@@ -1,0 +1,1242 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjAwIDIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYmdHcmFkIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIxMDAlIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI0U5RjRFRSIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNDREU4RDkiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICA8cmFkaWFsR3JhZGllbnQgaWQ9Imdsb3ciIGN4PSI3OCUiIGN5PSIxOCUiIHI9IjU1JSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiNmZmZmZmYiIHN0b3Atb3BhY2l0eT0iMC42Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iI2ZmZmZmZiIgc3RvcC1vcGFjaXR5PSIwIi8+CiAgICA8L3JhZGlhbEdyYWRpZW50PgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJwYXRoR3JhZCIgeDE9IjAlIiB5MT0iMTAwJSIgeDI9IjEwMCUiIHkyPSIwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiNFNTk5MUYiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjRjJBOTNCIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogIDwvZGVmcz4KCiAgPCEtLSBmdW5kbyBzcXVpcmNsZSB2ZXJkZSBjbGFybyAtLT4KICA8cmVjdCB4PSIwIiB5PSIwIiB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgcng9IjQ2IiBmaWxsPSJ1cmwoI2JnR3JhZCkiLz4KICA8cmVjdCB4PSIwIiB5PSIwIiB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgcng9IjQ2IiBmaWxsPSJ1cmwoI2dsb3cpIi8+CgogIDwhLS0gcm90YSBlc3RpbGl6YWRhIGVtIFM6IHN1Z2VyZSBvIHRyYWpldG8gZG8gdHJhbnNmZXIgY2hlZ2FuZG8gYW8gZGVzdGlubyAtLT4KICA8cGF0aCBkPSJNIDU4IDE1MiBDIDU4IDEyOCwgOTYgMTMyLCA5NiAxMDggQyA5NiA4NCwgNjAgODgsIDYwIDY0IEMgNjAgNDQsIDgyIDM0LCAxMDYgMzQiCiAgICAgICAgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ1cmwoI3BhdGhHcmFkKSIgc3Ryb2tlLXdpZHRoPSIxNSIKICAgICAgICBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KCiAgPCEtLSBwb250byBkZSBwYXJ0aWRhIC0tPgogIDxjaXJjbGUgY3g9IjU4IiBjeT0iMTUyIiByPSI4LjUiIGZpbGw9IiMxQjQzMzIiLz4KCiAgPCEtLSBwaW5vIGRlIGNoZWdhZGEgLS0+CiAgPHBhdGggZD0iTTEzMiAyMCBDIDE0NSAyMCAxNTUgMzAgMTU1IDQzIEMgMTU1IDU4IDEzMiA3OCAxMzIgNzggQyAxMzIgNzggMTA5IDU4IDEwOSA0MyBDIDEwOSAzMCAxMTkgMjAgMTMyIDIwIFoiCiAgICAgICAgZmlsbD0iIzFCNDMzMiIvPgogIDxjaXJjbGUgY3g9IjEzMiIgY3k9IjQzIiByPSI5IiBmaWxsPSIjRTlGNEVFIi8+Cjwvc3ZnPgo=">
+<title>Servir — Solicitação de Transfer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#12261E; --paper:#F0F4EE; --palm:#1B4332; --palm-2:#2D6A4F;
+    --gold:#F2A93B; --gold-ink:#8A5E12; --stamp:#A8442D;
+    --line: rgba(18,38,30,.16); --shadow: 0 20px 40px -18px rgba(18,38,30,.35);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{ font-family:'Inter', sans-serif; background:var(--paper); color:var(--ink); min-height:100vh; -webkit-font-smoothing:antialiased; }
+  @media (prefers-reduced-motion: reduce){ *{animation-duration:0.01ms !important; transition-duration:0.01ms !important;} }
+
+  /* ---------- NAVBAR ---------- */
+  .navbar{ display:flex; align-items:center; gap:12px; padding:16px 28px; background:var(--paper); border-bottom:1px solid var(--line); }
+  .navbar .burger{ display:flex; flex-direction:column; gap:4px; cursor:pointer; }
+  .navbar .burger span{ width:20px; height:2px; background:var(--ink); display:block;}
+  .brand{ font-family:'Fraunces', serif; font-weight:700; font-size:1.15rem; color:var(--palm); letter-spacing:.01em; }
+  .brand small{ display:block; font-family:'JetBrains Mono', monospace; font-weight:400; font-size:.6rem; letter-spacing:.18em; color:var(--gold-ink); text-transform:uppercase; margin-top:2px; }
+
+  /* ---------- STEPS ---------- */
+  .step{ display:none; }
+  .step.active{ display:block; animation:stepIn .4s ease; }
+  @keyframes stepIn{ from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
+
+  /* ---------- BOARD STRIP (etapa 1) ---------- */
+  .board{ background:var(--palm); color:var(--paper); padding:26px 28px; display:flex; align-items:center; justify-content:space-between; gap:24px; flex-wrap:wrap; position:relative; overflow:hidden; }
+  .board::after{ content:""; position:absolute; inset:0; background-image: repeating-linear-gradient(90deg, rgba(255,255,255,.035) 0 1px, transparent 1px 34px); pointer-events:none; }
+  .board-label{ font-family:'JetBrains Mono', monospace; font-size:.72rem; letter-spacing:.22em; text-transform:uppercase; color:var(--gold); display:flex; align-items:center; gap:8px; }
+  .board-label .req{ color:#ff9d80; }
+  .board-input-wrap{ display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
+  input[type="date"]{ font-family:'JetBrains Mono', monospace; font-size:1rem; letter-spacing:.08em; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.28); color:var(--paper); padding:10px 14px; border-radius:4px; outline:none; transition:border-color .2s, background .2s; color-scheme: dark; }
+  input[type="date"]:focus{ border-color:var(--gold); background:rgba(255,255,255,.1); box-shadow:0 0 0 3px rgba(242,169,59,.25); }
+  #dataChegada{ font-size:1.25rem; font-weight:700; padding:13px 20px; border-width:2px; }
+  #dataChegada.precisa-preencher{ border-color:var(--gold); animation:pulseGold 1.7s ease-in-out infinite; }
+  @keyframes pulseGold{
+    0%, 100%{ box-shadow:0 0 0 0 rgba(242,169,59,.5); }
+    50%{ box-shadow:0 0 0 9px rgba(242,169,59,0); }
+  }
+  .board-status.aviso{ color:#ff9d80 !important; font-weight:700; }
+  .board-status{ font-family:'JetBrains Mono', monospace; font-size:.68rem; letter-spacing:.14em; text-transform:uppercase; color:rgba(240,244,238,.55); border-left:1px dashed rgba(240,244,238,.3); padding-left:14px; }
+  .board-status.active{ color:var(--gold); }
+
+  /* ---------- MAIN (etapa 1) ---------- */
+  main.step1-main{ padding:48px 28px 100px; max-width:980px; margin:0 auto; }
+  .section-head{ margin-bottom:34px; }
+  .eyebrow{ font-family:'JetBrains Mono', monospace; font-size:.7rem; letter-spacing:.2em; text-transform:uppercase; color:var(--palm-2); display:block; margin-bottom:10px; }
+  h1{ font-family:'Fraunces', serif; font-weight:600; font-size:clamp(1.6rem, 3vw, 2.3rem); color:var(--ink); max-width:20ch; line-height:1.15; }
+  .subhead{ margin-top:12px; color:rgba(18,38,30,.65); max-width:52ch; font-size:.98rem;}
+
+  .tickets{ display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:28px; }
+  .ticket{ background:#fff; border-radius:14px; box-shadow:var(--shadow); display:grid; grid-template-rows:auto auto 1fr; overflow:hidden; position:relative; border:1px solid var(--line); cursor:pointer; transition:transform .25s ease, box-shadow .25s ease; opacity:0; animation:rise .6s ease forwards; }
+  .ticket:nth-child(1){ animation-delay:.05s; } .ticket:nth-child(2){ animation-delay:.18s; }
+  @keyframes rise{ from{ opacity:0; transform:translateY(14px); } to{ opacity:1; transform:translateY(0); } }
+  .ticket:hover{ transform:translateY(-4px) rotate(-.3deg); box-shadow:0 26px 46px -18px rgba(18,38,30,.4); }
+  .ticket.selected{ outline:3px solid var(--palm); outline-offset:-3px; box-shadow:0 0 0 6px rgba(27,67,50,.1), 0 26px 46px -18px rgba(18,38,30,.4); }
+  .selected-badge{
+    position:absolute; top:14px; right:14px; width:34px; height:34px; border-radius:50%;
+    background:var(--gold); color:var(--ink); display:flex; align-items:center; justify-content:center;
+    font-weight:700; font-size:1rem; opacity:0; transform:scale(.4); transition:opacity .2s, transform .2s;
+    box-shadow:0 4px 10px rgba(0,0,0,.25);
+  }
+  .ticket.selected .selected-badge{ opacity:1; transform:scale(1); }
+  .ticket:focus-visible{ outline:3px solid var(--gold); outline-offset:2px; }
+  .ticket-photo{ height:190px; background-size:cover; background-position:center; position:relative; }
+  .class-tag{ position:absolute; top:14px; left:14px; background:rgba(18,38,30,.82); color:var(--paper); font-family:'JetBrains Mono', monospace; font-size:.62rem; letter-spacing:.16em; text-transform:uppercase; padding:6px 10px; border-radius:20px; }
+  .perf{ position:relative; height:0; border-top:2px dashed rgba(18,38,30,.22); }
+  .perf::before, .perf::after{ content:""; position:absolute; top:-9px; width:18px; height:18px; border-radius:50%; background:var(--paper); box-shadow: inset 0 0 0 1px var(--line); }
+  .perf::before{ left:-9px; } .perf::after{ right:-9px; }
+  .ticket-body{ padding:20px 20px 22px; position:relative; }
+  .ticket-title{ font-family:'Fraunces', serif; font-weight:600; font-size:1.2rem; margin-bottom:6px; }
+  .ticket-desc{ font-size:.88rem; color:rgba(18,38,30,.68); line-height:1.5; }
+  .ticket-note{ margin-top:12px; font-size:.76rem; color:var(--palm-2); font-family:'JetBrains Mono', monospace; display:flex; align-items:center; gap:6px; }
+  .stamp{ position:absolute; top:-38px; right:20px; border:2px dashed var(--stamp); color:var(--stamp); border-radius:50%; width:104px; height:104px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; font-family:'JetBrains Mono', monospace; font-size:1.3rem; font-weight:700; letter-spacing:.02em; text-transform:uppercase; transform:rotate(-9deg); background:rgba(255,255,255,.92); line-height:1.05; padding:6px; }
+  .stamp span{ display:block; font-size:.66rem; margin-top:4px; letter-spacing:.05em; font-weight:600; }
+  .stamp.gold{ border-color:var(--palm-2); color:var(--palm-2); }
+  .stamp span{ display:block; font-size:.95rem; margin-top:2px; }
+  .select-hint{ margin-top:16px; font-size:.84rem; color:var(--ink); display:flex; align-items:center; gap:8px; font-weight:600; }
+  .select-hint .dot{ width:16px; height:16px; border-radius:50%; border:2.5px solid var(--palm); transition:background .2s, box-shadow .2s; flex-shrink:0; }
+  .ticket.selected .select-hint .dot{ background:var(--palm); box-shadow:0 0 0 4px rgba(27,67,50,.15); }
+  .ticket.selected .select-hint{ color:var(--palm); }
+
+  .step1-actions{ margin-top:36px; display:flex; justify-content:flex-end; }
+
+  /* ---------- ROUTE STRIP (etapa 2) ---------- */
+  .route-strip{ background:var(--palm); color:var(--paper); padding:18px 28px; display:flex; align-items:center; gap:28px; flex-wrap:wrap; font-family:'JetBrains Mono', monospace; font-size:.78rem; letter-spacing:.04em; }
+  .route-strip .item{ display:flex; flex-direction:column; gap:4px; }
+  .route-strip .item span:first-child{ color:var(--gold); font-size:.62rem; letter-spacing:.18em; text-transform:uppercase; }
+  .route-strip .divider{ width:1px; height:26px; background:rgba(240,244,238,.25); }
+  .route-strip .back-link{ margin-left:auto; background:none; border:1px solid rgba(240,244,238,.35); color:var(--paper); font-family:'JetBrains Mono', monospace; font-size:.68rem; letter-spacing:.08em; text-transform:uppercase; padding:8px 12px; border-radius:6px; cursor:pointer; }
+  .route-strip .back-link:hover{ background:rgba(240,244,238,.1); }
+
+  main.step2-main{ max-width:760px; margin:0 auto; padding:40px 28px 140px; }
+  .tabs{ display:flex; border-bottom:2px solid var(--line); margin-bottom:32px; gap:8px; }
+  .tab-btn{ font-family:'JetBrains Mono', monospace; font-size:.74rem; letter-spacing:.1em; text-transform:uppercase; background:none; border:none; padding:12px 4px; margin-right:22px; cursor:pointer; color:rgba(18,38,30,.45); position:relative; transition:color .2s; }
+  .tab-btn.active{ color:var(--palm); }
+  .tab-btn.active::after{ content:""; position:absolute; left:0; right:0; bottom:-2px; height:2px; background:var(--gold); }
+  .tab-btn .count{ display:inline-flex; align-items:center; justify-content:center; min-width:18px; height:18px; border-radius:50%; background:var(--palm-2); color:#fff; font-size:.62rem; margin-left:6px; padding:0 4px; }
+  .panel{ display:none; animation:fadeIn .35s ease; }
+  .panel.active{ display:block; }
+  @keyframes fadeIn{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
+  .field-group{ margin-bottom:20px; }
+  .field-group label{ display:block; font-family:'JetBrains Mono', monospace; font-size:.68rem; letter-spacing:.12em; text-transform:uppercase; color:var(--palm-2); margin-bottom:6px; }
+  .field-group input{ width:100%; padding:12px 14px; border-radius:8px; border:1px solid var(--line); font-family:'Inter', sans-serif; font-size:.95rem; background:#fff; color:var(--ink); outline:none; transition:border-color .2s, box-shadow .2s; }
+  .field-group input:focus{ border-color:var(--palm); box-shadow:0 0 0 3px rgba(27,67,50,.12); }
+  .field-group input.invalid, .field-group textarea.invalid{ border-color:var(--stamp); background:rgba(168,68,45,.04); }
+  .field-error{ display:none; color:var(--stamp); font-family:'JetBrains Mono', monospace; font-size:.7rem; margin-top:6px; letter-spacing:.02em; }
+  .field-error.show{ display:block; }
+  .field-row{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  @media (max-width:560px){ .field-row{ grid-template-columns:1fr; } }
+  .companion{ background:#fff; border:1px solid var(--line); border-radius:12px; padding:18px; margin-bottom:16px; position:relative; box-shadow:0 8px 20px -14px rgba(18,38,30,.3); }
+  .companion-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+  .companion-head .label{ font-family:'JetBrains Mono', monospace; font-size:.7rem; letter-spacing:.1em; text-transform:uppercase; color:rgba(18,38,30,.5); }
+  .companion-remove{ background:none; border:none; cursor:pointer; color:var(--stamp); font-size:.72rem; font-family:'JetBrains Mono', monospace; letter-spacing:.05em; text-transform:uppercase; }
+  .companion-fields{ display:grid; grid-template-columns:1.1fr 1.3fr auto; gap:14px; align-items:end; }
+  @media (max-width:560px){ .companion-fields{ grid-template-columns:1fr; } }
+  .dob-group{ display:grid; grid-template-columns:0.7fr 1fr 1fr; gap:8px; }
+  .dob-group input, .dob-group select{
+    width:100%; padding:12px 10px; border-radius:8px; border:1px solid var(--line);
+    font-family:'JetBrains Mono', monospace; font-size:.88rem; background:#fff; color:var(--ink);
+    outline:none; transition:border-color .2s, box-shadow .2s;
+  }
+  .dob-group input:focus, .dob-group select:focus{ border-color:var(--palm); box-shadow:0 0 0 3px rgba(27,67,50,.12); }
+  .dob-group input::-webkit-outer-spin-button, .dob-group input::-webkit-inner-spin-button{ -webkit-appearance:none; margin:0; }
+  .dob-group input[type=number]{ -moz-appearance:textfield; }
+  .tag-tipo{ font-family:'JetBrains Mono', monospace; font-size:.68rem; font-weight:700; letter-spacing:.08em; padding:8px 10px; border-radius:6px; text-align:center; white-space:nowrap; text-transform:uppercase; }
+  .tag-tipo.adt{ background:rgba(27,67,50,.1); color:var(--palm); }
+  .tag-tipo.chd{ background:rgba(242,169,59,.18); color:var(--gold-ink); }
+  .tag-tipo.isento{ background:rgba(168,68,45,.1); color:var(--stamp); }
+  .tag-tipo.pendente{ background:var(--paper); color:rgba(18,38,30,.35); }
+  .cadeirinha-check{ display:flex; align-items:center; gap:8px; margin-top:10px; font-size:.82rem; color:rgba(18,38,30,.7); }
+  .cadeirinha-check input{ width:16px; height:16px; accent-color:var(--palm); }
+  .btn-add{ display:inline-flex; align-items:center; gap:8px; background:none; border:2px dashed var(--palm-2); color:var(--palm-2); font-family:'JetBrains Mono', monospace; font-size:.76rem; letter-spacing:.08em; text-transform:uppercase; padding:12px 18px; border-radius:8px; cursor:pointer; width:100%; justify-content:center; transition:background .2s, color .2s; }
+  .btn-add:hover{ background:rgba(45,106,79,.08); }
+  .btn-add:disabled{ opacity:.4; cursor:not-allowed; }
+
+  .no-companion-box{
+    display:flex; align-items:center; gap:12px;
+    border:1px dashed var(--line); border-radius:10px;
+    padding:14px 16px; margin-bottom:20px; cursor:pointer;
+    font-size:.85rem; color:rgba(18,38,30,.75);
+    transition:border-color .2s, background .2s;
+  }
+  .no-companion-box:hover{ border-color:var(--palm-2); background:rgba(45,106,79,.04); }
+  .no-companion-box input{ width:17px; height:17px; accent-color:var(--palm); flex-shrink:0; }
+  .no-companion-box.attention{ border-color:var(--stamp); animation:shake .4s ease; }
+  @keyframes shake{
+    0%, 100%{ transform:translateX(0); }
+    25%{ transform:translateX(-6px); }
+    75%{ transform:translateX(6px); }
+  }
+
+  .summary-bar{ display:none; position:fixed; bottom:0; left:0; right:0; background:#fff; border-top:2px dashed var(--line); box-shadow:0 -14px 30px -20px rgba(18,38,30,.35); padding:16px 28px; z-index:20; }
+  .summary-inner{ max-width:760px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:20px; flex-wrap:wrap; }
+  .summary-breakdown{ font-family:'JetBrains Mono', monospace; font-size:.72rem; color:rgba(18,38,30,.6); display:flex; gap:14px; flex-wrap:wrap; }
+  .summary-total{ display:flex; align-items:center; gap:14px; }
+  .summary-total .value{ font-family:'JetBrains Mono', monospace; font-weight:700; font-size:1.3rem; color:var(--palm); }
+  .summary-total .value.pendente{ color:var(--stamp); font-size:1rem; }
+
+  .btn-confirm, .btn-continue{ background:var(--gold); color:var(--ink); border:none; font-family:'JetBrains Mono', monospace; font-weight:700; font-size:.8rem; letter-spacing:.08em; text-transform:uppercase; padding:14px 24px; border-radius:8px; cursor:pointer; transition:background .2s, transform .15s; }
+  .btn-confirm:hover, .btn-continue:hover{ background:#e5991f; }
+  .btn-confirm:active, .btn-continue:active{ transform:scale(.98); }
+  .btn-continue:disabled, .btn-confirm:disabled{ opacity:.4; cursor:not-allowed; }
+  .btn-back{ background:none; border:1px solid var(--line); color:var(--ink); font-family:'JetBrains Mono', monospace; font-weight:700; font-size:.8rem; letter-spacing:.08em; text-transform:uppercase; padding:14px 20px; border-radius:8px; cursor:pointer; transition:background .2s, border-color .2s; }
+  .btn-back:hover{ background:rgba(18,38,30,.05); border-color:var(--palm); }
+
+  footer{ background:var(--ink); color:rgba(240,244,238,.7); padding:22px 28px; display:flex; align-items:center; justify-content:center; gap:26px; flex-wrap:wrap; }
+  footer a{ color:rgba(240,244,238,.7); display:flex; align-items:center; gap:8px; text-decoration:none; font-size:.82rem; transition:color .2s; }
+  footer a:hover{ color:var(--gold); }
+  footer svg{ width:16px; height:16px; }
+
+  .overlay{ position:fixed; inset:0; background:rgba(18,38,30,.55); backdrop-filter: blur(2px); display:flex; align-items:center; justify-content:center; padding:20px; z-index:50; animation:fadeInOverlay .35s ease; }
+  @keyframes fadeInOverlay{ from{opacity:0;} to{opacity:1;} }
+  .overlay.hidden{ display:none; }
+  .modal{ background:#fff; max-width:520px; width:100%; border-radius:16px; overflow:hidden; box-shadow:0 40px 70px -20px rgba(18,38,30,.5); animation:pop .4s cubic-bezier(.2,.9,.25,1.1); }
+  @keyframes pop{ from{ opacity:0; transform:translateY(18px) scale(.97); } to{ opacity:1; transform:translateY(0) scale(1); } }
+  .modal-head{ background:var(--palm); color:var(--paper); padding:22px 26px; position:relative; }
+  .modal-head .gate{ font-family:'JetBrains Mono', monospace; font-size:.66rem; letter-spacing:.2em; text-transform:uppercase; color:var(--gold); margin-bottom:8px; display:block; }
+  .modal-head h2{ font-family:'Fraunces', serif; font-weight:600; font-size:1.35rem; line-height:1.25; }
+  .modal-body{ padding:22px 26px 26px; font-size:.9rem; color:rgba(18,38,30,.8); line-height:1.65; }
+  .modal-body p{ margin-bottom:12px; }
+  .modal-body ul{ margin:12px 0; padding-left:18px; }
+  .modal-body li{ margin-bottom:8px; }
+  .modal-body .contact{ margin-top:16px; padding-top:14px; border-top:1px dashed var(--line); font-family:'JetBrains Mono', monospace; font-size:.8rem; color:var(--ink); }
+  .modal-body .contact a{ color:var(--palm-2); text-decoration:none; }
+  .modal-foot{ padding:0 26px 26px; }
+</style>
+</head>
+<body>
+
+  <!-- TELA DE CARREGAMENTO: enquanto busca hotel/agência/serviços no Supabase -->
+  <div id="loadingScreen" style="position:fixed; inset:0; background:var(--paper); z-index:100; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:14px; text-align:center; padding:24px;">
+    <div id="loadingSpinner" style="width:34px; height:34px; border:3px solid var(--line); border-top-color:var(--palm); border-radius:50%; animation:spin .8s linear infinite;"></div>
+    <p id="loadingText" style="font-family:'JetBrains Mono', monospace; font-size:.8rem; letter-spacing:.06em; color:rgba(18,38,30,.6);">Carregando dados da reserva…</p>
+    <div id="loadingError" style="display:none; max-width:440px; font-family:'JetBrains Mono', monospace; font-size:.78rem; color:var(--stamp); background:rgba(168,68,45,.08); border:1px solid var(--stamp); border-radius:8px; padding:14px 16px; text-align:left; line-height:1.6;"></div>
+  </div>
+  <style>@keyframes spin{ to{ transform:rotate(360deg); } }</style>
+
+  <!-- POPUP: mensagem do hotel (dinâmica, ver renderPopupHotel) -->
+  <div class="overlay hidden" id="overlay">
+    <div class="modal">
+      <div class="modal-head">
+        <span class="gate" id="modalGate"></span>
+        <h2 id="modalTitulo"></h2>
+      </div>
+      <div class="modal-body">
+        <p id="modalIntro"></p>
+        <ul id="modalRegras"></ul>
+        <div class="contact" id="modalContato"></div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn-confirm" id="btnConfirm">Entendi, continuar →</button>
+      </div>
+    </div>
+  </div>
+
+  <nav class="navbar">
+    <div class="burger"><span></span><span></span><span></span></div>
+    <div class="brand" id="brandNome">—<small id="brandSub">Receptivo</small></div>
+  </nav>
+
+  <!-- ================= ETAPA 1: DATA + SERVIÇO ================= -->
+  <div class="step active" id="step1">
+    <div class="board">
+      <div class="board-label">Data da chegada <span class="req">*</span></div>
+      <div class="board-input-wrap">
+        <input type="date" id="dataChegada">
+        <div class="board-status" id="boardStatus">Aguardando data</div>
+      </div>
+    </div>
+
+    <main class="step1-main">
+      <div class="section-head">
+        <span class="eyebrow" id="eyebrowHotel">Chegada · Arraial Eco Resort</span>
+        <h1>Escolha como você quer chegar</h1>
+        <p class="subhead">Dois jeitos de sair do aeroporto direto pro seu quarto. Selecione um cartão para seguir com a reserva.</p>
+      </div>
+
+      <div class="tickets" id="ticketsWrap"></div>
+
+      <div class="step1-actions">
+        <button class="btn-continue" id="btnContinuar" disabled>Continuar com a reserva →</button>
+      </div>
+    </main>
+  </div>
+
+  <!-- ================= ETAPA 2: DADOS DO CLIENTE ================= -->
+  <div class="step" id="step2">
+    <div class="route-strip">
+      <div class="item"><span>Serviço</span><span id="rsServico">—</span></div>
+      <div class="divider"></div>
+      <div class="item"><span>Chegada</span><span id="rsData">—</span></div>
+      <div class="divider"></div>
+      <div class="item"><span>Hotel</span><span id="rsHotel">—</span></div>
+    </div>
+
+    <main class="step2-main">
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="principal">Passageiro principal</button>
+        <button class="tab-btn" data-tab="acompanhantes">Acompanhantes <span class="count" id="countAcomp">0</span></button>
+      </div>
+
+      <div class="panel active" id="panel-principal">
+        <div class="field-row">
+          <div class="field-group"><label>Nome <span style="color:var(--stamp)">*</span></label><input type="text" id="p_nome" placeholder="Ex: Maria"><span class="field-error" id="err_p_nome"></span></div>
+          <div class="field-group"><label>Sobrenome <span style="color:var(--stamp)">*</span></label><input type="text" id="p_sobrenome" placeholder="Ex: Silva"><span class="field-error" id="err_p_sobrenome"></span></div>
+        </div>
+        <div class="field-group"><label>Endereço <span style="color:var(--stamp)">*</span></label><input type="text" id="p_endereco" placeholder="Rua, número, bairro, cidade"><span class="field-error" id="err_p_endereco"></span></div>
+        <div class="field-row">
+          <div class="field-group"><label>WhatsApp <span style="color:var(--stamp)">*</span></label><input type="tel" id="p_whatsapp" placeholder="(00) 00000-0000" maxlength="15"><span class="field-error" id="err_p_whatsapp"></span></div>
+          <div class="field-group"><label>E-mail <span style="color:var(--stamp)">*</span></label><input type="email" id="p_email" placeholder="seuemail@exemplo.com"><span class="field-error" id="err_p_email"></span></div>
+        </div>
+      </div>
+
+      <div class="panel" id="panel-acompanhantes">
+        <label class="no-companion-box" id="noCompanionBox">
+          <input type="checkbox" id="semAcompanhante">
+          <span>Ninguém vai te acompanhar? Marque aqui se está viajando sozinho(a).</span>
+        </label>
+        <div id="companionsList"></div>
+        <button class="btn-add" id="btnAddCompanion">+ Adicionar acompanhante</button>
+      </div>
+    </main>
+  </div>
+
+  <!-- ================= ETAPA 3: DADOS DA RESERVA (HOTEL / VOOS) ================= -->
+  <div class="step" id="step3">
+    <div class="route-strip">
+      <div class="item"><span>Serviço</span><span id="rsServico3">—</span></div>
+      <div class="divider"></div>
+      <div class="item"><span>Chegada</span><span id="rsData3">—</span></div>
+      <div class="divider"></div>
+      <div class="item"><span>Hotel</span><span id="rsHotel3">—</span></div>
+    </div>
+
+    <main class="step2-main">
+      <div class="section-head" style="margin-bottom:26px;">
+        <span class="eyebrow">Reserva</span>
+        <h1 style="font-size:1.5rem;">Dados do hotel e do voo</h1>
+        <p class="subhead">Essas informações ajudam o motorista a te encontrar certinho na chegada.</p>
+      </div>
+
+      <div class="field-group"><label>Código da reserva no hotel <span style="color:var(--stamp)">*</span></label><input type="text" id="r_reserva_hotel" placeholder="Ex: RES-48213"><span class="field-error" id="err_r_reserva_hotel"></span></div>
+
+      <div class="field-row">
+        <div class="field-group"><label>Voo de chegada <span style="color:var(--stamp)">*</span></label><input type="text" id="r_voo_chegada" placeholder="Ex: G3 1234"><span class="field-error" id="err_r_voo_chegada"></span></div>
+        <div class="field-group"><label>Voo de partida <span style="color:var(--stamp)">*</span></label><input type="text" id="r_voo_partida" placeholder="Ex: G3 5678"><span class="field-error" id="err_r_voo_partida"></span></div>
+      </div>
+
+      <div class="field-group">
+        <label>Data e hora de chegada do voo <span style="color:var(--stamp)">*</span></label>
+        <div class="field-row" style="gap:10px;">
+          <input type="date" id="r_data_chegada_voo">
+          <input type="time" id="r_hora_chegada_voo">
+        </div>
+        <span class="field-error" id="err_r_data_chegada_voo"></span>
+      </div>
+      <div class="field-group">
+        <label>Data e hora de partida do voo <span style="color:var(--stamp)">*</span></label>
+        <div class="field-row" style="gap:10px;">
+          <input type="date" id="r_data_partida_voo">
+          <input type="time" id="r_hora_partida_voo">
+        </div>
+        <span class="field-error" id="err_r_data_partida_voo"></span>
+      </div>
+
+      <div class="field-group" id="avisoDatasInvalidas" style="display:none; color:var(--stamp); font-size:.82rem; font-family:'JetBrains Mono', monospace; margin-top:-8px;"></div>
+
+      <div class="field-group">
+        <label>Observações gerais</label>
+        <textarea id="r_obs_geral" rows="4" placeholder="Alguma informação extra? Ex: bagagem especial, horário aproximado, etc." style="width:100%; padding:12px 14px; border-radius:8px; border:1px solid var(--line); font-family:'Inter', sans-serif; font-size:.95rem; background:#fff; color:var(--ink); outline:none; resize:vertical;"></textarea>
+        <span class="field-error" id="err_r_obs_geral"></span>
+      </div>
+    </main>
+  </div>
+
+  <!-- ================= ETAPA 4: CONFIRMAÇÃO ================= -->
+  <div class="step" id="step4">
+    <main class="step2-main" style="padding-top:60px;">
+      <div class="section-head" style="text-align:center;">
+        <span class="eyebrow">Reserva enviada</span>
+        <h1 style="max-width:none;">Sua solicitação está a caminho ✓</h1>
+        <p class="subhead" style="margin:12px auto 0;">Confirmamos por e-mail e WhatsApp assim que o transfer for aprovado.</p>
+      </div>
+
+      <div class="ticket" style="max-width:420px; margin:32px auto 0; cursor:default;">
+        <div class="ticket-body" style="padding:24px;">
+          <div class="ticket-title" id="ticketFinalServico">—</div>
+          <p class="ticket-desc" id="ticketFinalHotel">—</p>
+          <div class="perf" style="margin:16px 0;"></div>
+          <div class="ticket-note" id="ticketFinalData">—</div>
+          <div class="ticket-note" id="ticketFinalPassageiro">—</div>
+          <div class="ticket-note" id="ticketFinalVoos">—</div>
+          <div class="ticket-note" id="ticketFinalTotal" style="font-weight:700; margin-top:10px;">—</div>
+        </div>
+      </div>
+
+      <div style="max-width:420px; margin:18px auto 0; text-align:center;">
+        <a href="#" id="btnAbrirWhatsapp" target="_blank" rel="noopener"
+           style="display:inline-flex; align-items:center; gap:8px; background:#25D366; color:#fff; text-decoration:none; font-family:'JetBrains Mono', monospace; font-weight:700; font-size:.8rem; letter-spacing:.06em; text-transform:uppercase; padding:12px 20px; border-radius:8px;">
+          Abrir WhatsApp com <span id="btnWhatsappAgenciaNome">a agência</span>
+        </a>
+        <p style="font-size:.72rem; color:rgba(18,38,30,.5); margin-top:8px;">Se o WhatsApp não abriu automaticamente, use o botão acima.</p>
+      </div>
+    </main>
+  </div>
+
+  <!-- Barra de resumo/ação, compartilhada entre etapas 2 e 3 -->
+  <div class="summary-bar" id="summaryBar">
+    <div class="summary-inner">
+      <div class="summary-breakdown" id="summaryBreakdown">1 adulto</div>
+      <div class="summary-total">
+        <span class="value" id="summaryTotal">R$ 0,00</span>
+        <button class="btn-back" id="btnBarBack">← Voltar</button>
+        <button class="btn-confirm" id="btnBarAction">Continuar →</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <a id="footerWhatsapp" href="#">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+      <span id="footerWhatsappTexto">—</span>
+    </a>
+    <a id="footerEmail" href="#">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M22 6l-10 7L2 6"/></svg>
+      <span id="footerEmailTexto">—</span>
+    </a>
+    <span style="opacity:.5; font-size:.72rem;">Powered by Servir</span>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+  // =================================================================
+  // CONFIGURAÇÃO DO SUPABASE
+  // Troque pelos valores do seu projeto: Supabase Dashboard >
+  // Project Settings > API > Project URL / anon public key.
+  // A anon key é segura pra expor no front — é feita pra isso — desde
+  // que as policies de RLS estejam corretas (ver alter-receptivo-rls-publico.sql).
+  // =================================================================
+  const SUPABASE_URL = 'https://frzvcrcshkpvjdbbqkhz.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_h-JuDyjYgb5YKGYFRKtLEg_8gnJor9w';
+  let sb; // cliente Supabase (renomeado pra não colidir com o global 'supabase' da biblioteca)
+
+  // =================================================================
+  // DADOS DINÂMICOS: carregados de verdade do Supabase (ver
+  // carregarDadosIniciais). Ficam em `let` porque só são preenchidos
+  // depois que a Promise resolve.
+  // =================================================================
+  let hotelAtual = null;
+  let agenciaAtual = null;
+  let servicosData = [];
+
+  function construirNotaServico(row){
+    const partes = [];
+    if(row.idade_isencao !== null && row.idade_isencao !== undefined){
+      partes.push(`Crianças até ${row.idade_isencao} anos não pagam`);
+    }
+    if(row.taxa_cadeirinha){
+      partes.push(`Cadeirinha: +R$ ${Number(row.taxa_cadeirinha).toFixed(2)}`);
+    }
+    return '⌁ ' + (partes.length ? partes.join(' · ') : 'Consulte as condições');
+  }
+
+  function mapearServico(row){
+    return {
+      key: row.id, // uuid real da tabela receptivo_servicos
+      nome: row.nome,
+      tag: row.descricao_curta || row.nome,
+      imagem: row.imagem_url,
+      desc: row.descricao || '',
+      sobConsulta: row.sob_consulta,
+      tarifaAdt: row.tarifa_adt !== null ? Number(row.tarifa_adt) : null,
+      tarifaChd: row.tarifa_chd !== null ? Number(row.tarifa_chd) : null,
+      idadeIsencao: row.idade_isencao,
+      idadeTarifaReduzida: row.idade_tarifa_reduzida,
+      taxaCadeirinha: row.taxa_cadeirinha !== null ? Number(row.taxa_cadeirinha) : 0,
+      aplicaCadeirinha: !!row.taxa_cadeirinha,
+      stampClass: row.sob_consulta ? '' : 'gold',
+      stampLine1: row.sob_consulta ? 'Sob' : ('R$' + Number(row.tarifa_adt).toFixed(0)),
+      stampLine2: row.sob_consulta ? 'Consulta' : (row.tipo_cobranca === 'por_pessoa' ? '/ pessoa' : '/ reserva'),
+      note: construirNotaServico(row)
+    };
+  }
+
+  function mapearHotel(row){
+    return {
+      id: row.id,
+      nome: row.nome,
+      popup_titulo: row.popup_titulo,
+      popup_intro: row.popup_intro,
+      popup_regras: row.popup_regras || [],
+      whatsapp: row.popup_whatsapp,
+      email: row.popup_email,
+      obs_urgencia: row.popup_obs_urgencia
+    };
+  }
+
+  // Lê ?hotel=<uuid> da URL. Esse link é gerado pela própria agência
+  // (painel administrativo). Como cada hotel pertence a uma agência
+  // específica (receptivo_hoteis.agencia_id), basta o hotel — a
+  // agência responsável é derivada dele, evitando links com
+  // combinações inconsistentes de agência+hotel.
+  function lerParametrosUrl(){
+    const params = new URLSearchParams(window.location.search);
+    return { hotelId: params.get('hotel') };
+  }
+
+  async function carregarDadosIniciais(){
+    const { hotelId } = lerParametrosUrl();
+
+    if(!hotelId){
+      throw new Error('Este link está incompleto. Peça à agência ou ao hotel o link correto de solicitação de transfer.');
+    }
+
+    const hotelRes = await sb.from('receptivo_hoteis').select('*').eq('id', hotelId).maybeSingle();
+    if(hotelRes.error) throw new Error('Hotel: ' + hotelRes.error.message);
+    if(!hotelRes.data) throw new Error('Hotel não encontrado. Confira o link com quem te enviou.');
+
+    const agenciaId = hotelRes.data.agencia_id;
+
+    const [agenciaRes, servicosRes] = await Promise.all([
+      sb.from('receptivo_agencias_receptivo').select('*').eq('id', agenciaId).eq('ativo', true).maybeSingle(),
+      sb.from('receptivo_servicos').select('*').eq('agencia_id', agenciaId).eq('ativo', true).order('ordem_exibicao', { ascending: true })
+    ]);
+
+    if(agenciaRes.error) throw new Error('Agência: ' + agenciaRes.error.message);
+    if(servicosRes.error) throw new Error('Serviços: ' + servicosRes.error.message);
+    if(!agenciaRes.data) throw new Error('A agência responsável por este hotel está inativa. Confira o link com quem te enviou.');
+    if(!servicosRes.data || servicosRes.data.length === 0) throw new Error('Essa agência ainda não tem serviços ativos cadastrados.');
+
+    hotelAtual = mapearHotel(hotelRes.data);
+    agenciaAtual = { id: agenciaRes.data.id, nome: agenciaRes.data.nome, whatsapp_contato: agenciaRes.data.whatsapp_contato };
+    servicosData = servicosRes.data.map(mapearServico);
+  }
+
+  let servicoSelecionadoKey = null;
+
+  // =================================================================
+  // POPUP
+  // =================================================================
+  function renderPopupHotel(hotel){
+    document.getElementById('modalGate').textContent = `Portão de solicitação · ${hotel.nome}`;
+    document.getElementById('modalTitulo').textContent = hotel.popup_titulo;
+    document.getElementById('modalIntro').innerHTML = hotel.popup_intro;
+    document.getElementById('brandNome').innerHTML = `${agenciaAtual.nome}<small id="brandSub">Receptivo · ${hotel.nome.split(' ')[0]}</small>`;
+    document.getElementById('eyebrowHotel').textContent = `Chegada · ${hotel.nome}`;
+
+    const lista = document.getElementById('modalRegras');
+    lista.innerHTML = '';
+    hotel.popup_regras.forEach(regra => {
+      const li = document.createElement('li');
+      li.textContent = regra;
+      lista.appendChild(li);
+    });
+
+    document.getElementById('modalContato').innerHTML =
+      `WhatsApp ${hotel.whatsapp} · <a href="mailto:${hotel.email}">${hotel.email}</a><br>${hotel.obs_urgencia}`;
+
+    const whatsappDigitos = (hotel.whatsapp || '').replace(/\D/g, '');
+    document.getElementById('footerWhatsapp').href = whatsappDigitos ? `https://wa.me/${whatsappDigitos}` : '#';
+    document.getElementById('footerWhatsappTexto').textContent = hotel.whatsapp || 'Sem WhatsApp';
+    document.getElementById('footerEmail').href = hotel.email ? `mailto:${hotel.email}` : '#';
+    document.getElementById('footerEmailTexto').textContent = hotel.email || 'Sem e-mail';
+  }
+
+  const overlay = document.getElementById('overlay');
+  document.getElementById('btnConfirm').addEventListener('click', () => overlay.classList.add('hidden'));
+
+  // =================================================================
+  // ETAPA 1: renderiza os cards a partir de servicosData
+  // =================================================================
+  const ticketsWrap = document.getElementById('ticketsWrap');
+
+  function renderTickets(){
+    ticketsWrap.innerHTML = '';
+    servicosData.forEach(s => {
+      const div = document.createElement('div');
+      div.className = 'ticket';
+      div.tabIndex = 0;
+      div.dataset.service = s.key;
+      div.innerHTML = `
+        <div class="ticket-photo" style="background-image:url('${s.imagem}')">
+          <span class="class-tag">${s.tag}</span>
+          <span class="selected-badge">✓</span>
+        </div>
+        <div class="perf"></div>
+        <div class="ticket-body">
+          <div class="stamp ${s.stampClass}">${s.stampLine1}<span>${s.stampLine2}</span></div>
+          <div class="ticket-title">${s.nome}</div>
+          <p class="ticket-desc">${s.desc}</p>
+          <div class="ticket-note">${s.note}</div>
+          <div class="select-hint"><span class="dot"></span> <span data-role="hint-text">Selecionar este transfer</span></div>
+        </div>
+      `;
+      ticketsWrap.appendChild(div);
+    });
+
+    ticketsWrap.querySelectorAll('.ticket').forEach(t => {
+      const select = () => {
+        if(!dateInput.value){
+          avisarDataChegadaFaltando();
+          return;
+        }
+        ticketsWrap.querySelectorAll('.ticket').forEach(o => {
+          o.classList.remove('selected');
+          o.querySelector('[data-role="hint-text"]').textContent = 'Selecionar este transfer';
+        });
+        t.classList.add('selected');
+        t.querySelector('[data-role="hint-text"]').textContent = 'Selecionado';
+        servicoSelecionadoKey = t.dataset.service;
+        validaEtapa1();
+      };
+      t.addEventListener('click', select);
+      t.addEventListener('keydown', e => { if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); select(); } });
+    });
+  }
+
+  const dateInput = document.getElementById('dataChegada');
+  const status = document.getElementById('boardStatus');
+  const btnContinuar = document.getElementById('btnContinuar');
+
+  // data de chegada: só permite a partir de amanhã (nunca hoje ou dias anteriores)
+  (function setMinDate(){
+    const amanha = new Date();
+    amanha.setDate(amanha.getDate() + 1);
+    const iso = amanha.toISOString().split('T')[0];
+    dateInput.min = iso;
+  })();
+  dateInput.classList.add('precisa-preencher');
+
+  function validaEtapa1(){
+    btnContinuar.disabled = !(dateInput.value && servicoSelecionadoKey);
+  }
+
+  dateInput.addEventListener('change', () => {
+    status.textContent = dateInput.value ? 'Data confirmada' : 'Aguardando data';
+    status.classList.toggle('active', !!dateInput.value);
+    status.classList.remove('aviso');
+    dateInput.classList.toggle('precisa-preencher', !dateInput.value);
+    validaEtapa1();
+  });
+
+  function avisarDataChegadaFaltando(){
+    dateInput.focus();
+    if(typeof dateInput.showPicker === 'function'){
+      try{ dateInput.showPicker(); } catch(e){ /* alguns navegadores bloqueiam showPicker fora de gesto direto */ }
+    }
+    status.textContent = 'Preencha a data antes de escolher o serviço';
+    status.classList.add('active', 'aviso');
+    dateInput.classList.remove('precisa-preencher');
+    void dateInput.offsetWidth; // reinicia a animação se já tiver rodado
+    dateInput.classList.add('precisa-preencher');
+  }
+
+  // =================================================================
+  // TRANSIÇÃO ENTRE ETAPAS
+  // =================================================================
+  const steps = { 1: document.getElementById('step1'), 2: document.getElementById('step2'), 3: document.getElementById('step3'), 4: document.getElementById('step4') };
+  const summaryBar = document.getElementById('summaryBar');
+  const btnBarAction = document.getElementById('btnBarAction');
+  const btnBarBack = document.getElementById('btnBarBack');
+  let currentStep = 1;
+
+  // =================================================================
+  // VALIDAÇÃO: helpers genéricos de campo obrigatório + erro visual
+  // =================================================================
+  function marcarErro(id, mensagem){
+    const input = document.getElementById(id);
+    const err = document.getElementById('err_' + id);
+    input.classList.add('invalid');
+    if(err){ err.textContent = mensagem; err.classList.add('show'); }
+  }
+  function limparErro(id){
+    const input = document.getElementById(id);
+    const err = document.getElementById('err_' + id);
+    input.classList.remove('invalid');
+    if(err){ err.classList.remove('show'); }
+  }
+
+  // regex de e-mail: exige @ e um domínio com ponto (ex: nome@dominio.com)
+  const REGEX_EMAIL = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/;
+  // regex de whatsapp/telefone BR: (DD) 9XXXX-XXXX ou (DD) XXXX-XXXX
+  const REGEX_WHATSAPP = /^\(\d{2}\) \d{4,5}-\d{4}$/;
+
+  // máscara de digitação do WhatsApp: formata enquanto a pessoa digita
+  const whatsappInput = document.getElementById('p_whatsapp');
+  whatsappInput.addEventListener('input', () => {
+    let v = whatsappInput.value.replace(/\D/g, '').slice(0, 11);
+    if(v.length > 6){
+      v = `(${v.slice(0,2)}) ${v.slice(2, v.length - 4)}-${v.slice(-4)}`;
+    } else if(v.length > 2){
+      v = `(${v.slice(0,2)}) ${v.slice(2)}`;
+    } else if(v.length > 0){
+      v = `(${v}`;
+    }
+    whatsappInput.value = v;
+  });
+
+  // e-mail sempre em minúsculas, conforme digita
+  const emailInput = document.getElementById('p_email');
+  emailInput.addEventListener('input', () => {
+    const cursor = emailInput.selectionStart;
+    emailInput.value = emailInput.value.toLowerCase();
+    emailInput.setSelectionRange(cursor, cursor);
+  });
+
+  // campos obrigatórios do passageiro principal (todos)
+  const camposPrincipalObrigatorios = ['p_nome', 'p_sobrenome', 'p_endereco', 'p_whatsapp', 'p_email'];
+
+  function principalValido(mostrarErros){
+    let valido = true;
+    camposPrincipalObrigatorios.forEach(id => {
+      const valor = document.getElementById(id).value.trim();
+      if(valor === ''){
+        valido = false;
+        if(mostrarErros) marcarErro(id, 'Campo obrigatório.');
+      } else if(mostrarErros){
+        limparErro(id);
+      }
+    });
+
+    const whatsappVal = document.getElementById('p_whatsapp').value.trim();
+    if(whatsappVal !== '' && !REGEX_WHATSAPP.test(whatsappVal)){
+      valido = false;
+      if(mostrarErros) marcarErro('p_whatsapp', 'Formato inválido. Use (DD) 9XXXX-XXXX.');
+    }
+
+    const emailVal = document.getElementById('p_email').value.trim();
+    if(emailVal !== '' && !REGEX_EMAIL.test(emailVal)){
+      valido = false;
+      if(mostrarErros) marcarErro('p_email', 'E-mail inválido. Deve conter @ e um domínio (ex: nome@dominio.com).');
+    }
+
+    return valido;
+  }
+
+  function atualizarEstadoBotaoAcao(){
+    if(currentStep === 2){
+      btnBarAction.disabled = !principalValido(false);
+    } else {
+      btnBarAction.disabled = false;
+    }
+  }
+  camposPrincipalObrigatorios.forEach(id => {
+    document.getElementById(id).addEventListener('input', atualizarEstadoBotaoAcao);
+    document.getElementById(id).addEventListener('blur', () => principalValido(true));
+  });
+
+  function goToStep(n){
+    Object.values(steps).forEach(s => s.classList.remove('active'));
+    steps[n].classList.add('active');
+    currentStep = n;
+    window.scrollTo({top:0, behavior:'smooth'});
+
+    // a barra de resumo/ação só aparece nas etapas 2 e 3
+    summaryBar.style.display = (n === 2 || n === 3) ? 'block' : 'none';
+    btnBarAction.textContent = n === 2 ? 'Continuar →' : 'Confirmar reserva →';
+    atualizarEstadoBotaoAcao();
+
+    if(n === 3) configurarLimitesDatasEtapa3();
+  }
+
+  // ---------------------------------------------------------------
+  // Datas da etapa 3: chegada não pode ser antes da data escolhida na
+  // etapa 1; partida não pode ser antes da chegada. Como os campos
+  // agora são separados (data + hora), uma função auxiliar combina
+  // os dois em uma string 'YYYY-MM-DDTHH:MM' pra comparação/gravação.
+  // ---------------------------------------------------------------
+  const inputDataChegadaVoo = document.getElementById('r_data_chegada_voo');
+  const inputHoraChegadaVoo = document.getElementById('r_hora_chegada_voo');
+  const inputDataPartidaVoo = document.getElementById('r_data_partida_voo');
+  const inputHoraPartidaVoo = document.getElementById('r_hora_partida_voo');
+  const avisoDatas = document.getElementById('avisoDatasInvalidas');
+
+  function obterDataHoraChegadaVoo(){
+    if(!inputDataChegadaVoo.value) return '';
+    return inputDataChegadaVoo.value + 'T' + (inputHoraChegadaVoo.value || '00:00');
+  }
+  function obterDataHoraPartidaVoo(){
+    if(!inputDataPartidaVoo.value) return '';
+    return inputDataPartidaVoo.value + 'T' + (inputHoraPartidaVoo.value || '00:00');
+  }
+
+  function configurarLimitesDatasEtapa3(){
+    if(dateInput.value){
+      inputDataChegadaVoo.min = dateInput.value;
+    }
+  }
+
+  function validarChegadaVoo(){
+    if(dateInput.value && inputDataChegadaVoo.value && inputDataChegadaVoo.value < dateInput.value){
+      avisoDatas.style.display = 'block';
+      avisoDatas.textContent = '⚠ A chegada do voo não pode ser antes de ' + new Date(dateInput.value + 'T00:00:00').toLocaleDateString('pt-BR') + ', a data de chegada informada no início.';
+      inputDataChegadaVoo.value = '';
+      return false;
+    }
+    avisoDatas.style.display = 'none';
+    // partida nunca pode ser antes da chegada
+    if(inputDataChegadaVoo.value){
+      inputDataPartidaVoo.min = inputDataChegadaVoo.value;
+    }
+    const chegada = obterDataHoraChegadaVoo();
+    const partida = obterDataHoraPartidaVoo();
+    if(chegada && partida && partida < chegada){
+      inputDataPartidaVoo.value = '';
+      inputHoraPartidaVoo.value = '';
+    }
+    return true;
+  }
+
+  function validarPartidaVoo(){
+    const chegada = obterDataHoraChegadaVoo();
+    const partida = obterDataHoraPartidaVoo();
+    if(chegada && partida && partida < chegada){
+      avisoDatas.style.display = 'block';
+      avisoDatas.textContent = '⚠ A partida do voo não pode ser antes da chegada.';
+      inputDataPartidaVoo.value = '';
+      inputHoraPartidaVoo.value = '';
+      return false;
+    }
+    avisoDatas.style.display = 'none';
+    return true;
+  }
+
+  [inputDataChegadaVoo, inputHoraChegadaVoo].forEach(el => el.addEventListener('change', validarChegadaVoo));
+  [inputDataPartidaVoo, inputHoraPartidaVoo].forEach(el => el.addEventListener('change', validarPartidaVoo));
+
+  btnContinuar.addEventListener('click', () => {
+    const servico = servicosData.find(s => s.key === servicoSelecionadoKey);
+    const dataFormatada = new Date(dateInput.value + 'T00:00:00').toLocaleDateString('pt-BR');
+
+    ['', '3'].forEach(suffix => {
+      document.getElementById('rsServico' + suffix).textContent = servico.nome;
+      document.getElementById('rsHotel' + suffix).textContent = hotelAtual.nome;
+      const rsData = document.getElementById('rsData' + suffix);
+      rsData.textContent = dataFormatada;
+      rsData.dataset.iso = dateInput.value;
+    });
+
+    goToStep(2);
+    atualizarResumo();
+  });
+
+  // botão voltar único: na etapa 2, se estiver na aba "acompanhantes",
+  // volta só pra aba "passageiro principal" (sem sair da etapa); se já
+  // estiver na aba principal, aí sim volta pra etapa 1. Na etapa 3, volta
+  // pra etapa 2.
+  btnBarBack.addEventListener('click', () => {
+    if(currentStep === 2){
+      const abaAtiva = document.querySelector('.tab-btn.active').dataset.tab;
+      if(abaAtiva === 'acompanhantes'){
+        trocarAba('principal');
+      } else {
+        goToStep(1);
+      }
+    } else if(currentStep === 3){
+      goToStep(2);
+    }
+  });
+
+  // botão de ação único: na etapa 2, o primeiro clique (a partir da aba
+  // "principal") abre a aba "acompanhantes" como lembrete; só avança pra
+  // etapa 3 depois que isso estiver resolvido (acompanhante lançado ou
+  // "sem acompanhante" marcado). Na etapa 3, finaliza a reserva.
+  btnBarAction.addEventListener('click', () => {
+    if(currentStep === 2){
+      if(!principalValido(true)) return;
+
+      const abaAtiva = document.querySelector('.tab-btn.active').dataset.tab;
+      if(abaAtiva === 'principal'){
+        trocarAba('acompanhantes');
+        return;
+      }
+
+      if(!acompanhanteResolvido()){
+        const box = document.getElementById('noCompanionBox');
+        box.classList.remove('attention');
+        void box.offsetWidth; // reinicia a animação se já tiver rodado antes
+        box.classList.add('attention');
+        return;
+      }
+
+      goToStep(3);
+    } else if(currentStep === 3){
+      if(!etapa3Valida(true)) return;
+
+      const chegadaVoo = obterDataHoraChegadaVoo();
+      const partidaVoo = obterDataHoraPartidaVoo();
+
+      if(dateInput.value && inputDataChegadaVoo.value && inputDataChegadaVoo.value < dateInput.value){
+        avisoDatas.style.display = 'block';
+        avisoDatas.textContent = '⚠ A chegada do voo não pode ser antes de ' + new Date(dateInput.value + 'T00:00:00').toLocaleDateString('pt-BR') + ', a data de chegada informada no início.';
+        return;
+      }
+      if(chegadaVoo && partidaVoo && partidaVoo < chegadaVoo){
+        avisoDatas.style.display = 'block';
+        avisoDatas.textContent = '⚠ A partida do voo não pode ser antes da chegada.';
+        return;
+      }
+      finalizarReserva();
+    }
+  });
+
+  // todos os campos da etapa 3 (dados do hotel/voo) são obrigatórios
+  const camposEtapa3Obrigatorios = ['r_reserva_hotel', 'r_voo_chegada', 'r_voo_partida'];
+  function etapa3Valida(mostrarErros){
+    let valido = true;
+    camposEtapa3Obrigatorios.forEach(id => {
+      const valor = document.getElementById(id).value.trim();
+      if(valor === ''){
+        valido = false;
+        if(mostrarErros) marcarErro(id, 'Campo obrigatório.');
+      } else if(mostrarErros){
+        limparErro(id);
+      }
+    });
+
+    if(!inputDataChegadaVoo.value || !inputHoraChegadaVoo.value){
+      valido = false;
+      if(mostrarErros) marcarErro('r_data_chegada_voo', 'Informe a data e a hora da chegada do voo.');
+    } else if(mostrarErros){
+      limparErro('r_data_chegada_voo');
+    }
+
+    if(!inputDataPartidaVoo.value || !inputHoraPartidaVoo.value){
+      valido = false;
+      if(mostrarErros) marcarErro('r_data_partida_voo', 'Informe a data e a hora da partida do voo.');
+    } else if(mostrarErros){
+      limparErro('r_data_partida_voo');
+    }
+
+    return valido;
+  }
+  camposEtapa3Obrigatorios.forEach(id => {
+    document.getElementById(id).addEventListener('blur', () => etapa3Valida(true));
+  });
+  [inputDataChegadaVoo, inputHoraChegadaVoo, inputDataPartidaVoo, inputHoraPartidaVoo].forEach(el => {
+    el.addEventListener('blur', () => etapa3Valida(true));
+  });
+
+  function acompanhanteResolvido(){
+    const semAcompanhante = document.getElementById('semAcompanhante').checked;
+    const qtd = document.querySelectorAll('#companionsList .companion').length;
+    return semAcompanhante || qtd > 0;
+  }
+
+  async function finalizarReserva(){
+    const servico = servicosData.find(s => s.key === servicoSelecionadoKey);
+    const nome = document.getElementById('p_nome').value.trim();
+    const sobrenome = document.getElementById('p_sobrenome').value.trim();
+    const endereco = document.getElementById('p_endereco').value.trim();
+    const whatsappPrincipal = document.getElementById('p_whatsapp').value.trim();
+    const emailPrincipal = document.getElementById('p_email').value.trim();
+    const vooChegada = document.getElementById('r_voo_chegada').value.trim();
+    const vooPartida = document.getElementById('r_voo_partida').value.trim();
+    const reservaHotel = document.getElementById('r_reserva_hotel').value.trim();
+    const obsGeral = document.getElementById('r_obs_geral').value.trim();
+    const dataHrChegada = obterDataHoraChegadaVoo();
+    const dataHrPartida = obterDataHoraPartidaVoo();
+    const semAcompanhante = document.getElementById('semAcompanhante').checked;
+    const linhasCompanion = [...document.querySelectorAll('#companionsList .companion')];
+
+    // trava o botão e avisa que está enviando, pra evitar duplo clique
+    btnBarAction.disabled = true;
+    btnBarBack.disabled = true;
+    const textoOriginalBotao = btnBarAction.textContent;
+    btnBarAction.textContent = 'Enviando...';
+
+    try{
+      // 1) grava a reserva
+      const { data: reservaInserida, error: erroReserva } = await sb
+        .from('receptivo_reservas')
+        .insert({
+          id_hotel: hotelAtual.id,
+          id_servico: servico.key,
+          id_agencia: agenciaAtual.id,
+          reserva_hotel: reservaHotel || null,
+          voo_chegada: vooChegada || null,
+          voo_partida: vooPartida || null,
+          data_hr_chegada: dataHrChegada || null,
+          data_hr_partida: dataHrPartida || null,
+          obs_geral: obsGeral || null,
+          status: 'pendente'
+        })
+        .select()
+        .single();
+
+      if(erroReserva) throw new Error('Erro ao gravar a reserva: ' + erroReserva.message);
+
+      // 2) grava o passageiro principal
+      const { error: erroPrincipal } = await sb
+        .from('receptivo_clientes_reserva')
+        .insert({
+          reserva_id: reservaInserida.id,
+          eh_principal: true,
+          nome: nome,
+          sobrenome: sobrenome,
+          endereco: endereco || null,
+          whatsapp: whatsappPrincipal,
+          email: emailPrincipal || null
+        });
+
+      if(erroPrincipal) throw new Error('Erro ao gravar o passageiro principal: ' + erroPrincipal.message);
+
+      // 3) grava os acompanhantes (se houver)
+      if(!semAcompanhante && linhasCompanion.length > 0){
+        const payloadAcompanhantes = linhasCompanion.map(row => ({
+          reserva_id: reservaInserida.id,
+          eh_principal: false,
+          nome: row.querySelector('[data-role="nome"]').value.trim(),
+          data_nascimento: obterDataNascStr(row),
+          precisa_cadeirinha: !!(row.querySelector('[data-role="cadeirinha"]') && row.querySelector('[data-role="cadeirinha"]').checked)
+        }));
+
+        const { error: erroAcompanhantes } = await sb
+          .from('receptivo_clientes_reserva')
+          .insert(payloadAcompanhantes);
+
+        if(erroAcompanhantes) throw new Error('Erro ao gravar os acompanhantes: ' + erroAcompanhantes.message);
+      }
+
+      // 4) busca o valor_total já recalculado pelo trigger do banco
+      //    (fonte da verdade, em vez do valor estimado no front)
+      const { data: reservaFinal, error: erroFinal } = await sb
+        .from('receptivo_reservas')
+        .select('valor_total')
+        .eq('id', reservaInserida.id)
+        .single();
+
+      if(erroFinal) throw new Error('Reserva gravada, mas não consegui confirmar o valor total: ' + erroFinal.message);
+
+      const totalTexto = reservaFinal.valor_total !== null
+        ? 'R$ ' + Number(reservaFinal.valor_total).toFixed(2).replace('.', ',')
+        : 'Sob consulta';
+
+      // ---------------------------------------------------------------
+      // Preenche o ticket de confirmação
+      // ---------------------------------------------------------------
+      const qtdAcompanhantes = linhasCompanion.length;
+      document.getElementById('ticketFinalServico').textContent = servico.nome;
+      document.getElementById('ticketFinalHotel').textContent = hotelAtual.nome;
+      document.getElementById('ticketFinalData').textContent = '📅 Chegada: ' + document.getElementById('rsData').textContent;
+      document.getElementById('ticketFinalPassageiro').textContent = `👤 ${nome} ${sobrenome} · ${qtdAcompanhantes} acompanhante${qtdAcompanhantes === 1 ? '' : 's'}`;
+      document.getElementById('ticketFinalVoos').textContent = `✈ Chegada ${vooChegada || 'não informado'} · Partida ${vooPartida || 'não informado'}`;
+      document.getElementById('ticketFinalTotal').textContent = 'Total: ' + totalTexto;
+
+      // ---------------------------------------------------------------
+      // Monta a mensagem e abre o WhatsApp da agência responsável
+      // ---------------------------------------------------------------
+      const linhasAcompanhantesTexto = linhasCompanion.map((row, i) => {
+        const nomeAcomp = row.querySelector('[data-role="nome"]').value || `Acompanhante ${i + 1}`;
+        const tag = row.querySelector('[data-role="tag"]').textContent;
+        return `  ${i + 1}. ${nomeAcomp} (${tag})`;
+      }).join('\n');
+
+      const mensagem = [
+        `Nova solicitação de transfer — ${hotelAtual.nome}`,
+        ``,
+        `Serviço: ${servico.nome}`,
+        `Chegada: ${document.getElementById('rsData').textContent}`,
+        `Reserva no hotel: ${reservaHotel || 'não informado'}`,
+        `Voo de chegada: ${vooChegada || 'não informado'}`,
+        `Voo de partida: ${vooPartida || 'não informado'}`,
+        ``,
+        `Passageiro principal: ${nome} ${sobrenome}`,
+        `WhatsApp: ${whatsappPrincipal}`,
+        qtdAcompanhantes > 0 ? `Acompanhantes (${qtdAcompanhantes}):\n${linhasAcompanhantesTexto}` : `Acompanhantes: nenhum (viaja sozinho)`,
+        ``,
+        `Observações: ${obsGeral || '—'}`,
+        `Valor total: ${totalTexto}`
+      ].join('\n');
+
+      const linkWhatsapp = `https://wa.me/${agenciaAtual.whatsapp_contato}?text=${encodeURIComponent(mensagem)}`;
+
+      window.open(linkWhatsapp, '_blank');
+
+      const btnWhats = document.getElementById('btnAbrirWhatsapp');
+      if(btnWhats) btnWhats.href = linkWhatsapp;
+      const nomeAgenciaBtn = document.getElementById('btnWhatsappAgenciaNome');
+      if(nomeAgenciaBtn) nomeAgenciaBtn.textContent = agenciaAtual.nome;
+
+      goToStep(4);
+    } catch(erro){
+      alert(erro.message);
+      console.error(erro);
+    } finally{
+      btnBarAction.disabled = false;
+      btnBarBack.disabled = false;
+      btnBarAction.textContent = textoOriginalBotao;
+    }
+  }
+
+  // =================================================================
+  // ETAPA 2: tabs
+  // =================================================================
+  function trocarAba(tabKey){
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelector(`.tab-btn[data-tab="${tabKey}"]`).classList.add('active');
+    document.getElementById('panel-' + tabKey).classList.add('active');
+  }
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => trocarAba(btn.dataset.tab));
+  });
+
+  // =================================================================
+  // ETAPA 2: acompanhantes + cálculo ao vivo
+  // =================================================================
+  let companionId = 0;
+  const companionsList = document.getElementById('companionsList');
+
+  function obterDataNascStr(row){
+    const dia = parseInt(row.querySelector('[data-role="dia"]').value, 10);
+    const mes = parseInt(row.querySelector('[data-role="mes"]').value, 10);
+    const ano = parseInt(row.querySelector('[data-role="ano"]').value, 10);
+    if(!dia || !mes || !ano) return null;
+    if(ano < 1900 || ano > new Date().getFullYear()) return null;
+
+    // valida se o dia realmente existe nesse mês/ano (evita 31 de fevereiro etc.)
+    const testDate = new Date(ano, mes - 1, dia);
+    if(testDate.getMonth() !== mes - 1 || testDate.getDate() !== dia) return null;
+
+    const mesStr = String(mes).padStart(2, '0');
+    const diaStr = String(dia).padStart(2, '0');
+    return `${ano}-${mesStr}-${diaStr}`;
+  }
+
+  function classificaIdade(dataNascStr){
+    if(!dataNascStr) return null;
+    const nasc = new Date(dataNascStr + 'T00:00:00');
+    const isoRef = document.getElementById('rsData').dataset.iso;
+    const ref = isoRef ? new Date(isoRef + 'T00:00:00') : new Date();
+    let idade = ref.getFullYear() - nasc.getFullYear();
+    const m = ref.getMonth() - nasc.getMonth();
+    if(m < 0 || (m === 0 && ref.getDate() < nasc.getDate())) idade--;
+    return idade;
+  }
+
+  function tipoPorIdade(idade, servico){
+    if(idade === null) return { tipo:'pendente', label:'—' };
+    if(servico.idadeIsencao !== null && idade <= servico.idadeIsencao) return { tipo:'isento', label:'Isento' };
+    if(servico.idadeTarifaReduzida !== null && idade <= servico.idadeTarifaReduzida) return { tipo:'chd', label:'CHD' };
+    return { tipo:'adt', label:'ADT' };
+  }
+
+  function addCompanion(){
+    companionId++;
+    const id = companionId;
+    document.getElementById('semAcompanhante').checked = false;
+    document.getElementById('btnAddCompanion').disabled = false;
+    const servico = servicosData.find(s => s.key === servicoSelecionadoKey);
+    const div = document.createElement('div');
+    div.className = 'companion';
+    div.dataset.id = id;
+    div.innerHTML = `
+      <div class="companion-head">
+        <span class="label">Acompanhante #${id}</span>
+        <button class="companion-remove" data-remove="${id}">Remover</button>
+      </div>
+      <div class="companion-fields">
+        <div class="field-group" style="margin-bottom:0"><label>Nome</label><input type="text" data-role="nome" placeholder="Nome completo"></div>
+        <div class="field-group" style="margin-bottom:0">
+          <label>Data de nascimento</label>
+          <div class="dob-group">
+            <input type="number" data-role="dia" placeholder="DD" min="1" max="31" inputmode="numeric">
+            <select data-role="mes">
+              <option value="">Mês</option>
+              <option value="1">Jan</option><option value="2">Fev</option><option value="3">Mar</option>
+              <option value="4">Abr</option><option value="5">Mai</option><option value="6">Jun</option>
+              <option value="7">Jul</option><option value="8">Ago</option><option value="9">Set</option>
+              <option value="10">Out</option><option value="11">Nov</option><option value="12">Dez</option>
+            </select>
+            <input type="number" data-role="ano" placeholder="AAAA" min="${new Date().getFullYear() - 100}" max="${new Date().getFullYear()}" inputmode="numeric">
+          </div>
+        </div>
+        <div class="tag-tipo pendente" data-role="tag">—</div>
+      </div>
+      ${servico && servico.aplicaCadeirinha ? `
+      <label class="cadeirinha-check">
+        <input type="checkbox" data-role="cadeirinha">
+        Precisa de cadeirinha / bebê conforto (+R$ ${servico.taxaCadeirinha.toFixed(2)})
+      </label>` : ''}
+    `;
+    companionsList.appendChild(div);
+    div.querySelectorAll('[data-role="dia"], [data-role="mes"], [data-role="ano"]').forEach(inp => {
+      inp.addEventListener('input', atualizarResumo);
+      inp.addEventListener('change', atualizarResumo);
+    });
+    const chk = div.querySelector('[data-role="cadeirinha"]');
+    if(chk) chk.addEventListener('change', atualizarResumo);
+    div.querySelector('[data-remove]').addEventListener('click', () => { div.remove(); atualizarResumo(); });
+    atualizarResumo();
+  }
+  document.getElementById('btnAddCompanion').addEventListener('click', addCompanion);
+
+  // "sem acompanhante": enquanto marcado, não faz sentido permitir adicionar
+  const semAcompanhanteCheck = document.getElementById('semAcompanhante');
+  const btnAddCompanionEl = document.getElementById('btnAddCompanion');
+  semAcompanhanteCheck.addEventListener('change', () => {
+    btnAddCompanionEl.disabled = semAcompanhanteCheck.checked;
+    document.getElementById('noCompanionBox').classList.remove('attention');
+  });
+
+  function atualizarResumo(){
+    const servico = servicosData.find(s => s.key === servicoSelecionadoKey);
+    if(!servico) return;
+
+    const rows = [...companionsList.querySelectorAll('.companion')];
+    document.getElementById('countAcomp').textContent = rows.length;
+
+    let qtdAdt = 1, qtdChd = 0, qtdIsento = 0, qtdCadeirinha = 0;
+
+    rows.forEach(row => {
+      const dataNasc = obterDataNascStr(row);
+      const idade = classificaIdade(dataNasc);
+      const info = tipoPorIdade(idade, servico);
+      const tag = row.querySelector('[data-role="tag"]');
+      tag.className = 'tag-tipo ' + info.tipo;
+      tag.textContent = idade !== null ? `${info.label} · ${idade}a` : '—';
+      if(info.tipo === 'adt') qtdAdt++;
+      if(info.tipo === 'chd') qtdChd++;
+      if(info.tipo === 'isento') qtdIsento++;
+      const chk = row.querySelector('[data-role="cadeirinha"]');
+      if(chk && chk.checked) qtdCadeirinha++;
+    });
+
+    const breakdown = [];
+    if(qtdAdt) breakdown.push(`${qtdAdt} adulto${qtdAdt > 1 ? 's' : ''}`);
+    if(qtdChd) breakdown.push(`${qtdChd} tarifa reduzida`);
+    if(qtdIsento) breakdown.push(`${qtdIsento} isento${qtdIsento > 1 ? 's' : ''}`);
+    if(qtdCadeirinha) breakdown.push(`${qtdCadeirinha} cadeirinha${qtdCadeirinha > 1 ? 's' : ''}`);
+    document.getElementById('summaryBreakdown').textContent = breakdown.join(' · ');
+
+    const totalEl = document.getElementById('summaryTotal');
+    if(servico.sobConsulta){
+      totalEl.textContent = 'Sob consulta';
+      totalEl.classList.add('pendente');
+    } else {
+      const total = (qtdAdt * servico.tarifaAdt) + (qtdChd * servico.tarifaChd) + (qtdCadeirinha * servico.taxaCadeirinha);
+      totalEl.textContent = 'R$ ' + total.toFixed(2).replace('.', ',');
+      totalEl.classList.remove('pendente');
+    }
+  }
+
+  // =================================================================
+  // BOOTSTRAP: carrega hotel, agência e serviços reais do Supabase
+  // antes de mostrar qualquer coisa na tela.
+  // =================================================================
+  async function iniciar(){
+    try{
+      if(typeof window.supabase === 'undefined'){
+        throw new Error('A biblioteca do Supabase (supabase-js) não carregou. Provavelmente o CDN foi bloqueado (firewall, adblock, ou sem internet).');
+      }
+      sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+        auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false }
+      });
+
+      await carregarDadosIniciais();
+      renderPopupHotel(hotelAtual);
+      renderTickets();
+      document.getElementById('loadingScreen').style.display = 'none';
+      overlay.classList.remove('hidden');
+    } catch(erro){
+      document.getElementById('loadingSpinner').style.display = 'none';
+      document.getElementById('loadingText').textContent = 'Não foi possível carregar os dados da reserva.';
+      const box = document.getElementById('loadingError');
+      box.style.display = 'block';
+      box.textContent = erro.message + '\n\nConfira SUPABASE_URL, SUPABASE_ANON_KEY e as policies de RLS.';
+      console.error(erro);
+    }
+  }
+  iniciar();
+</script>
+</body>
+</html>

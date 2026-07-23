@@ -1,0 +1,1342 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjAwIDIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYmdHcmFkIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIxMDAlIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI0U5RjRFRSIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNDREU4RDkiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICA8cmFkaWFsR3JhZGllbnQgaWQ9Imdsb3ciIGN4PSI3OCUiIGN5PSIxOCUiIHI9IjU1JSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiNmZmZmZmYiIHN0b3Atb3BhY2l0eT0iMC42Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iI2ZmZmZmZiIgc3RvcC1vcGFjaXR5PSIwIi8+CiAgICA8L3JhZGlhbEdyYWRpZW50PgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJwYXRoR3JhZCIgeDE9IjAlIiB5MT0iMTAwJSIgeDI9IjEwMCUiIHkyPSIwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiNFNTk5MUYiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjRjJBOTNCIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogIDwvZGVmcz4KCiAgPCEtLSBmdW5kbyBzcXVpcmNsZSB2ZXJkZSBjbGFybyAtLT4KICA8cmVjdCB4PSIwIiB5PSIwIiB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgcng9IjQ2IiBmaWxsPSJ1cmwoI2JnR3JhZCkiLz4KICA8cmVjdCB4PSIwIiB5PSIwIiB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgcng9IjQ2IiBmaWxsPSJ1cmwoI2dsb3cpIi8+CgogIDwhLS0gcm90YSBlc3RpbGl6YWRhIGVtIFM6IHN1Z2VyZSBvIHRyYWpldG8gZG8gdHJhbnNmZXIgY2hlZ2FuZG8gYW8gZGVzdGlubyAtLT4KICA8cGF0aCBkPSJNIDU4IDE1MiBDIDU4IDEyOCwgOTYgMTMyLCA5NiAxMDggQyA5NiA4NCwgNjAgODgsIDYwIDY0IEMgNjAgNDQsIDgyIDM0LCAxMDYgMzQiCiAgICAgICAgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ1cmwoI3BhdGhHcmFkKSIgc3Ryb2tlLXdpZHRoPSIxNSIKICAgICAgICBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KCiAgPCEtLSBwb250byBkZSBwYXJ0aWRhIC0tPgogIDxjaXJjbGUgY3g9IjU4IiBjeT0iMTUyIiByPSI4LjUiIGZpbGw9IiMxQjQzMzIiLz4KCiAgPCEtLSBwaW5vIGRlIGNoZWdhZGEgLS0+CiAgPHBhdGggZD0iTTEzMiAyMCBDIDE0NSAyMCAxNTUgMzAgMTU1IDQzIEMgMTU1IDU4IDEzMiA3OCAxMzIgNzggQyAxMzIgNzggMTA5IDU4IDEwOSA0MyBDIDEwOSAzMCAxMTkgMjAgMTMyIDIwIFoiCiAgICAgICAgZmlsbD0iIzFCNDMzMiIvPgogIDxjaXJjbGUgY3g9IjEzMiIgY3k9IjQzIiByPSI5IiBmaWxsPSIjRTlGNEVFIi8+Cjwvc3ZnPgo=">
+<title>Servir — Painel da Agência</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F6F7F9;
+    --surface:#FFFFFF;
+    --border:#E8EAED;
+    --ink:#171E1A;
+    --muted:#6B7280;
+    --muted-2:#9AA1A9;
+    --brand:#1B4332;
+    --brand-2:#2D6A4F;
+    --brand-soft:#EAF2EE;
+    --accent:#F2A93B;
+    --accent-ink:#8A5E12;
+    --danger:#C0392B;
+    --danger-soft:#FBEAE8;
+    --success-soft:#E8F3EC;
+    --shadow-sm: 0 1px 2px rgba(23,30,26,.05), 0 1px 3px rgba(23,30,26,.06);
+    --shadow-md: 0 8px 24px -8px rgba(23,30,26,.12);
+    --shadow-lg: 0 24px 48px -16px rgba(23,30,26,.22);
+    --radius: 14px;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    font-family:'Inter', -apple-system, sans-serif;
+    background:var(--bg);
+    color:var(--ink);
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  @media (prefers-reduced-motion: reduce){ *{animation-duration:0.01ms !important; transition-duration:0.01ms !important;} }
+  .mono{ font-family:'JetBrains Mono', monospace; font-variant-numeric:tabular-nums; }
+
+  #telaLogin{ min-height:100vh; display:grid; grid-template-columns:1fr 1fr; }
+  @media (max-width:860px){ #telaLogin{ grid-template-columns:1fr; } }
+  .login-visual{
+    background:linear-gradient(155deg, var(--brand) 0%, #143327 100%);
+    color:#fff; display:flex; flex-direction:column; justify-content:space-between;
+    padding:56px 48px; position:relative; overflow:hidden;
+  }
+  @media (max-width:860px){ .login-visual{ display:none; } }
+  .login-visual::after{
+    content:""; position:absolute; inset:0;
+    background:radial-gradient(circle at 80% 100%, rgba(242,169,59,.18), transparent 55%);
+  }
+  .login-visual .brand-mark{ font-size:1.3rem; font-weight:700; letter-spacing:-.01em; position:relative; z-index:1; }
+  .login-visual .brand-mark span{ color:var(--accent); }
+  .login-visual .quote{ font-size:1.5rem; font-weight:600; line-height:1.4; max-width:26ch; position:relative; z-index:1; }
+  .login-visual .foot{ font-size:.82rem; color:rgba(255,255,255,.55); position:relative; z-index:1; }
+
+  .login-form-side{ display:flex; align-items:center; justify-content:center; padding:32px; }
+  .login-card{ width:100%; max-width:360px; }
+  .login-card h1{ font-size:1.5rem; font-weight:700; margin-bottom:6px; letter-spacing:-.01em; }
+  .login-card .sub{ color:var(--muted); font-size:.9rem; margin-bottom:28px; }
+  .field-group{ margin-bottom:16px; }
+  .field-group label{ display:block; font-size:.8rem; font-weight:600; color:var(--ink); margin-bottom:6px; }
+  .field-group input{
+    width:100%; padding:11px 14px; border-radius:10px; border:1.5px solid var(--border);
+    font-family:'Inter', sans-serif; font-size:.92rem; background:var(--surface); color:var(--ink);
+    outline:none; transition:border-color .15s, box-shadow .15s;
+  }
+  .field-group input:focus{ border-color:var(--brand-2); box-shadow:0 0 0 3px var(--brand-soft); }
+  .btn-primary{
+    width:100%; background:var(--brand); color:#fff; border:none; font-weight:600; font-size:.92rem;
+    padding:12px; border-radius:10px; cursor:pointer; transition:background .15s, transform .1s;
+  }
+  .btn-primary:hover{ background:#143327; }
+  .btn-primary:active{ transform:scale(.98); }
+  .btn-primary:disabled{ opacity:.5; cursor:not-allowed; }
+  .login-erro{ display:none; margin-top:14px; font-size:.82rem; color:var(--danger); background:var(--danger-soft); border-radius:8px; padding:10px 12px; }
+  .login-erro.show{ display:block; }
+
+  #app{ display:none; }
+  .app-shell{ display:flex; min-height:100vh; }
+
+  .sidebar{
+    width:232px; flex-shrink:0; background:var(--brand); color:#fff;
+    display:flex; flex-direction:column; padding:24px 16px; position:sticky; top:0; height:100vh;
+  }
+  .sidebar-brand{ padding:8px 10px 28px; font-weight:700; font-size:1.1rem; letter-spacing:-.01em; }
+  .sidebar-brand small{ display:block; font-weight:400; font-size:.74rem; color:rgba(255,255,255,.55); margin-top:3px; }
+  .nav-item{
+    display:flex; align-items:center; gap:10px; width:100%; text-align:left;
+    background:none; border:none; color:rgba(255,255,255,.72); font-size:.88rem; font-weight:500;
+    padding:10px 12px; border-radius:9px; cursor:pointer; margin-bottom:2px; transition:background .15s, color .15s;
+  }
+  .nav-item svg{ width:17px; height:17px; flex-shrink:0; }
+  .nav-item:hover{ background:rgba(255,255,255,.06); color:#fff; }
+  .nav-item.active{ background:rgba(255,255,255,.12); color:#fff; }
+  .sidebar-spacer{ flex:1; }
+  .btn-sair{
+    display:flex; align-items:center; gap:10px; background:none; border:1px solid rgba(255,255,255,.18);
+    color:rgba(255,255,255,.75); font-size:.85rem; padding:10px 12px; border-radius:9px; cursor:pointer; width:100%;
+  }
+  .btn-sair:hover{ background:rgba(255,255,255,.06); color:#fff; }
+  .btn-sair svg{ width:16px; height:16px; }
+
+  .content-area{ flex:1; min-width:0; }
+  .content-header{
+    background:var(--surface); border-bottom:1px solid var(--border);
+    padding:22px 36px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;
+  }
+  .content-header h1{ font-size:1.3rem; font-weight:700; letter-spacing:-.01em; }
+  .content-header .agencia-pill{
+    font-size:.78rem; color:var(--brand-2); background:var(--brand-soft); padding:6px 12px; border-radius:20px; font-weight:600;
+  }
+
+  main.app-main{ max-width:1100px; margin:0 auto; padding:32px 36px 60px; }
+  .panel-app{ display:none; }
+  .panel-app.active{ display:block; animation:fadeIn .3s ease; }
+  @keyframes fadeIn{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
+
+  .stat-cards{ display:grid; grid-template-columns:repeat(auto-fit, minmax(210px, 1fr)); gap:16px; margin-bottom:28px; }
+  .stat-card{
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+    padding:20px; box-shadow:var(--shadow-sm); display:flex; flex-direction:column; gap:10px;
+  }
+  .stat-card .icon-badge{
+    width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center;
+    background:var(--brand-soft); color:var(--brand-2);
+  }
+  .stat-card .icon-badge svg{ width:18px; height:18px; }
+  .stat-card .label{ font-size:.8rem; color:var(--muted); font-weight:500; }
+  .stat-card .value{ font-size:1.65rem; font-weight:700; letter-spacing:-.02em; }
+
+  .chart-box{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:26px; margin-bottom:28px; box-shadow:var(--shadow-sm); }
+  .chart-box h3{ font-size:.92rem; font-weight:600; margin-bottom:4px; }
+  .chart-box .chart-sub{ font-size:.8rem; color:var(--muted); margin-bottom:22px; }
+  .bars{ display:flex; align-items:flex-end; gap:16px; height:150px; }
+  .bar-col{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; height:100%; }
+  .bar-col .valor{ font-size:.76rem; color:var(--ink); margin-bottom:6px; font-weight:700; }
+  .bar-col .bar{
+    width:100%; max-width:38px; border-radius:8px 8px 3px 3px;
+    background:linear-gradient(180deg, var(--brand-2), var(--brand));
+    transition:height .6s cubic-bezier(.2,.8,.2,1);
+  }
+  .bar-col .mes{ font-size:.76rem; color:var(--muted); margin-top:10px; text-transform:capitalize; }
+
+  .filtros{ display:flex; gap:10px; margin-bottom:18px; flex-wrap:wrap; align-items:center; }
+  .filtros select{
+    padding:9px 14px; border-radius:9px; border:1.5px solid var(--border); font-size:.85rem;
+    background:var(--surface); color:var(--ink); font-weight:500;
+  }
+  .config-url-booking{
+    background:var(--brand-soft); border:1px solid var(--border); border-radius:12px;
+    padding:14px 16px; margin-bottom:18px;
+  }
+  .config-url-booking label{ display:block; font-size:.78rem; font-weight:600; color:var(--brand-2); margin-bottom:8px; }
+  .config-url-booking input{
+    width:100%; padding:10px 13px; border-radius:8px; border:1.5px solid var(--border);
+    font-size:.85rem; background:var(--surface); color:var(--ink); outline:none;
+    transition:border-color .15s, box-shadow .15s;
+  }
+  .config-url-booking input:focus{ border-color:var(--brand-2); box-shadow:0 0 0 3px rgba(45,106,79,.12); }
+  .btn-novo{
+    background:var(--brand); color:#fff; border:none; font-weight:600; font-size:.85rem;
+    padding:10px 16px; border-radius:9px; cursor:pointer; transition:background .15s;
+  }
+  .btn-novo:hover{ background:#143327; }
+
+  .lista-cadastro{ display:flex; flex-direction:column; gap:10px; }
+  .cadastro-row{
+    background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:14px 18px;
+    display:flex; align-items:center; gap:16px; cursor:pointer; transition:box-shadow .15s, border-color .15s;
+  }
+  .cadastro-row:hover{ box-shadow:var(--shadow-md); border-color:var(--brand-2); }
+  .cadastro-thumb{
+    width:52px; height:52px; border-radius:10px; background:var(--brand-soft) center/cover no-repeat;
+    display:flex; align-items:center; justify-content:center; color:var(--brand-2); flex-shrink:0;
+  }
+  .cadastro-thumb svg{ width:22px; height:22px; }
+  .cadastro-info{ flex:1; min-width:0; display:flex; flex-direction:column; gap:3px; }
+  .cadastro-info .nome{ font-weight:600; font-size:.92rem; }
+  .cadastro-info .meta{ font-size:.78rem; color:var(--muted); }
+  .status-tag.inativo{ background:#F1F2F4; color:var(--muted); }
+  .status-tag.inativo::before{ background:var(--muted-2); }
+  .status-tag.ativo{ background:var(--success-soft); color:var(--brand-2); }
+  .status-tag.ativo::before{ background:var(--brand-2); }
+  .btn-link-hotel{
+    display:flex; align-items:center; gap:6px; background:var(--brand-soft); color:var(--brand-2);
+    border:none; font-size:.78rem; font-weight:600; padding:8px 12px; border-radius:8px; cursor:pointer;
+    flex-shrink:0; transition:background .15s;
+  }
+  .btn-link-hotel:hover{ background:#DCEAE2; }
+  .btn-link-hotel svg{ width:14px; height:14px; }
+
+  .image-upload-box{ display:flex; align-items:center; gap:14px; }
+  .image-preview-wrap{
+    width:64px; height:64px; border-radius:10px; overflow:hidden; flex-shrink:0;
+    background:var(--bg); border:1.5px dashed var(--border); display:flex; align-items:center; justify-content:center;
+  }
+  .image-preview-wrap img{ width:100%; height:100%; object-fit:cover; }
+  .image-preview-placeholder{ color:var(--muted-2); }
+  .image-preview-placeholder svg{ width:24px; height:24px; }
+  .btn-upload-imagem{
+    background:var(--surface); border:1.5px solid var(--border); color:var(--ink); font-weight:600; font-size:.82rem;
+    padding:9px 14px; border-radius:9px; cursor:pointer; transition:border-color .15s, background .15s;
+  }
+  .btn-upload-imagem:hover{ border-color:var(--brand-2); background:var(--brand-soft); }
+  .btn-upload-imagem:disabled{ opacity:.6; cursor:not-allowed; }
+
+  .lista-reservas{ display:flex; flex-direction:column; gap:10px; }
+  .reserva-row{
+    background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:14px 18px;
+    display:flex; align-items:center; gap:16px; cursor:pointer; transition:box-shadow .15s, border-color .15s;
+  }
+  .reserva-row:hover{ box-shadow:var(--shadow-md); border-color:var(--brand-2); }
+  .avatar-circle{
+    width:38px; height:38px; border-radius:50%; background:var(--brand-soft); color:var(--brand-2);
+    display:flex; align-items:center; justify-content:center; font-weight:700; font-size:.85rem; flex-shrink:0;
+  }
+  .data-mini{
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    background:var(--brand-soft); color:var(--brand); border-radius:9px; padding:6px 10px;
+    min-width:58px; flex-shrink:0; font-family:'JetBrains Mono', monospace;
+  }
+  .data-mini strong{ font-size:.9rem; font-weight:700; letter-spacing:-.01em; }
+  .data-mini small{ font-size:.66rem; color:var(--brand-2); font-weight:600; }
+  .data-mini-vazia{ background:#F1F2F4; color:var(--muted); font-size:.68rem; font-family:'Inter', sans-serif; padding:10px; }
+  .reserva-info{ display:flex; flex-direction:column; gap:3px; flex:1; min-width:0; }
+  .reserva-info .principal{ font-weight:600; font-size:.92rem; }
+  .reserva-info .meta{ font-size:.78rem; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .reserva-right{ display:flex; align-items:center; gap:14px; flex-shrink:0; }
+  .reserva-valor{ font-weight:700; font-size:.92rem; }
+  .chevron{ color:var(--muted-2); width:16px; height:16px; }
+
+  .status-tag{
+    font-size:.72rem; font-weight:600; padding:5px 11px; border-radius:20px; display:inline-flex; align-items:center; gap:6px;
+  }
+  .status-tag::before{ content:""; width:6px; height:6px; border-radius:50%; }
+  .status-tag.pendente{ background:#FEF3E2; color:var(--accent-ink); }
+  .status-tag.pendente::before{ background:var(--accent); }
+  .status-tag.confirmada{ background:var(--success-soft); color:var(--brand-2); }
+  .status-tag.confirmada::before{ background:var(--brand-2); }
+  .status-tag.cancelada{ background:var(--danger-soft); color:var(--danger); }
+  .status-tag.cancelada::before{ background:var(--danger); }
+
+  .vazio{ text-align:center; padding:48px 20px; color:var(--muted); font-size:.88rem; }
+
+  .drawer-overlay{ position:fixed; inset:0; background:rgba(23,30,26,.45); z-index:60; display:none; align-items:stretch; justify-content:flex-end; }
+  .drawer-overlay.show{ display:flex; }
+  .drawer{ background:var(--bg); width:100%; max-width:460px; height:100%; overflow-y:auto; box-shadow:var(--shadow-lg); animation:slideIn .25s ease; }
+  @keyframes slideIn{ from{ transform:translateX(24px); opacity:0; } to{ transform:translateX(0); opacity:1; } }
+  .drawer-head{
+    background:var(--surface); border-bottom:1px solid var(--border); padding:20px 24px;
+    display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:2;
+  }
+  .drawer-head h2{ font-size:1.05rem; font-weight:700; }
+  .drawer-close{ background:var(--bg); border:none; width:30px; height:30px; border-radius:8px; color:var(--muted); font-size:1.1rem; cursor:pointer; }
+  .drawer-close:hover{ background:var(--border); }
+  .drawer-body{ padding:22px 24px 24px; }
+  .drawer-section{ background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:16px 18px; margin-bottom:14px; }
+  .drawer-section-title{ font-size:.7rem; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); margin-bottom:12px; }
+  .drawer-body .field-row{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .companion-view{
+    background:var(--bg); border-radius:8px; padding:9px 12px; margin-bottom:6px; font-size:.85rem;
+    display:flex; justify-content:space-between;
+  }
+  .valor-total-box{ display:flex; align-items:baseline; justify-content:space-between; }
+  .valor-total-box .num{ font-size:1.3rem; font-weight:700; color:var(--brand-2); }
+
+  /* ---------- CARD DE VERIFICAÇÃO RÁPIDA (chegada / voo / contato) ---------- */
+  .verify-card{
+    display:flex; gap:0; border-radius:16px; overflow:hidden; margin-bottom:14px;
+    box-shadow:var(--shadow-md); border:1px solid var(--border);
+  }
+  .verify-date-block{
+    background:linear-gradient(160deg, var(--brand) 0%, #143327 100%); color:#fff;
+    padding:18px 16px; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    min-width:96px; text-align:center; flex-shrink:0;
+  }
+  .verify-date-block .dow{ font-size:.68rem; text-transform:uppercase; letter-spacing:.08em; color:rgba(255,255,255,.6); margin-bottom:2px; }
+  .verify-date-block .day{ font-size:2.1rem; font-weight:800; line-height:1; letter-spacing:-.02em; }
+  .verify-date-block .monyear{ font-size:.72rem; color:rgba(255,255,255,.75); margin-top:4px; text-transform:uppercase; }
+  .verify-date-block .time{ font-size:.85rem; font-weight:700; color:var(--accent); margin-top:8px; }
+  .verify-date-block .sem-data{ font-size:.78rem; color:rgba(255,255,255,.75); max-width:80px; }
+
+  .verify-details{ flex:1; background:var(--surface); padding:14px 18px; display:flex; flex-direction:column; gap:9px; min-width:0; }
+  .verify-row{ display:flex; align-items:center; gap:9px; font-size:.85rem; color:var(--ink); }
+  .verify-row svg{ width:16px; height:16px; color:var(--brand-2); flex-shrink:0; }
+  .verify-row a{ color:var(--ink); text-decoration:none; }
+  .verify-row a:hover{ color:var(--brand-2); text-decoration:underline; }
+  .verify-row .rotulo{ color:var(--muted); font-weight:500; }
+  .verify-row strong{ font-weight:700; }
+
+  .drawer-actions{
+    position:sticky; bottom:0; background:var(--surface); border-top:1px solid var(--border);
+    padding:14px 24px; display:flex; gap:8px; flex-wrap:wrap;
+  }
+  .btn-acao{ flex:1; min-width:100px; font-weight:600; font-size:.8rem; padding:11px; border-radius:9px; cursor:pointer; border:none; transition:opacity .15s, background .15s; }
+  .btn-acao:disabled{ opacity:.4; cursor:not-allowed; }
+  .btn-salvar{ background:var(--brand); color:#fff; }
+  .btn-salvar:hover:not(:disabled){ background:#143327; }
+  .btn-confirmar{ background:var(--accent); color:#3d2a06; }
+  .btn-confirmar:hover:not(:disabled){ background:#e5991f; }
+  .btn-cancelar{ background:none; border:1.5px solid var(--danger); color:var(--danger); }
+  .btn-cancelar:hover:not(:disabled){ background:var(--danger-soft); }
+
+  #loadingScreen{ position:fixed; inset:0; background:var(--bg); z-index:100; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:14px; }
+  .spinner{ width:32px; height:32px; border:3px solid var(--border); border-top-color:var(--brand); border-radius:50%; animation:spin .8s linear infinite; }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+</style>
+</head>
+<body>
+
+  <div id="telaLogin">
+    <div class="login-visual">
+      <div class="brand-mark" style="display:flex; align-items:center; gap:10px;">
+        <svg width="30" height="30" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;">
+          <defs>
+            <linearGradient id="loginG1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1B4332"/><stop offset="100%" stop-color="#0F2B22"/></linearGradient>
+            <linearGradient id="loginG2" x1="0%" y1="100%" x2="100%" y2="0%"><stop offset="0%" stop-color="#E5991F"/><stop offset="100%" stop-color="#F2A93B"/></linearGradient>
+          </defs>
+          <rect width="200" height="200" rx="46" fill="url(#loginG1)"/>
+          <path d="M 58 152 C 58 128, 96 132, 96 108 C 96 84, 60 88, 60 64 C 60 44, 82 34, 106 34" fill="none" stroke="url(#loginG2)" stroke-width="15" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="58" cy="152" r="8.5" fill="#F0F4EE"/>
+          <path d="M132 20 C145 20 155 30 155 43 C155 58 132 78 132 78 C132 78 109 58 109 43 C109 30 119 20 132 20 Z" fill="#F0F4EE"/>
+          <circle cx="132" cy="43" r="9" fill="#1B4332"/>
+        </svg>
+        Servir
+      </div>
+      <div class="quote">Cada operação de receptivo, organizada de ponta a ponta.</div>
+      <div class="foot">Painel de agências parceiras</div>
+    </div>
+    <div class="login-form-side">
+      <div class="login-card">
+        <h1>Bem-vindo de volta</h1>
+        <p class="sub">Entre com sua conta da agência.</p>
+        <div class="field-group">
+          <label>E-mail</label>
+          <input type="email" id="loginEmail" placeholder="voce@agencia.com.br">
+        </div>
+        <div class="field-group">
+          <label>Senha</label>
+          <input type="password" id="loginSenha" placeholder="••••••••">
+        </div>
+        <button class="btn-primary" id="btnEntrar">Entrar</button>
+        <div class="login-erro" id="loginErro"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="loadingScreen" style="display:none;">
+    <div class="spinner"></div>
+    <p style="font-size:.85rem; color:var(--muted);">Carregando painel…</p>
+  </div>
+
+  <div id="app">
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="sidebar-brand">Servir<small id="nomeAgencia">Painel</small></div>
+        <button class="nav-item tab-app-btn active" data-app-tab="dashboard">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+          Dashboard
+        </button>
+        <button class="nav-item tab-app-btn" data-app-tab="reservas">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h18v4H3z"/><path d="M5 7v13a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V7"/><path d="M10 12h4"/></svg>
+          Reservas
+        </button>
+        <button class="nav-item tab-app-btn" data-app-tab="servicos">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+          Serviços
+        </button>
+        <button class="nav-item tab-app-btn" data-app-tab="hoteis">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-4"/><line x1="9" y1="9" x2="9" y2="9.01"/><line x1="9" y1="12" x2="9" y2="12.01"/><line x1="9" y1="15" x2="9" y2="15.01"/></svg>
+          Hotéis
+        </button>
+        <div class="sidebar-spacer"></div>
+        <button class="btn-sair" id="btnSair">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Sair
+        </button>
+      </aside>
+
+      <div class="content-area">
+        <div class="content-header">
+          <h1 id="tituloConteudo">Dashboard</h1>
+          <span class="agencia-pill" id="agenciaPill">—</span>
+        </div>
+
+        <main class="app-main">
+          <div class="panel-app active" id="app-panel-dashboard">
+            <div class="stat-cards">
+              <div class="stat-card">
+                <div class="icon-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+                <div class="label">Reservas este mês</div>
+                <div class="value mono" id="statQtdMes">—</div>
+              </div>
+              <div class="stat-card">
+                <div class="icon-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+                <div class="label">Valor total este mês</div>
+                <div class="value mono" id="statValorMes">—</div>
+              </div>
+              <div class="stat-card">
+                <div class="icon-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4"/><path d="M4 6v12c0 1.1.9 2 2 2h14v-4"/><path d="M18 12a2 2 0 0 0 0 4h4v-4z"/></svg></div>
+                <div class="label">Ticket médio</div>
+                <div class="value mono" id="statTicketMedio">—</div>
+              </div>
+              <div class="stat-card">
+                <div class="icon-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+                <div class="label">Pendentes de confirmação</div>
+                <div class="value mono" id="statPendentes">—</div>
+              </div>
+            </div>
+
+            <div class="chart-box">
+              <h3>Reservas por mês</h3>
+              <p class="chart-sub">Últimos 6 meses, agrupado pela data de chegada do transfer</p>
+              <div class="bars" id="graficoMeses"></div>
+            </div>
+          </div>
+
+          <div class="panel-app" id="app-panel-reservas">
+            <div class="filtros">
+              <select id="filtroStatus">
+                <option value="">Todos os status</option>
+                <option value="pendente">Pendente</option>
+                <option value="confirmada">Confirmada</option>
+                <option value="cancelada">Cancelada</option>
+              </select>
+            </div>
+            <div class="lista-reservas" id="listaReservas"></div>
+          </div>
+
+          <div class="panel-app" id="app-panel-servicos">
+            <div class="filtros" style="justify-content:space-between;">
+              <span></span>
+              <button class="btn-novo" id="btnNovoServico">+ Novo serviço</button>
+            </div>
+            <div class="lista-cadastro" id="listaServicos"></div>
+          </div>
+
+          <div class="panel-app" id="app-panel-hoteis">
+            <div class="config-url-booking">
+              <label for="inputUrlBooking">URL onde o formulário (receptivo-booking.html) está publicado</label>
+              <input type="text" id="inputUrlBooking" placeholder="https://juliovoana.github.io/sicon/receptivo-booking.html">
+            </div>
+            <div class="filtros" style="justify-content:space-between;">
+              <span></span>
+              <button class="btn-novo" id="btnNovoHotel">+ Novo hotel</button>
+            </div>
+            <div class="lista-cadastro" id="listaHoteis"></div>
+          </div>
+        </main>
+      </div>
+    </div>
+  </div>
+
+  <div class="drawer-overlay" id="drawerOverlay">
+    <div class="drawer">
+      <div class="drawer-head">
+        <h2>Detalhes da reserva</h2>
+        <button class="drawer-close" id="btnFecharDrawer">✕</button>
+      </div>
+      <div class="drawer-body" id="drawerBody"></div>
+      <div class="drawer-actions">
+        <button class="btn-acao btn-cancelar" id="btnCancelarReserva">Cancelar</button>
+        <button class="btn-acao btn-salvar" id="btnSalvarReserva">Salvar</button>
+        <button class="btn-acao btn-confirmar" id="btnConfirmarReserva">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= DRAWER DE CADASTRO (serviços / hotéis) ================= -->
+  <div class="drawer-overlay" id="drawerCadastroOverlay">
+    <div class="drawer">
+      <div class="drawer-head">
+        <h2 id="drawerCadastroTitulo">Novo registro</h2>
+        <button class="drawer-close" id="btnFecharDrawerCadastro">✕</button>
+      </div>
+      <div class="drawer-body" id="drawerCadastroBody"></div>
+      <div class="drawer-actions">
+        <button class="btn-acao btn-salvar" id="btnSalvarCadastro" style="flex:2;">Salvar</button>
+      </div>
+    </div>
+  </div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+  // =================================================================
+  // CONFIGURAÇÃO DO SUPABASE (mesmo projeto do formulário público)
+  // =================================================================
+  const SUPABASE_URL = 'https://frzvcrcshkpvjdbbqkhz.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_h-JuDyjYgb5YKGYFRKtLEg_8gnJor9w';
+
+  // URL onde o formulário público (receptivo-booking.html) está
+  // hospedado. Agora é configurável direto na aba "Hotéis" (campo
+  // #inputUrlBooking) e fica salva no navegador — sem precisar
+  // editar código. Isso aqui é só o valor padrão/sugestão inicial.
+  const URL_FORMULARIO_PUBLICO_PADRAO = 'https://SEU-DOMINIO-AQUI/receptivo-booking.html';
+  const CHAVE_LOCALSTORAGE_URL_BOOKING = 'servir_url_booking_publico';
+  let sb;
+
+  let agenciaId = null;
+  let agenciaNome = null;
+  let reservaSelecionadaId = null;
+  let todasReservas = [];
+  let todosServicos = [];
+  let todosHoteis = [];
+  let cadastroTipoAtual = null; // 'servico' | 'hotel'
+  let cadastroIdAtual = null;   // null = criando novo registro
+
+  // =================================================================
+  // LOGIN
+  // =================================================================
+  const telaLogin = document.getElementById('telaLogin');
+  const loadingScreen = document.getElementById('loadingScreen');
+  const appEl = document.getElementById('app');
+  const loginErro = document.getElementById('loginErro');
+
+  function mostrarErroLogin(msg){
+    loginErro.textContent = msg;
+    loginErro.classList.add('show');
+  }
+
+  async function fazerLogin(){
+    const email = document.getElementById('loginEmail').value.trim();
+    const senha = document.getElementById('loginSenha').value;
+    if(!email || !senha){ mostrarErroLogin('Preencha e-mail e senha.'); return; }
+
+    const btn = document.getElementById('btnEntrar');
+    btn.disabled = true;
+    btn.textContent = 'Entrando...';
+    loginErro.classList.remove('show');
+
+    try{
+      const { data, error } = await sb.auth.signInWithPassword({ email, password: senha });
+      if(error) throw new Error('E-mail ou senha inválidos.');
+
+      await carregarAgenciaDoUsuario(data.user);
+      telaLogin.style.display = 'none';
+      appEl.style.display = 'block';
+      await carregarTudo();
+    } catch(erro){
+      mostrarErroLogin(erro.message);
+    } finally{
+      btn.disabled = false;
+      btn.textContent = 'Entrar';
+    }
+  }
+
+  async function carregarAgenciaDoUsuario(user){
+    let { data: vinculo, error: erroVinculo } = await sb
+      .from('receptivo_agencia_usuarios')
+      .select('agencia_id')
+      .eq('user_id', user.id)
+      .maybeSingle();
+
+    if(erroVinculo) throw new Error('Erro ao buscar sua agência: ' + erroVinculo.message);
+
+    // Primeiro acesso após confirmar o e-mail: ainda não existe vínculo,
+    // mas o cadastro (servir-cadastro-agencia.html) guardou os dados da
+    // agência nos metadados do usuário. Finaliza o provisionamento agora.
+    if(!vinculo){
+      const nomePendente = user.user_metadata?.agencia_nome_pendente;
+      const whatsappPendente = user.user_metadata?.agencia_whatsapp_pendente;
+
+      if(!nomePendente){
+        throw new Error('Este login não está vinculado a nenhuma agência ainda.');
+      }
+
+      const { data: novaAgencia, error: erroNovaAgencia } = await sb
+        .from('receptivo_agencias_receptivo')
+        .insert({ nome: nomePendente, whatsapp_contato: (whatsappPendente || '').replace(/\D/g, ''), ativo: true })
+        .select()
+        .single();
+      if(erroNovaAgencia) throw new Error('Erro ao finalizar cadastro da agência: ' + erroNovaAgencia.message);
+
+      const { error: erroVinculoNovo } = await sb.from('receptivo_agencia_usuarios').insert({
+        agencia_id: novaAgencia.id,
+        user_id: user.id,
+        eh_principal: true
+      });
+      if(erroVinculoNovo) throw new Error('Erro ao vincular sua conta à agência: ' + erroVinculoNovo.message);
+
+      vinculo = { agencia_id: novaAgencia.id };
+    }
+
+    agenciaId = vinculo.agencia_id;
+
+    const { data: agencia, error: erroAgencia } = await sb
+      .from('receptivo_agencias_receptivo')
+      .select('nome')
+      .eq('id', agenciaId)
+      .single();
+
+    if(erroAgencia) throw new Error('Erro ao buscar dados da agência: ' + erroAgencia.message);
+    agenciaNome = agencia.nome;
+    document.getElementById('nomeAgencia').textContent = agenciaNome;
+    document.getElementById('agenciaPill').textContent = agenciaNome;
+  }
+
+  document.getElementById('btnEntrar').addEventListener('click', fazerLogin);
+  document.getElementById('loginSenha').addEventListener('keydown', e => { if(e.key === 'Enter') fazerLogin(); });
+
+  document.getElementById('btnSair').addEventListener('click', async () => {
+    await sb.auth.signOut();
+    location.reload();
+  });
+
+  // =================================================================
+  // TABS DO APP
+  // =================================================================
+  const titulosAba = { dashboard: 'Dashboard', reservas: 'Reservas', servicos: 'Serviços', hoteis: 'Hotéis' };
+  document.querySelectorAll('.tab-app-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-app-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.panel-app').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('app-panel-' + btn.dataset.appTab).classList.add('active');
+      document.getElementById('tituloConteudo').textContent = titulosAba[btn.dataset.appTab] || '';
+    });
+  });
+
+  // =================================================================
+  // CARREGAMENTO DE DADOS (dashboard + lista de reservas)
+  // =================================================================
+  async function carregarTudo(){
+    const { data, error } = await sb
+      .from('receptivo_reservas')
+      .select(`
+        id, reserva_hotel, voo_chegada, voo_partida, data_hr_chegada, data_hr_partida,
+        obs_geral, valor_total, status, created_at,
+        receptivo_hoteis ( nome ),
+        receptivo_servicos ( nome ),
+        receptivo_clientes_reserva ( id, eh_principal, nome, sobrenome, endereco, whatsapp, email, data_nascimento, precisa_cadeirinha )
+      `)
+      .order('data_hr_chegada', { ascending: false });
+
+    if(error){ alert('Erro ao carregar reservas: ' + error.message); return; }
+
+    todasReservas = data || [];
+    renderDashboard();
+    renderListaReservas();
+
+    await Promise.all([carregarServicos(), carregarHoteis()]);
+  }
+
+  async function carregarServicos(){
+    const { data, error } = await sb
+      .from('receptivo_servicos')
+      .select('*')
+      .eq('agencia_id', agenciaId)
+      .order('ordem_exibicao', { ascending: true });
+    if(error){ alert('Erro ao carregar serviços: ' + error.message); return; }
+    todosServicos = data || [];
+    renderListaServicos();
+  }
+
+  async function carregarHoteis(){
+    const { data, error } = await sb
+      .from('receptivo_hoteis')
+      .select('*')
+      .eq('agencia_id', agenciaId)
+      .order('nome', { ascending: true });
+    if(error){ alert('Erro ao carregar hotéis: ' + error.message); return; }
+    todosHoteis = data || [];
+    renderListaHoteis();
+  }
+
+  // =================================================================
+  // DASHBOARD
+  // =================================================================
+  function renderDashboard(){
+    const agora = new Date();
+    const mesAtual = agora.getMonth();
+    const anoAtual = agora.getFullYear();
+
+    const doMes = todasReservas.filter(r => {
+      if(!r.data_hr_chegada) return false;
+      const d = new Date(r.data_hr_chegada);
+      return d.getMonth() === mesAtual && d.getFullYear() === anoAtual;
+    });
+
+    const valorMes = doMes.reduce((acc, r) => acc + (Number(r.valor_total) || 0), 0);
+    const pendentes = todasReservas.filter(r => r.status === 'pendente').length;
+    const ticketMedio = doMes.length > 0 ? valorMes / doMes.length : 0;
+
+    document.getElementById('statQtdMes').textContent = doMes.length;
+    document.getElementById('statValorMes').textContent = formatarMoeda(valorMes);
+    document.getElementById('statTicketMedio').textContent = formatarMoeda(ticketMedio);
+    document.getElementById('statPendentes').textContent = pendentes;
+
+    const meses = [];
+    for(let i = 5; i >= 0; i--){
+      const d = new Date(anoAtual, mesAtual - i, 1);
+      meses.push({ mes: d.getMonth(), ano: d.getFullYear(), label: d.toLocaleDateString('pt-BR', { month: 'short' }).replace('.', ''), qtd: 0, valor: 0 });
+    }
+
+    todasReservas.forEach(r => {
+      if(!r.data_hr_chegada) return;
+      const d = new Date(r.data_hr_chegada);
+      const alvo = meses.find(m => m.mes === d.getMonth() && m.ano === d.getFullYear());
+      if(alvo){ alvo.qtd++; alvo.valor += Number(r.valor_total) || 0; }
+    });
+
+    const maxQtd = Math.max(1, ...meses.map(m => m.qtd));
+    const grafico = document.getElementById('graficoMeses');
+    grafico.innerHTML = '';
+    meses.forEach(m => {
+      const col = document.createElement('div');
+      col.className = 'bar-col';
+      const alturaPerc = (m.qtd / maxQtd) * 100;
+      col.innerHTML = `
+        <div class="valor">${m.qtd}</div>
+        <div class="bar" style="height:${Math.max(alturaPerc, 4)}%"></div>
+        <div class="mes">${m.label}</div>
+      `;
+      grafico.appendChild(col);
+    });
+  }
+
+  function formatarMoeda(v){
+    return 'R$ ' + Number(v || 0).toFixed(2).replace('.', ',');
+  }
+
+  // =================================================================
+  // LISTA DE RESERVAS
+  // =================================================================
+  function renderListaReservas(){
+    const filtro = document.getElementById('filtroStatus').value;
+    const lista = document.getElementById('listaReservas');
+    const filtradas = filtro ? todasReservas.filter(r => r.status === filtro) : todasReservas;
+
+    if(filtradas.length === 0){
+      lista.innerHTML = '<div class="vazio">Nenhuma reserva encontrada.</div>';
+      return;
+    }
+
+    lista.innerHTML = '';
+    filtradas.forEach(r => {
+      const principal = (r.receptivo_clientes_reserva || []).find(c => c.eh_principal);
+      const qtdAcomp = (r.receptivo_clientes_reserva || []).filter(c => !c.eh_principal).length;
+      const nomeCompleto = principal ? (principal.nome + ' ' + (principal.sobrenome || '')).trim() : 'Sem nome';
+      const iniciais = nomeCompleto.split(' ').filter(Boolean).slice(0, 2).map(p => p[0].toUpperCase()).join('') || '?';
+
+      let blocoDataMini;
+      if(r.data_hr_chegada){
+        const d = new Date(r.data_hr_chegada);
+        const diaMes = d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+        const hora = d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+        blocoDataMini = `<span class="data-mini"><strong>${diaMes}</strong><small>${hora}</small></span>`;
+      } else {
+        blocoDataMini = `<span class="data-mini data-mini-vazia">sem data</span>`;
+      }
+
+      const row = document.createElement('div');
+      row.className = 'reserva-row';
+      row.innerHTML = `
+        ${blocoDataMini}
+        <div class="avatar-circle">${iniciais}</div>
+        <div class="reserva-info">
+          <span class="principal">${nomeCompleto}</span>
+          <span class="meta">${r.receptivo_servicos?.nome || '—'} · ${r.receptivo_hoteis?.nome || '—'} · ${qtdAcomp} acompanhante${qtdAcomp === 1 ? '' : 's'}</span>
+        </div>
+        <div class="reserva-right">
+          <span class="reserva-valor mono">${r.valor_total !== null ? formatarMoeda(r.valor_total) : 'Sob consulta'}</span>
+          <span class="status-tag ${r.status}">${r.status}</span>
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      `;
+      row.addEventListener('click', () => abrirDrawer(r.id));
+      lista.appendChild(row);
+    });
+  }
+
+  document.getElementById('filtroStatus').addEventListener('change', renderListaReservas);
+
+  // =================================================================
+  // LISTA DE SERVIÇOS
+  // =================================================================
+  const iconeServico = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>`;
+  const iconeHotel = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-4"/><line x1="9" y1="9" x2="9" y2="9.01"/><line x1="9" y1="12" x2="9" y2="12.01"/><line x1="9" y1="15" x2="9" y2="15.01"/></svg>`;
+
+  function renderListaServicos(){
+    const lista = document.getElementById('listaServicos');
+    if(todosServicos.length === 0){ lista.innerHTML = '<div class="vazio">Nenhum serviço cadastrado.</div>'; return; }
+
+    lista.innerHTML = '';
+    todosServicos.forEach(s => {
+      const metaPreco = s.sob_consulta
+        ? 'Sob consulta'
+        : formatarMoeda(s.tarifa_adt) + (s.tipo_cobranca === 'por_pessoa' ? ' / pessoa' : ' / reserva');
+
+      const row = document.createElement('div');
+      row.className = 'cadastro-row';
+      row.innerHTML = `
+        <div class="cadastro-thumb" ${s.imagem_url ? `style="background-image:url('${s.imagem_url}')"` : ''}>${s.imagem_url ? '' : iconeServico}</div>
+        <div class="cadastro-info">
+          <span class="nome">${s.nome}</span>
+          <span class="meta">${metaPreco}</span>
+        </div>
+        <span class="status-tag ${s.ativo ? 'ativo' : 'inativo'}">${s.ativo ? 'ativo' : 'inativo'}</span>
+      `;
+      row.addEventListener('click', () => abrirDrawerCadastro('servico', s.id));
+      lista.appendChild(row);
+    });
+  }
+
+  function renderListaHoteis(){
+    const lista = document.getElementById('listaHoteis');
+    if(todosHoteis.length === 0){ lista.innerHTML = '<div class="vazio">Nenhum hotel cadastrado.</div>'; return; }
+
+    lista.innerHTML = '';
+    todosHoteis.forEach(h => {
+      const row = document.createElement('div');
+      row.className = 'cadastro-row';
+      row.innerHTML = `
+        <div class="cadastro-thumb">${iconeHotel}</div>
+        <div class="cadastro-info">
+          <span class="nome">${h.nome}</span>
+          <span class="meta">${h.endereco || 'Sem endereço cadastrado'}</span>
+        </div>
+        <span class="status-tag ${h.ativo ? 'ativo' : 'inativo'}">${h.ativo ? 'ativo' : 'inativo'}</span>
+        <button class="btn-link-hotel" data-hotel-id="${h.id}" title="Copiar link de solicitação para este hotel">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          Link
+        </button>
+      `;
+      row.addEventListener('click', (e) => {
+        if(e.target.closest('.btn-link-hotel')) return; // não abre o drawer se clicou no botão de link
+        abrirDrawerCadastro('hotel', h.id);
+      });
+      row.querySelector('.btn-link-hotel').addEventListener('click', () => copiarLinkHotel(h.id, h.nome));
+      lista.appendChild(row);
+    });
+  }
+
+  // =================================================================
+  // URL de publicação do formulário: configurável pelo operador,
+  // persistida no navegador (localStorage)
+  // =================================================================
+  const inputUrlBooking = document.getElementById('inputUrlBooking');
+  inputUrlBooking.value = localStorage.getItem(CHAVE_LOCALSTORAGE_URL_BOOKING) || '';
+  inputUrlBooking.addEventListener('change', () => {
+    localStorage.setItem(CHAVE_LOCALSTORAGE_URL_BOOKING, inputUrlBooking.value.trim());
+  });
+
+  function obterUrlBookingConfigurada(){
+    const salva = (localStorage.getItem(CHAVE_LOCALSTORAGE_URL_BOOKING) || '').trim();
+    return salva || URL_FORMULARIO_PUBLICO_PADRAO;
+  }
+
+  async function copiarLinkHotel(hotelId, hotelNome){
+    const base = obterUrlBookingConfigurada().replace(/\/$/, '');
+    if(base.includes('SEU-DOMINIO-AQUI')){
+      alert('Antes de gerar o link, informe onde o formulário está publicado no campo acima ("URL onde o formulário está publicado").');
+      inputUrlBooking.focus();
+      return;
+    }
+    const link = `${base}?hotel=${hotelId}`;
+    try{
+      await navigator.clipboard.writeText(link);
+      alert(`Link copiado! Envie para o cliente que vai chegar no ${hotelNome}:\n\n${link}`);
+    } catch(erro){
+      prompt(`Copie o link manualmente (para ${hotelNome}):`, link);
+    }
+  }
+
+  // =================================================================
+  // DRAWER DE CADASTRO (serviços e hotéis compartilham o mesmo drawer)
+  // =================================================================
+  const drawerCadastroOverlay = document.getElementById('drawerCadastroOverlay');
+
+  // Redimensiona e comprime a imagem no navegador antes de enviar
+  // (o Supabase Storage guarda o arquivo exatamente como recebe,
+  // sem nenhuma compressão automática).
+  function comprimirImagem(arquivo, maxDimensao = 1600, qualidade = 0.82){
+    return new Promise((resolve, reject) => {
+      const url = URL.createObjectURL(arquivo);
+      const img = new Image();
+      img.onload = () => {
+        let { width, height } = img;
+        if(width > maxDimensao || height > maxDimensao){
+          if(width > height){
+            height = Math.round(height * (maxDimensao / width));
+            width = maxDimensao;
+          } else {
+            width = Math.round(width * (maxDimensao / height));
+            height = maxDimensao;
+          }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+        URL.revokeObjectURL(url);
+        canvas.toBlob(
+          blob => blob ? resolve(blob) : reject(new Error('Não foi possível processar a imagem.')),
+          'image/jpeg',
+          qualidade
+        );
+      };
+      img.onerror = () => reject(new Error('Não foi possível ler o arquivo de imagem.'));
+      img.src = url;
+    });
+  }
+
+  async function enviarImagemServico(arquivo){
+    const btn = document.getElementById('btnEscolherImagem');
+    const textoOriginal = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = 'Comprimindo...';
+
+    try{
+      const tamanhoOriginalKb = Math.round(arquivo.size / 1024);
+      const blobComprimido = await comprimirImagem(arquivo);
+      const tamanhoFinalKb = Math.round(blobComprimido.size / 1024);
+
+      btn.textContent = 'Enviando...';
+      const nomeArquivo = `${agenciaId}/${cadastroIdAtual || 'novo-' + Date.now()}-${Date.now()}.jpg`;
+
+      const { error: erroUpload } = await sb.storage
+        .from('servicos-imagens')
+        .upload(nomeArquivo, blobComprimido, { upsert: true, contentType: 'image/jpeg' });
+      if(erroUpload) throw new Error(erroUpload.message);
+
+      const { data } = sb.storage.from('servicos-imagens').getPublicUrl(nomeArquivo);
+      const urlPublica = data.publicUrl;
+
+      document.getElementById('c_imagem_url').value = urlPublica;
+      const preview = document.getElementById('previewImagemServico');
+      preview.src = urlPublica;
+      preview.style.display = 'block';
+      document.getElementById('placeholderImagemServico').style.display = 'none';
+      console.log(`Imagem comprimida: ${tamanhoOriginalKb}KB → ${tamanhoFinalKb}KB`);
+      btn.textContent = 'Trocar imagem';
+    } catch(erro){
+      alert('Erro ao enviar imagem: ' + erro.message);
+      btn.textContent = textoOriginal;
+    } finally{
+      btn.disabled = false;
+    }
+  }
+
+
+  function abrirDrawerCadastro(tipo, id){
+    cadastroTipoAtual = tipo;
+    cadastroIdAtual = id;
+    const titulo = document.getElementById('drawerCadastroTitulo');
+    const body = document.getElementById('drawerCadastroBody');
+
+    if(tipo === 'servico'){
+      const s = id ? todosServicos.find(x => x.id === id) : {};
+      titulo.textContent = id ? 'Editar serviço' : 'Novo serviço';
+      body.innerHTML = `
+        <div class="drawer-section">
+          <div class="drawer-section-title">Dados gerais</div>
+          <div class="field-group"><label>Nome</label><input type="text" id="c_nome" value="${s.nome || ''}"></div>
+          <div class="field-group"><label>Descrição completa</label><input type="text" id="c_descricao" value="${s.descricao || ''}"></div>
+          <div class="field-group"><label>Descrição curta (card público)</label><input type="text" id="c_descricao_curta" value="${s.descricao_curta || ''}"></div>
+          <div class="field-group">
+            <label>Imagem do serviço</label>
+            <div class="image-upload-box">
+              <div class="image-preview-wrap">
+                <img id="previewImagemServico" src="${s.imagem_url || ''}" style="${s.imagem_url ? '' : 'display:none;'}">
+                <div class="image-preview-placeholder" id="placeholderImagemServico" style="${s.imagem_url ? 'display:none;' : ''}">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+                </div>
+              </div>
+              <button type="button" class="btn-upload-imagem" id="btnEscolherImagem">${s.imagem_url ? 'Trocar imagem' : 'Escolher imagem'}</button>
+              <input type="file" id="c_imagem_arquivo" accept="image/*" style="display:none;">
+              <input type="hidden" id="c_imagem_url" value="${s.imagem_url || ''}">
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field-group"><label>Ordem de exibição</label><input type="number" id="c_ordem_exibicao" value="${s.ordem_exibicao ?? 0}"></div>
+            <div class="field-group">
+              <label>Status</label>
+              <select id="c_ativo"><option value="true" ${s.ativo !== false ? 'selected' : ''}>Ativo</option><option value="false" ${s.ativo === false ? 'selected' : ''}>Inativo</option></select>
+            </div>
+          </div>
+        </div>
+        <div class="drawer-section">
+          <div class="drawer-section-title">Precificação</div>
+          <div class="field-group">
+            <label>Tipo de cobrança</label>
+            <select id="c_sob_consulta">
+              <option value="false" ${!s.sob_consulta ? 'selected' : ''}>Tarifa fixa</option>
+              <option value="true" ${s.sob_consulta ? 'selected' : ''}>Sob consulta (sem preço fixo)</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label>Cobrança</label>
+            <select id="c_tipo_cobranca">
+              <option value="por_pessoa" ${s.tipo_cobranca !== 'por_reserva' ? 'selected' : ''}>Por pessoa</option>
+              <option value="por_reserva" ${s.tipo_cobranca === 'por_reserva' ? 'selected' : ''}>Por reserva (valor fixo)</option>
+            </select>
+          </div>
+          <div class="field-row">
+            <div class="field-group"><label>Tarifa ADT (R$)</label><input type="number" step="0.01" id="c_tarifa_adt" value="${s.tarifa_adt ?? ''}"></div>
+            <div class="field-group"><label>Tarifa CHD (R$, opcional)</label><input type="number" step="0.01" id="c_tarifa_chd" value="${s.tarifa_chd ?? ''}"></div>
+          </div>
+          <div class="field-row">
+            <div class="field-group"><label>Isenção até (anos)</label><input type="number" id="c_idade_isencao" value="${s.idade_isencao ?? ''}"></div>
+            <div class="field-group"><label>Tarifa reduzida até (anos)</label><input type="number" id="c_idade_tarifa_reduzida" value="${s.idade_tarifa_reduzida ?? ''}"></div>
+          </div>
+          <div class="field-group"><label>Taxa de cadeirinha (R$, opcional)</label><input type="number" step="0.01" id="c_taxa_cadeirinha" value="${s.taxa_cadeirinha ?? ''}"></div>
+        </div>
+      `;
+
+      document.getElementById('btnEscolherImagem').addEventListener('click', () => {
+        document.getElementById('c_imagem_arquivo').click();
+      });
+      document.getElementById('c_imagem_arquivo').addEventListener('change', async (e) => {
+        const arquivo = e.target.files[0];
+        if(!arquivo) return;
+        await enviarImagemServico(arquivo);
+      });
+    } else {
+      const h = id ? todosHoteis.find(x => x.id === id) : {};
+      titulo.textContent = id ? 'Editar hotel' : 'Novo hotel';
+      const regrasTexto = Array.isArray(h.popup_regras) ? h.popup_regras.join('\n') : '';
+      body.innerHTML = `
+        <div class="drawer-section">
+          <div class="drawer-section-title">Dados gerais</div>
+          <div class="field-group"><label>Nome</label><input type="text" id="c_nome" value="${h.nome || ''}"></div>
+          <div class="field-group"><label>Endereço</label><input type="text" id="c_endereco" value="${h.endereco || ''}"></div>
+          <div class="field-row">
+            <div class="field-group"><label>Telefone</label><input type="text" id="c_telefone" value="${h.telefone || ''}"></div>
+            <div class="field-group">
+              <label>Status</label>
+              <select id="c_ativo"><option value="true" ${h.ativo !== false ? 'selected' : ''}>Ativo</option><option value="false" ${h.ativo === false ? 'selected' : ''}>Inativo</option></select>
+            </div>
+          </div>
+        </div>
+        <div class="drawer-section">
+          <div class="drawer-section-title">Popup de boas-vindas (formulário público)</div>
+          <div class="field-group"><label>Título do popup</label><input type="text" id="c_popup_titulo" value="${h.popup_titulo || ''}"></div>
+          <div class="field-group"><label>Texto de introdução</label><input type="text" id="c_popup_intro" value="${h.popup_intro || ''}"></div>
+          <div class="field-group">
+            <label>Regras (uma por linha)</label>
+            <textarea id="c_popup_regras" rows="5" style="width:100%; padding:11px 14px; border-radius:10px; border:1.5px solid var(--border); font-family:'Inter', sans-serif; font-size:.9rem; resize:vertical;">${regrasTexto}</textarea>
+          </div>
+          <div class="field-row">
+            <div class="field-group"><label>WhatsApp de contato</label><input type="text" id="c_popup_whatsapp" value="${h.popup_whatsapp || ''}"></div>
+            <div class="field-group"><label>E-mail de contato</label><input type="text" id="c_popup_email" value="${h.popup_email || ''}"></div>
+          </div>
+          <div class="field-group"><label>Observação de urgência</label><input type="text" id="c_popup_obs_urgencia" value="${h.popup_obs_urgencia || ''}"></div>
+        </div>
+      `;
+    }
+
+    drawerCadastroOverlay.classList.add('show');
+  }
+
+  document.getElementById('btnNovoServico').addEventListener('click', () => abrirDrawerCadastro('servico', null));
+  document.getElementById('btnNovoHotel').addEventListener('click', () => abrirDrawerCadastro('hotel', null));
+  document.getElementById('btnFecharDrawerCadastro').addEventListener('click', () => drawerCadastroOverlay.classList.remove('show'));
+
+  document.getElementById('btnSalvarCadastro').addEventListener('click', async () => {
+    const btn = document.getElementById('btnSalvarCadastro');
+    btn.disabled = true;
+    btn.textContent = 'Salvando...';
+
+    try{
+      if(cadastroTipoAtual === 'servico'){
+        const payload = {
+          agencia_id: agenciaId,
+          nome: document.getElementById('c_nome').value.trim(),
+          descricao: document.getElementById('c_descricao').value.trim() || null,
+          descricao_curta: document.getElementById('c_descricao_curta').value.trim() || null,
+          imagem_url: document.getElementById('c_imagem_url').value.trim() || null,
+          ordem_exibicao: parseInt(document.getElementById('c_ordem_exibicao').value, 10) || 0,
+          ativo: document.getElementById('c_ativo').value === 'true',
+          sob_consulta: document.getElementById('c_sob_consulta').value === 'true',
+          tipo_cobranca: document.getElementById('c_tipo_cobranca').value,
+          tarifa_adt: document.getElementById('c_tarifa_adt').value ? Number(document.getElementById('c_tarifa_adt').value) : null,
+          tarifa_chd: document.getElementById('c_tarifa_chd').value ? Number(document.getElementById('c_tarifa_chd').value) : null,
+          idade_isencao: document.getElementById('c_idade_isencao').value ? parseInt(document.getElementById('c_idade_isencao').value, 10) : null,
+          idade_tarifa_reduzida: document.getElementById('c_idade_tarifa_reduzida').value ? parseInt(document.getElementById('c_idade_tarifa_reduzida').value, 10) : null,
+          taxa_cadeirinha: document.getElementById('c_taxa_cadeirinha').value ? Number(document.getElementById('c_taxa_cadeirinha').value) : null
+        };
+
+        if(!payload.nome){ throw new Error('Nome é obrigatório.'); }
+        if(!payload.sob_consulta && !payload.tarifa_adt){ throw new Error('Informe a tarifa ADT ou marque como "sob consulta".'); }
+
+        const query = cadastroIdAtual
+          ? sb.from('receptivo_servicos').update(payload).eq('id', cadastroIdAtual)
+          : sb.from('receptivo_servicos').insert(payload);
+        const { error } = await query;
+        if(error) throw new Error(error.message);
+
+        await carregarServicos();
+      } else {
+        const regrasArray = document.getElementById('c_popup_regras').value
+          .split('\n').map(l => l.trim()).filter(Boolean);
+
+        const payload = {
+          agencia_id: agenciaId,
+          nome: document.getElementById('c_nome').value.trim(),
+          endereco: document.getElementById('c_endereco').value.trim() || null,
+          telefone: document.getElementById('c_telefone').value.trim() || null,
+          ativo: document.getElementById('c_ativo').value === 'true',
+          popup_titulo: document.getElementById('c_popup_titulo').value.trim() || null,
+          popup_intro: document.getElementById('c_popup_intro').value.trim() || null,
+          popup_regras: regrasArray,
+          popup_whatsapp: document.getElementById('c_popup_whatsapp').value.trim() || null,
+          popup_email: document.getElementById('c_popup_email').value.trim() || null,
+          popup_obs_urgencia: document.getElementById('c_popup_obs_urgencia').value.trim() || null
+        };
+
+        if(!payload.nome){ throw new Error('Nome é obrigatório.'); }
+
+        const query = cadastroIdAtual
+          ? sb.from('receptivo_hoteis').update(payload).eq('id', cadastroIdAtual)
+          : sb.from('receptivo_hoteis').insert(payload);
+        const { error } = await query;
+        if(error) throw new Error(error.message);
+
+        await carregarHoteis();
+      }
+
+      drawerCadastroOverlay.classList.remove('show');
+    } catch(erro){
+      alert('Erro ao salvar: ' + erro.message);
+    } finally{
+      btn.disabled = false;
+      btn.textContent = 'Salvar';
+    }
+  });
+
+  // =================================================================
+  // DRAWER DE DETALHE / EDIÇÃO (reservas)
+  // =================================================================
+  const drawerOverlay = document.getElementById('drawerOverlay');
+
+  function gerarCardVerificacao(r, principal){
+    let blocoData;
+    if(r.data_hr_chegada){
+      const d = new Date(r.data_hr_chegada);
+      const dow = d.toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', '');
+      const mon = d.toLocaleDateString('pt-BR', { month: 'short' }).replace('.', '');
+      const hora = d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+      blocoData = `
+        <span class="dow">${dow}</span>
+        <span class="day">${d.getDate()}</span>
+        <span class="monyear">${mon}/${d.getFullYear()}</span>
+        <span class="time">${hora}</span>
+      `;
+    } else {
+      blocoData = `<span class="sem-data">Data de chegada não informada</span>`;
+    }
+
+    const whatsappLink = principal.whatsapp ? `https://wa.me/${principal.whatsapp.replace(/\D/g, '')}` : null;
+
+    return `
+      <div class="verify-card">
+        <div class="verify-date-block">${blocoData}</div>
+        <div class="verify-details">
+          <div class="verify-row">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-1 .1-1.3.5l-.7.7c-.5.5-.3 1.3.3 1.5L9 11l-2 3H3l-1 3 1 1 3-1v-4l3-2 2.2 6.2c.2.6 1 .8 1.5.3l.7-.7c.4-.3.6-.8.5-1.3z"/></svg>
+            <span class="rotulo">Chegada:</span> <strong>${r.voo_chegada || '—'}</strong>
+          </div>
+          <div class="verify-row">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-1 .1-1.3.5l-.7.7c-.5.5-.3 1.3.3 1.5L9 11l-2 3H3l-1 3 1 1 3-1v-4l3-2 2.2 6.2c.2.6 1 .8 1.5.3l.7-.7c.4-.3.6-.8.5-1.3z"/></svg>
+            <span class="rotulo">Partida:</span> <strong>${r.voo_partida || '—'}</strong>
+          </div>
+          <div class="verify-row">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"/><path d="M22 6l-10 7L2 6"/></svg>
+            ${principal.email ? `<a href="mailto:${principal.email}">${principal.email}</a>` : '<span class="rotulo">Sem e-mail</span>'}
+          </div>
+          <div class="verify-row">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            ${whatsappLink ? `<a href="${whatsappLink}" target="_blank" rel="noopener">${principal.whatsapp}</a>` : '<span class="rotulo">Sem WhatsApp</span>'}
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function abrirDrawer(reservaId){
+    reservaSelecionadaId = reservaId;
+    const r = todasReservas.find(x => x.id === reservaId);
+    if(!r) return;
+
+    const principal = (r.receptivo_clientes_reserva || []).find(c => c.eh_principal) || {};
+    const acompanhantes = (r.receptivo_clientes_reserva || []).filter(c => !c.eh_principal);
+
+    const body = document.getElementById('drawerBody');
+    body.innerHTML = `
+      ${gerarCardVerificacao(r, principal)}
+
+      <div class="drawer-section">
+        <div class="drawer-section-title">Status</div>
+        <span class="status-tag ${r.status}">${r.status}</span>
+      </div>
+
+      <div class="drawer-section">
+        <div class="drawer-section-title">Passageiro principal</div>
+        <div class="field-row">
+          <div class="field-group"><label>Nome</label><input type="text" id="d_nome" value="${principal.nome || ''}"></div>
+          <div class="field-group"><label>Sobrenome</label><input type="text" id="d_sobrenome" value="${principal.sobrenome || ''}"></div>
+        </div>
+        <div class="field-group"><label>Endereço</label><input type="text" id="d_endereco" value="${principal.endereco || ''}"></div>
+        <div class="field-row">
+          <div class="field-group"><label>WhatsApp</label><input type="text" id="d_whatsapp" value="${principal.whatsapp || ''}"></div>
+          <div class="field-group"><label>E-mail</label><input type="email" id="d_email" value="${principal.email || ''}"></div>
+        </div>
+      </div>
+
+      <div class="drawer-section">
+        <div class="drawer-section-title">Acompanhantes (${acompanhantes.length})</div>
+        ${acompanhantes.length ? acompanhantes.map(a => `
+          <div class="companion-view">
+            <span>${a.nome}</span>
+            <span>${a.data_nascimento ? new Date(a.data_nascimento + 'T00:00:00').toLocaleDateString('pt-BR') : '—'}</span>
+          </div>
+        `).join('') : '<p style="font-size:.85rem; color:var(--muted);">Nenhum acompanhante.</p>'}
+      </div>
+
+      <div class="drawer-section">
+        <div class="drawer-section-title">Hotel e voo</div>
+        <div class="field-group"><label>Código da reserva no hotel</label><input type="text" id="d_reserva_hotel" value="${r.reserva_hotel || ''}"></div>
+        <div class="field-row">
+          <div class="field-group"><label>Voo de chegada</label><input type="text" id="d_voo_chegada" value="${r.voo_chegada || ''}"></div>
+          <div class="field-group"><label>Voo de partida</label><input type="text" id="d_voo_partida" value="${r.voo_partida || ''}"></div>
+        </div>
+        <div class="field-row">
+          <div class="field-group"><label>Chegada</label><input type="datetime-local" id="d_data_hr_chegada" value="${formatarParaInput(r.data_hr_chegada)}"></div>
+          <div class="field-group"><label>Partida</label><input type="datetime-local" id="d_data_hr_partida" value="${formatarParaInput(r.data_hr_partida)}"></div>
+        </div>
+        <div class="field-group"><label>Observações</label><input type="text" id="d_obs_geral" value="${r.obs_geral || ''}"></div>
+      </div>
+
+      <div class="drawer-section">
+        <div class="drawer-section-title">Valor total</div>
+        <div class="valor-total-box">
+          <span class="num mono">${r.valor_total !== null ? formatarMoeda(r.valor_total) : 'Sob consulta'}</span>
+        </div>
+      </div>
+    `;
+
+    const btnConfirmar = document.getElementById('btnConfirmarReserva');
+    const btnCancelar = document.getElementById('btnCancelarReserva');
+    btnConfirmar.disabled = r.status !== 'pendente';
+    btnCancelar.disabled = r.status === 'cancelada';
+
+    drawerOverlay.classList.add('show');
+  }
+
+  function formatarParaInput(valor){
+    if(!valor) return '';
+    const d = new Date(valor);
+    const pad = n => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }
+
+  document.getElementById('btnFecharDrawer').addEventListener('click', () => {
+    drawerOverlay.classList.remove('show');
+  });
+
+  document.getElementById('btnSalvarReserva').addEventListener('click', async () => {
+    const btn = document.getElementById('btnSalvarReserva');
+    btn.disabled = true;
+    btn.textContent = 'Salvando...';
+    try{
+      const r = todasReservas.find(x => x.id === reservaSelecionadaId);
+      const principal = (r.receptivo_clientes_reserva || []).find(c => c.eh_principal);
+
+      const { error: erroReserva } = await sb.from('receptivo_reservas').update({
+        reserva_hotel: document.getElementById('d_reserva_hotel').value || null,
+        voo_chegada: document.getElementById('d_voo_chegada').value || null,
+        voo_partida: document.getElementById('d_voo_partida').value || null,
+        data_hr_chegada: document.getElementById('d_data_hr_chegada').value || null,
+        data_hr_partida: document.getElementById('d_data_hr_partida').value || null,
+        obs_geral: document.getElementById('d_obs_geral').value || null
+      }).eq('id', reservaSelecionadaId);
+      if(erroReserva) throw new Error(erroReserva.message);
+
+      if(principal){
+        const { error: erroPrincipal } = await sb.from('receptivo_clientes_reserva').update({
+          nome: document.getElementById('d_nome').value,
+          sobrenome: document.getElementById('d_sobrenome').value,
+          endereco: document.getElementById('d_endereco').value,
+          whatsapp: document.getElementById('d_whatsapp').value,
+          email: document.getElementById('d_email').value
+        }).eq('id', principal.id);
+        if(erroPrincipal) throw new Error(erroPrincipal.message);
+      }
+
+      await carregarTudo();
+      drawerOverlay.classList.remove('show');
+    } catch(erro){
+      alert('Erro ao salvar: ' + erro.message);
+    } finally{
+      btn.disabled = false;
+      btn.textContent = 'Salvar alterações';
+    }
+  });
+
+  document.getElementById('btnConfirmarReserva').addEventListener('click', async () => {
+    if(!confirm('Confirmar esta reserva?')) return;
+    const { error } = await sb.from('receptivo_reservas').update({ status: 'confirmada' }).eq('id', reservaSelecionadaId);
+    if(error){ alert('Erro: ' + error.message); return; }
+    await carregarTudo();
+    drawerOverlay.classList.remove('show');
+  });
+
+  document.getElementById('btnCancelarReserva').addEventListener('click', async () => {
+    if(!confirm('Tem certeza que deseja cancelar esta reserva?')) return;
+    const { error } = await sb.from('receptivo_reservas').update({ status: 'cancelada' }).eq('id', reservaSelecionadaId);
+    if(error){ alert('Erro: ' + error.message); return; }
+    await carregarTudo();
+    drawerOverlay.classList.remove('show');
+  });
+
+  // =================================================================
+  // BOOTSTRAP: mantém login se já houver sessão ativa
+  // =================================================================
+  async function iniciar(){
+    sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const { data: { session } } = await sb.auth.getSession();
+    if(session){
+      loadingScreen.style.display = 'flex';
+      telaLogin.style.display = 'none';
+      try{
+        await carregarAgenciaDoUsuario(session.user);
+        appEl.style.display = 'block';
+        await carregarTudo();
+      } catch(erro){
+        alert(erro.message);
+        await sb.auth.signOut();
+        location.reload();
+        return;
+      }
+      loadingScreen.style.display = 'none';
+    }
+  }
+  iniciar();
+</script>
+</body>
+</html>
