@@ -1,0 +1,2062 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Controle de Estoque & Projetos</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23e65100'/%3E%3Cstop offset='1' stop-color='%231565c0'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect x='4' y='4' width='56' height='56' rx='14' fill='url(%23g)'/%3E%3Cpath d='M20 34 L32 20 L48 20 L48 36 L34 50 Z' fill='%23ffffff' fill-opacity='0.95'/%3E%3Ccircle cx='41' cy='27' r='4' fill='url(%23g)'/%3E%3C/svg%3E">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+    * { box-sizing: border-box; }
+    body { font-family: Arial, sans-serif; margin: 20px; color: #222; background:#fff; }
+    h2 { margin-bottom: 4px; }
+    .subtitulo { color: #666; font-size: 0.9em; margin-top: 0; margin-bottom: 20px; }
+    .tag-status {
+        display: inline-block;
+        background: #eef2ff;
+        color: #1565c0;
+        font-weight: bold;
+        font-size: 0.9em;
+        padding: 5px 12px;
+        border-radius: 20px;
+        margin-bottom: 16px;
+    }
+
+    /* ===== Abas ===== */
+    .abas { display: flex; gap: 6px; border-bottom: 2px solid #eee; margin-bottom: 20px; }
+    .aba-btn {
+        background: none; border: none; cursor: pointer;
+        padding: 10px 18px; font-size: 0.95em; font-weight: bold; color: #666;
+        border-bottom: 3px solid transparent; margin-bottom: -2px;
+    }
+    .aba-btn.ativa { color: #1565c0; border-bottom-color: #1565c0; }
+    .aba-btn:hover { color: #1565c0; }
+    .conteudo-aba { display: none; }
+    .conteudo-aba.ativa { display: block; }
+
+    /* ===== Caixas / cards ===== */
+    .caixa {
+        background: #f7f7f7; border: 1px solid #ddd; border-radius: 6px;
+        padding: 14px; margin-bottom: 20px;
+    }
+    .grade { display: grid; gap: 12px; }
+    .grade.col2 { grid-template-columns: 1fr 1fr; }
+    .grade.col3 { grid-template-columns: 1fr 1fr 1fr; }
+    .grade.col4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+    .grade label { font-size: 0.8em; font-weight: bold; color: #555; display:block; margin-bottom: 4px; }
+    .grade input, .grade select, .grade textarea {
+        width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 0.95em; font-family: Arial, sans-serif;
+    }
+    .campo { display: flex; flex-direction: column; }
+
+    .linha-busca { display: flex; gap: 8px; margin-bottom: 4px; max-width: 620px; }
+    .linha-busca input { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 1em; }
+    .btn { border: none; border-radius: 4px; padding: 9px 16px; cursor: pointer; font-size: 0.9em; font-weight: bold; }
+    .btn-azul { background: #1565c0; color: #fff; }
+    .btn-azul:hover { background: #0d4d99; }
+    .btn-verde { background: #2e7d32; color: #fff; }
+    .btn-verde:hover { background: #256428; }
+    .btn-cinza { background: #666; color: #fff; }
+    .btn-cinza:hover { background: #444; }
+    .btn-vermelho { background: #b00020; color: #fff; }
+    .btn-vermelho:hover { background: #7a0016; }
+    .btn-pequeno { padding: 5px 10px; font-size: 0.8em; }
+
+    #resultadosBuscaProduto {
+        max-width: 620px; border: 1px solid #ddd; border-radius: 6px; margin-bottom: 16px;
+        max-height: 260px; overflow-y: auto; display: none;
+    }
+    #resultadosBuscaProduto.aberto { display: block; }
+    .item-resultado {
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 9px 12px; border-bottom: 1px solid #eee; gap: 10px;
+    }
+    .item-resultado:last-child { border-bottom: none; }
+    .item-resultado:hover { background: #f5f9ff; }
+    .info-resultado { font-size: 0.88em; }
+    .info-resultado .cod { font-weight: bold; color: #1565c0; }
+    .info-resultado .preco { color: #2e7d32; font-weight: bold; }
+    .info-resultado .estoque-baixo { color: #b00020; font-weight: bold; }
+
+    table.tabela { border-collapse: collapse; width: 100%; margin-bottom: 10px; }
+    table.tabela th, table.tabela td {
+        border: 1px solid #ddd; padding: 8px 9px; text-align: left; font-size: 0.88em;
+    }
+    table.tabela th { background-color: #f0f0f0; }
+    table.tabela tr:hover td { background: #fafcff; }
+    .num { text-align: right; }
+    .center { text-align: center; }
+
+    .vazio { color: #888; font-style: italic; padding: 10px 0; }
+    .status-msg { display:block; font-size: 0.85em; margin-top: 8px; }
+    .status-msg.erro { color: #b00020; }
+    .status-msg.sucesso { color: #2e7d32; }
+
+    .pill { display:inline-block; padding: 2px 9px; border-radius: 12px; font-size: 0.78em; font-weight: bold; }
+    .pill-entrada { background:#e8f5e9; color:#2e7d32; }
+    .pill-saida { background:#ffebee; color:#b00020; }
+
+    .barra-progresso { background:#eee; border-radius: 8px; height: 8px; width: 100%; overflow:hidden; }
+    .barra-progresso-fill { background:#2e7d32; height:100%; }
+    .barra-progresso-fill.excedido { background:#b00020; }
+
+    .lista-projetos { display: flex; flex-direction: column; gap: 10px; }
+    .card-projeto {
+        border: 1px solid #ddd; border-radius: 6px; padding: 12px 14px; cursor: pointer;
+        display: flex; justify-content: space-between; align-items: center; gap: 12px;
+    }
+    .card-projeto:hover { background: #f5f9ff; border-color: #b8d4f5; }
+    .card-projeto .titulo-projeto { font-weight: bold; color:#222; }
+    .card-projeto .meta-projeto { font-size: 0.8em; color: #666; }
+
+    .fechar-topo { text-align: right; margin-bottom: 8px; }
+    .link-voltar { color:#1565c0; cursor:pointer; font-size:0.9em; font-weight:bold; }
+    .link-voltar:hover { text-decoration: underline; }
+
+    /* ===== Modal / popup ===== */
+    .modal-overlay {
+        display: none; position: fixed; top:0; left:0; width:100%; height:100%;
+        background: rgba(0,0,0,0.45); z-index: 1000;
+        align-items: center; justify-content: center;
+    }
+    .modal-overlay.aberto { display: flex; }
+    .modal-caixa {
+        background: #fff; border-radius: 8px; padding: 22px; width: 90%; max-width: 520px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.25); max-height: 88vh; overflow-y: auto;
+    }
+
+    .aviso-carregando { color:#666; font-style: italic; padding: 20px 0; }
+
+    .badge-atendido {
+        display: inline-block; min-width: 34px; text-align: center;
+        background: #1565c0; color: #fff; font-weight: bold;
+        padding: 6px 10px; border-radius: 5px; cursor: pointer;
+    }
+    .badge-atendido:hover { background: #0d4d99; }
+    .badge-atendido.completo { background: #2e7d32; }
+    .badge-atendido.excedido { background: #b00020; }
+    .input-qtd-pedida { width: 80px; padding: 6px; border: 1px solid #ccc; border-radius: 4px; text-align: right; }
+    .input-tag-evento { width: 100px; padding: 6px; border: 1px solid #ccc; border-radius: 4px; }
+
+    .linha-ferramentas-relatorio {
+        display: flex; align-items: center; gap: 8px; margin-top: 10px; flex-wrap: wrap;
+    }
+    .linha-ferramentas-relatorio select {
+        padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 0.9em;
+    }
+    .btn-icone {
+        border: 1px solid #ccc; background: #fff; border-radius: 6px;
+        width: 36px; height: 36px; font-size: 1.05em; cursor: pointer;
+        display: inline-flex; align-items: center; justify-content: center;
+    }
+    .btn-icone:hover { background: #f0f0f0; }
+    .modal-caixa.larga { max-width: 780px; }
+
+    .linha-atendimento {
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 8px 0; border-bottom: 1px solid #eee; font-size: 0.85em; gap: 8px;
+    }
+    .linha-atendimento:last-child { border-bottom: none; }
+    .linha-atendimento .info-atendimento { flex: 1; }
+    .linha-atendimento .acoes-atendimento { display:flex; gap:6px; flex-shrink:0; }
+
+    .botao-engrenagem {
+        background: #666; color: #fff; border: none; border-radius: 50%;
+        width: 40px; height: 40px; font-size: 1.15em; cursor: pointer; flex-shrink: 0;
+    }
+    .botao-engrenagem:hover { background: #444; }
+</style>
+</head>
+<body>
+
+<div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px;">
+    <div>
+        <h2 style="margin-bottom:4px;">Controle de Estoque &amp; Projetos</h2>
+        <p class="subtitulo">Contêiner &amp; Esquadria — controle de produção, estoque e movimentações</p>
+    </div>
+    <button id="btnConfiguracoes" title="Configurações" class="botao-engrenagem">⚙️</button>
+</div>
+<span class="tag-status" id="tagContagem">carregando...</span>
+
+<div class="abas">
+    <button class="aba-btn ativa" data-aba="estoque">📦 Estoque</button>
+    <button class="aba-btn" data-aba="movimentacao">🧾 Requisição de Saída</button>
+    <button class="aba-btn" data-aba="projetos">🏗️ Projetos</button>
+    <button class="aba-btn" data-aba="relatorios">📊 Relatórios</button>
+</div>
+
+<!-- ===================== ABA ESTOQUE ===================== -->
+<div class="conteudo-aba ativa" id="aba-estoque">
+    <div class="caixa">
+        <div class="linha-busca">
+            <input type="text" id="buscaEstoque" placeholder="Buscar por código ou nome do produto...">
+            <button class="btn btn-azul" id="btnBuscarEstoque">Buscar</button>
+        </div>
+        <button class="btn btn-verde" id="btnNovoProduto" style="margin-top:8px;">+ Novo produto</button>
+    </div>
+
+    <div class="caixa" id="painelNovoProduto" style="display:none;">
+        <h4 style="margin-top:0;">Novo produto</h4>
+        <div class="grade col4">
+            <div class="campo"><label>Código (opcional)</label><input type="text" id="npCodigo" placeholder="auto"></div>
+            <div class="campo" style="grid-column: span 2;"><label>Nome do produto</label><input type="text" id="npNome"></div>
+            <div class="campo"><label>Unidade</label><input type="text" id="npUn" value="UN"></div>
+            <div class="campo"><label>Valor unitário (R$)</label><input type="number" step="0.01" id="npValor"></div>
+            <div class="campo"><label>Estoque inicial</label><input type="number" step="0.01" id="npEstoque" value="0"></div>
+            <div class="campo"><label>Grupo</label><input type="number" id="npGrupo" value="1"></div>
+        </div>
+        <div style="margin-top:10px;">
+            <button class="btn btn-verde" id="btnSalvarProduto">Salvar produto</button>
+            <button class="btn btn-cinza" id="btnCancelarProduto">Sair</button>
+        </div>
+        <span class="status-msg" id="statusNovoProduto"></span>
+    </div>
+
+    <table class="tabela" id="tabelaEstoque">
+        <thead>
+            <tr><th>Código</th><th>Produto</th><th>Un</th><th class="num">Valor (R$)</th><th class="num">Estoque Inicial</th><th class="num">Estoque Atual</th><th class="center">Ações</th></tr>
+        </thead>
+        <tbody id="corpoTabelaEstoque"></tbody>
+    </table>
+    <div class="vazio" id="vazioEstoque" style="display:none;">Nenhum produto encontrado.</div>
+</div>
+
+<!-- ===================== ABA REQUISIÇÃO DE SAÍDA ===================== -->
+<div class="conteudo-aba" id="aba-movimentacao">
+    <div class="caixa">
+        <div class="grade col3">
+            <div class="campo"><label>Projeto</label>
+                <select id="reqProjetoSelect"><option value="">-- selecione um projeto --</option></select>
+            </div>
+            <div class="campo"><label>Tag (código na obra/reforma)</label><input type="text" id="cabTag" placeholder="ex: 112"></div>
+            <div class="campo"><label>Data</label><input type="date" id="cabData"></div>
+        </div>
+        <div class="campo" style="margin-top:10px;">
+            <label>Evento (o que vai custear a reforma/uso)</label>
+            <div class="linha-busca">
+                <input type="text" id="buscaEvento" placeholder="Digite o código ou a descrição do evento...">
+                <button class="btn btn-verde" id="btnNovoEvento" type="button">+ Novo evento</button>
+            </div>
+            <div id="resultadosBuscaEvento"></div>
+            <div id="eventoSelecionado" style="margin-top:6px; font-size:0.9em;"></div>
+        </div>
+    </div>
+
+    <div class="vazio" id="avisoSemProjeto">Selecione um projeto acima (ou crie um novo na aba Projetos) para montar a requisição de saída.</div>
+
+    <div id="blocoRequisicao" style="display:none;">
+        <div class="linha-busca">
+            <input type="text" id="buscaItemProjeto" placeholder="Digite código ou descrição do produto...">
+            <button class="btn btn-azul" id="btnBuscarItemProjeto">Buscar</button>
+        </div>
+        <div id="resultadosBuscaItemProjeto"></div>
+        <span class="status-msg" id="statusItemProjeto"></span>
+
+        <table class="tabela" id="tabelaItensProjeto" style="margin-top:14px;">
+            <thead>
+                <tr><th>Código</th><th>Descrição</th><th>Tag</th><th>Evento</th><th class="num">Valor Unit.</th><th class="num">Qtd. Pedida</th><th class="center">Qtd. Atendida</th><th class="num">Subtotal</th><th class="center">Ações</th></tr>
+            </thead>
+            <tbody id="corpoTabelaItensProjeto"></tbody>
+        </table>
+        <div class="vazio" id="vazioItensProjeto" style="display:none;">Nenhum item adicionado ainda. Busque um produto acima.</div>
+        <div style="text-align:right; margin-top:10px; font-size:1.1em;">
+            Total pedido: <strong id="totalPedidoProjeto">R$ 0,00</strong>
+        </div>
+        <div style="margin-top:14px; display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end;">
+            <button class="btn btn-azul" id="btnPdfResumo">📄 PDF Resumido</button>
+            <button class="btn btn-azul" id="btnPdfDetalhado">📄 PDF Detalhado</button>
+            <button class="btn btn-verde" id="btnExcelResumo">📊 Excel Resumido</button>
+            <button class="btn btn-verde" id="btnExcelDetalhado">📊 Excel Detalhado</button>
+        </div>
+    </div>
+</div>
+
+<!-- ===================== ABA PROJETOS ===================== -->
+<div class="conteudo-aba" id="aba-projetos">
+    <div class="caixa">
+        <div class="grade col3">
+            <div class="campo"><label>Descrição do projeto</label><input type="text" id="projDescricao" placeholder="ex: CONTÊINER LAURA"></div>
+            <div class="campo"><label>Tipo</label>
+                <select id="projTipo">
+                    <option value="conteiner">Contêiner</option>
+                    <option value="esquadria">Esquadria</option>
+                </select>
+            </div>
+            <div class="campo"><label>Data</label><input type="date" id="projData"></div>
+        </div>
+        <div style="margin-top:10px;">
+            <button class="btn btn-verde" id="btnNovoProjeto">+ Criar projeto</button>
+        </div>
+        <span class="status-msg" id="statusProjeto"></span>
+    </div>
+
+    <h4>Projetos</h4>
+    <p class="subtitulo">Clique em um projeto para abrir a requisição de saída dele.</p>
+    <div class="lista-projetos" id="listaProjetos"></div>
+    <div class="vazio" id="vazioProjetos" style="display:none;">Nenhum projeto cadastrado ainda.</div>
+</div>
+
+<!-- ===================== ABA RELATÓRIOS ===================== -->
+<div class="conteudo-aba" id="aba-relatorios">
+
+    <div class="caixa">
+        <h4 style="margin-top:0;">📌 Relatório por Evento <span class="subtitulo" style="font-weight:normal;">(detalhado — produto e data de cada retirada)</span></h4>
+        <div class="linha-busca">
+            <input type="text" id="relBuscaEvento" placeholder="Digite o código ou a descrição do evento...">
+            <button class="btn btn-azul" id="relBtnBuscarEvento">Buscar</button>
+        </div>
+        <div id="relResultadosEvento"></div>
+        <div id="relEventoSelecionado" style="margin-top:6px; font-size:0.9em;"></div>
+        <div class="linha-ferramentas-relatorio">
+            <select id="relEventoFormato">
+                <option value="pdf">PDF</option>
+                <option value="xlsx">Excel</option>
+            </select>
+            <button class="btn-icone" id="relEventoVer" title="Visualizar">👁️</button>
+            <button class="btn-icone" id="relEventoCompartilhar" title="Compartilhar">📤</button>
+            <button class="btn-icone" id="relEventoSalvar" title="Salvar">💾</button>
+        </div>
+    </div>
+
+    <div class="caixa">
+        <h4 style="margin-top:0;">🏷️ Relatório por Tag <span class="subtitulo" style="font-weight:normal;">(detalhado — produto e data de cada retirada)</span></h4>
+        <div class="campo">
+            <input type="text" id="relBuscaTag" list="relListaTags" placeholder="Digite a tag...">
+            <datalist id="relListaTags"></datalist>
+        </div>
+        <div class="linha-ferramentas-relatorio">
+            <select id="relTagFormato">
+                <option value="pdf">PDF</option>
+                <option value="xlsx">Excel</option>
+            </select>
+            <button class="btn-icone" id="relTagVer" title="Visualizar">👁️</button>
+            <button class="btn-icone" id="relTagCompartilhar" title="Compartilhar">📤</button>
+            <button class="btn-icone" id="relTagSalvar" title="Salvar">💾</button>
+        </div>
+    </div>
+
+    <div class="caixa">
+        <h4 style="margin-top:0;">🏗️ Relatório por Projeto</h4>
+        <div class="campo">
+            <select id="relProjetoSelect"><option value="">-- selecione um projeto --</option></select>
+        </div>
+        <div class="linha-ferramentas-relatorio">
+            <select id="relProjetoTipo">
+                <option value="resumo">Resumo</option>
+                <option value="detalhado">Detalhado</option>
+            </select>
+            <select id="relProjetoFormato">
+                <option value="pdf">PDF</option>
+                <option value="xlsx">Excel</option>
+            </select>
+            <button class="btn-icone" id="relProjetoVer" title="Visualizar">👁️</button>
+            <button class="btn-icone" id="relProjetoCompartilhar" title="Compartilhar">📤</button>
+            <button class="btn-icone" id="relProjetoSalvar" title="Salvar">💾</button>
+        </div>
+    </div>
+</div>
+
+<!-- ===================== MODAL / POPUP: Pré-visualização (Excel) ===================== -->
+<!-- ===================== MODAL / POPUP: Histórico do produto ===================== -->
+<div class="modal-overlay" id="modalInfoProduto">
+    <div class="modal-caixa larga">
+        <div id="modalInfoProdutoConteudo"></div>
+        <div style="margin-top:16px; text-align:right;">
+            <button class="btn btn-cinza" id="btnFecharInfoProduto">Sair</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="modalPreview">
+    <div class="modal-caixa larga">
+        <div id="modalPreviewConteudo"></div>
+        <div style="margin-top:16px; text-align:right;">
+            <button class="btn btn-cinza" id="btnFecharPreview">Sair</button>
+        </div>
+    </div>
+</div>
+
+<!-- ===================== MODAL / POPUP: Atender item ===================== -->
+<div class="modal-overlay" id="modalAtender">
+    <div class="modal-caixa">
+        <h4 style="margin-top:0;">Registrar atendimento</h4>
+        <p class="subtitulo" id="modalAtenderProduto" style="margin-bottom:14px;"></p>
+        <div class="grade col2">
+            <div class="campo"><label>Tag</label><input type="text" id="modalAtenderTag"></div>
+            <div class="campo"><label>Evento</label><input type="text" id="modalAtenderEvento"></div>
+        </div>
+        <div class="grade col2" style="margin-top:10px;">
+            <div class="campo"><label>Quantidade atendida agora</label><input type="number" step="0.01" id="modalQtdAtendida"></div>
+            <div class="campo"><label>Quem retirou (responsável)</label><input type="text" id="modalResponsavelRetirada"></div>
+        </div>
+        <div class="campo" style="margin-top:10px;"><label>Observação (opcional)</label><input type="text" id="modalObservacaoRetirada"></div>
+        <div style="margin-top:16px; text-align:right;">
+            <button class="btn btn-cinza" id="btnCancelarAtender">Sair</button>
+            <button class="btn btn-verde" id="btnConfirmarAtender">Confirmar atendimento</button>
+        </div>
+        <span class="status-msg" id="statusModalAtender"></span>
+
+        <div style="margin-top:18px; border-top:1px solid #eee; padding-top:12px;">
+            <h4 style="margin:0 0 8px 0; font-size:0.95em;">Atendimentos já registrados</h4>
+            <div id="listaAtendimentosItem"></div>
+        </div>
+    </div>
+</div>
+
+<!-- ===================== MODAL / POPUP: Editar atendimento ===================== -->
+<div class="modal-overlay" id="modalEditarAtendimento" style="z-index:1001;">
+    <div class="modal-caixa">
+        <h4 style="margin-top:0;">Editar atendimento</h4>
+        <div class="grade col2">
+            <div class="campo"><label>Quantidade atendida</label><input type="number" step="0.01" id="editAtendQtd"></div>
+            <div class="campo"><label>Responsável</label><input type="text" id="editAtendResponsavel"></div>
+        </div>
+        <div class="grade col2" style="margin-top:10px;">
+            <div class="campo"><label>Tag</label><input type="text" id="editAtendTag"></div>
+            <div class="campo"><label>Evento</label><input type="text" id="editAtendEvento"></div>
+        </div>
+        <div class="campo" style="margin-top:10px;"><label>Observação</label><input type="text" id="editAtendObservacao"></div>
+        <div style="margin-top:16px; text-align:right;">
+            <button class="btn btn-cinza" id="btnCancelarEditarAtendimento">Sair</button>
+            <button class="btn btn-verde" id="btnSalvarEditarAtendimento">Salvar</button>
+        </div>
+        <span class="status-msg" id="statusEditarAtendimento"></span>
+    </div>
+</div>
+
+<!-- ===================== MODAL / POPUP: Configurações ===================== -->
+<!-- ===================== MODAL / POPUP: Quantidade ao adicionar produto ===================== -->
+<div class="modal-overlay" id="modalQtdInicial">
+    <div class="modal-caixa">
+        <h4 style="margin-top:0;">Quantidade solicitada</h4>
+        <p class="subtitulo" id="modalQtdInicialProduto" style="margin-bottom:14px;"></p>
+        <div class="campo">
+            <label>Quantidade</label>
+            <input type="number" step="0.01" id="modalQtdInicialValor" value="1">
+        </div>
+        <div style="margin-top:16px; text-align:right;">
+            <button class="btn btn-cinza" id="btnCancelarQtdInicial">Sair</button>
+            <button class="btn btn-verde" id="btnConfirmarQtdInicial">Adicionar</button>
+        </div>
+        <span class="status-msg" id="statusModalQtdInicial"></span>
+    </div>
+</div>
+
+<!-- ===================== MODAL / POPUP: Novo evento ===================== -->
+<div class="modal-overlay" id="modalNovoEvento">
+    <div class="modal-caixa">
+        <h4 style="margin-top:0;">Novo evento</h4>
+        <div class="campo">
+            <label>Código do evento</label>
+            <input type="text" id="novoEventoCodigo" placeholder="ex: 2888">
+        </div>
+        <div class="campo" style="margin-top:10px;">
+            <label>Descrição</label>
+            <input type="text" id="novoEventoDescricao" placeholder="ex: Reforma salão principal">
+        </div>
+        <div style="margin-top:16px; text-align:right;">
+            <button class="btn btn-cinza" id="btnCancelarNovoEvento">Sair</button>
+            <button class="btn btn-verde" id="btnSalvarNovoEvento">Salvar</button>
+        </div>
+        <span class="status-msg" id="statusNovoEvento"></span>
+    </div>
+</div>
+
+<div class="modal-overlay" id="modalConfig">
+    <div class="modal-caixa">
+        <h4 style="margin-top:0;">Configurações</h4>
+        <div class="campo">
+            <label>Project URL (Supabase)</label>
+            <input type="text" id="configSupabaseUrl" placeholder="https://xxxxxxxxxxxx.supabase.co">
+        </div>
+        <div class="campo" style="margin-top:10px;">
+            <label>Chave anon public (Supabase)</label>
+            <input type="text" id="configSupabaseKey" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...">
+        </div>
+        <p class="subtitulo" style="margin-top:8px;">Esses dados ficam salvos neste navegador — não precisa editar o arquivo. Encontre em Project Settings → API no painel do Supabase.</p>
+        <div style="margin-top:16px; text-align:right;">
+            <button class="btn btn-cinza" id="btnCancelarConfig">Sair</button>
+            <button class="btn btn-verde" id="btnSalvarConfig">Salvar</button>
+        </div>
+        <span class="status-msg" id="statusConfig"></span>
+    </div>
+</div>
+
+<script>
+/* ===================== Conexão com o Supabase ===================== */
+/* Fica salva no navegador (localStorage) — configurável pelo ícone de engrenagem no topo. */
+let SUPABASE_URL = localStorage.getItem('estoqueapp_supabase_url') || "COLE_AQUI_A_URL_DO_SEU_PROJETO_SUPABASE";
+let SUPABASE_ANON_KEY = localStorage.getItem('estoqueapp_supabase_key') || "COLE_AQUI_A_CHAVE_ANON_PUBLIC";
+</script>
+<script>
+/* ============================================================
+   Controle de Estoque & Projetos — Contêiner & Esquadria
+   Dados gravados no Supabase (Postgres) via supabase-js.
+   ============================================================ */
+
+let produtos = [];       // [{id, nome, un, valor, grupo, estoqueInicial, estoque, almox}]
+let movimentacoes = [];  // [{id, data, produtoId, tipo, qtd, valorUnit, tag, evento, observacao, responsavel, projetoId, itemProjetoId}]
+let projetos = [];       // [{id, descricao, tipo, data, itens:[{id, projetoId, produtoId, qtdRequisitada, responsavel, observacao}]}]
+let eventos = [];        // [{codigo, descricao}]
+
+let eventoSelecionadoAtual = null;
+let projetoAtualId = null;
+let itemAtualAtendimentoId = null;
+let sb = null; // cliente do Supabase, criado em iniciar()
+
+/* ---------- utilidades ---------- */
+function formatarMoeda(v) {
+    return (Number(v) || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+}
+function hojeISO() {
+    return new Date().toISOString().slice(0, 10);
+}
+function formatarData(v) {
+    if (!v) return '-';
+    const s = String(v);
+    return s.length >= 10 ? s.slice(0, 10) : s;
+}
+function escapeHtml(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+/* ---------- comunicação com o backend (Supabase) ---------- */
+async function chamarGet(acao) {
+    if (acao === 'listarProdutos') {
+        const { data, error } = await sb.from('fabrica_produtos').select('*');
+        if (error) throw error;
+        return data;
+    }
+    if (acao === 'listarMovimentacoes') {
+        const { data, error } = await sb.from('fabrica_movimentacoes').select('*').order('data', { ascending: false }).limit(300);
+        if (error) throw error;
+        return data;
+    }
+    if (acao === 'listarProjetos') {
+        const { data, error } = await sb.from('fabrica_projetos').select('*, fabrica_itens_projeto(*)');
+        if (error) throw error;
+        return (data || []).map(p => ({ ...p, itens: p.fabrica_itens_projeto || [] }));
+    }
+    if (acao === 'listarEventos') {
+        const { data, error } = await sb.from('fabrica_eventos').select('*');
+        if (error) throw error;
+        return data;
+    }
+    throw new Error('ação GET desconhecida: ' + acao);
+}
+
+async function chamarPost(acao, d) {
+    if (acao === 'salvarProduto') {
+        const p = d.produto;
+        const registro = {
+            nome: p.nome, un: p.un, valor: p.valor, grupo: p.grupo,
+            estoque_inicial: p.estoqueInicial, estoque: p.estoque, almox: p.almox || 1
+        };
+        if (p.id) registro.id = p.id;
+        const { error } = await sb.from('fabrica_produtos').upsert(registro);
+        if (error) throw error;
+        return;
+    }
+    if (acao === 'registrarMovimentacao') {
+        const m = d.movimentacao;
+        const { error: e1 } = await sb.from('fabrica_movimentacoes').insert({
+            data: m.data, produto_id: m.produtoId, tipo: m.tipo, qtd: m.qtd, valor_unit: m.valorUnit,
+            tag: m.tag || '', evento: m.evento || '', observacao: m.observacao || '', responsavel: m.responsavel || '',
+            projeto_id: m.projetoId || null, item_projeto_id: m.itemProjetoId || null
+        });
+        if (e1) throw e1;
+        const { error: e2 } = await sb.rpc('fabrica_ajustar_estoque', {
+            p_produto_id: m.produtoId, p_delta: m.tipo === 'entrada' ? Number(m.qtd) : -Number(m.qtd)
+        });
+        if (e2) throw e2;
+        return;
+    }
+    if (acao === 'salvarProjeto') {
+        const p = d.projeto;
+        const { error } = await sb.from('fabrica_projetos').insert({ descricao: p.descricao, tipo: p.tipo, data: p.data });
+        if (error) throw error;
+        return;
+    }
+    if (acao === 'adicionarItemProjeto') {
+        const it = d.item;
+        const { error } = await sb.from('fabrica_itens_projeto').insert({
+            projeto_id: it.projetoId, produto_id: it.produtoId, qtd_requisitada: it.qtdRequisitada,
+            responsavel: it.responsavel || '', observacao: it.observacao || '', tag: it.tag || '', evento: it.evento || ''
+        });
+        if (error) throw error;
+        return;
+    }
+    if (acao === 'atualizarQtdItem') {
+        const { error } = await sb.from('fabrica_itens_projeto').update({ qtd_requisitada: d.novaQtd }).eq('id', d.itemId);
+        if (error) throw error;
+        return;
+    }
+    if (acao === 'removerItemProjeto') {
+        const { error } = await sb.from('fabrica_itens_projeto').delete().eq('id', d.itemId);
+        if (error) throw error;
+        return;
+    }
+    if (acao === 'editarMovimentacao') {
+        const { data: antiga, error: eSel } = await sb.from('fabrica_movimentacoes').select('produto_id,tipo,qtd').eq('id', d.movId).single();
+        if (eSel) throw eSel;
+        const sinal = antiga.tipo === 'entrada' ? 1 : -1;
+        await sb.rpc('fabrica_ajustar_estoque', { p_produto_id: antiga.produto_id, p_delta: -sinal * Number(antiga.qtd) });
+        await sb.rpc('fabrica_ajustar_estoque', { p_produto_id: antiga.produto_id, p_delta: sinal * Number(d.novaQtd) });
+        const upd = { qtd: d.novaQtd };
+        if (d.responsavel != null) upd.responsavel = d.responsavel;
+        if (d.observacao != null) upd.observacao = d.observacao;
+        if (d.tag != null) upd.tag = d.tag;
+        if (d.evento != null) upd.evento = d.evento;
+        const { error } = await sb.from('fabrica_movimentacoes').update(upd).eq('id', d.movId);
+        if (error) throw error;
+        return;
+    }
+    if (acao === 'removerMovimentacao') {
+        const { data: antiga, error: eSel } = await sb.from('fabrica_movimentacoes').select('produto_id,tipo,qtd').eq('id', d.movId).single();
+        if (eSel) throw eSel;
+        const sinal = antiga.tipo === 'entrada' ? 1 : -1;
+        await sb.rpc('fabrica_ajustar_estoque', { p_produto_id: antiga.produto_id, p_delta: -sinal * Number(antiga.qtd) });
+        const { error } = await sb.from('fabrica_movimentacoes').delete().eq('id', d.movId);
+        if (error) throw error;
+        return;
+    }
+    if (acao === 'salvarEvento') {
+        const ev = d.evento;
+        const { error } = await sb.from('fabrica_eventos').upsert({ codigo: ev.codigo, descricao: ev.descricao || '' });
+        if (error) throw error;
+        return;
+    }
+    if (acao === 'atualizarTagEventoItem') {
+        const { error } = await sb.from('fabrica_itens_projeto').update({ tag: d.tag || '', evento: d.evento || '' }).eq('id', d.itemId);
+        if (error) throw error;
+        return;
+    }
+    throw new Error('ação desconhecida: ' + acao);
+}
+
+/* ---------- carregamento de dados ---------- */
+async function carregarProdutos() {
+    const lista = await chamarGet('listarProdutos');
+    produtos = (lista || []).map(p => ({
+        id: Number(p.id),
+        nome: String(p.nome || ''),
+        un: String(p.un || 'UN'),
+        valor: Number(p.valor) || 0,
+        grupo: Number(p.grupo) || 1,
+        estoqueInicial: Number(p.estoque_inicial) || 0,
+        estoque: Number(p.estoque) || 0,
+        almox: Number(p.almox) || 1
+    }));
+}
+
+async function carregarMovimentacoes() {
+    const lista = await chamarGet('listarMovimentacoes');
+    movimentacoes = (lista || []).map(m => ({
+        id: Number(m.id),
+        data: formatarData(m.data),
+        produtoId: Number(m.produto_id),
+        tipo: m.tipo,
+        qtd: Number(m.qtd) || 0,
+        valorUnit: Number(m.valor_unit) || 0,
+        tag: m.tag || '',
+        evento: m.evento || '',
+        observacao: m.observacao || '',
+        responsavel: m.responsavel || '',
+        projetoId: m.projeto_id || null,
+        itemProjetoId: m.item_projeto_id || null
+    }));
+}
+
+async function carregarProjetos() {
+    const lista = await chamarGet('listarProjetos');
+    projetos = (lista || []).map(p => ({
+        id: Number(p.id),
+        descricao: String(p.descricao || ''),
+        tipo: p.tipo,
+        data: formatarData(p.data),
+        itens: (p.itens || []).map(i => ({
+            id: Number(i.id),
+            projetoId: Number(i.projeto_id),
+            produtoId: Number(i.produto_id),
+            qtdRequisitada: Number(i.qtd_requisitada) || 0,
+            responsavel: i.responsavel || '',
+            observacao: i.observacao || '',
+            tag: i.tag || '',
+            evento: i.evento || ''
+        }))
+    }));
+}
+
+async function carregarEventos() {
+    const lista = await chamarGet('listarEventos');
+    eventos = (lista || []).map(e => ({
+        codigo: String(e.codigo != null ? e.codigo : ''),
+        descricao: String(e.descricao || '')
+    }));
+}
+
+async function carregarTudo() {
+    document.getElementById('tagContagem').textContent = 'carregando dados do Supabase...';
+    try {
+        await Promise.all([carregarProdutos(), carregarMovimentacoes(), carregarProjetos(), carregarEventos()]);
+    } catch (err) {
+        console.error(err);
+        document.getElementById('tagContagem').textContent = '⚠️ Não foi possível carregar os dados. Confira a URL/chave do Supabase.';
+        return;
+    }
+    atualizarTagContagem();
+}
+
+function atualizarTagContagem() {
+    document.getElementById('tagContagem').textContent =
+        `${produtos.length} produtos · ${movimentacoes.length} movimentações · ${projetos.length} projetos`;
+}
+
+/* ---------- abas ---------- */
+document.querySelectorAll('.aba-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.aba-btn').forEach(b => b.classList.remove('ativa'));
+        document.querySelectorAll('.conteudo-aba').forEach(c => c.classList.remove('ativa'));
+        btn.classList.add('ativa');
+        document.getElementById('aba-' + btn.dataset.aba).classList.add('ativa');
+        if (btn.dataset.aba === 'relatorios') popularRelatoriosSelects();
+    });
+});
+
+function popularRelatoriosSelects() {
+    popularSelectProjetos(document.getElementById('relProjetoSelect'));
+    const tags = [...new Set(movimentacoes.map(m => m.tag).filter(Boolean))].sort();
+    document.getElementById('relListaTags').innerHTML = tags.map(t => `<option value="${escapeHtml(t)}"></option>`).join('');
+}
+
+/* ============================================================
+   ABA ESTOQUE
+   ============================================================ */
+function buscarProdutos(termo) {
+    termo = (termo || '').trim().toUpperCase();
+    if (!termo) return produtos.slice(0, 60);
+    const palavras = termo.split(/\s+/).filter(Boolean);
+    return produtos.filter(p => {
+        const texto = (String(p.id) + ' ' + p.nome).toUpperCase();
+        return palavras.every(palavra => texto.includes(palavra));
+    }).slice(0, 60);
+}
+
+function renderizarTabelaEstoque(lista) {
+    const corpo = document.getElementById('corpoTabelaEstoque');
+    const vazio = document.getElementById('vazioEstoque');
+    corpo.innerHTML = '';
+    if (!lista.length) { vazio.style.display = 'block'; return; }
+    vazio.style.display = 'none';
+    lista.forEach(p => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${p.id}</td>
+            <td>${escapeHtml(p.nome)}</td>
+            <td>${escapeHtml(p.un)}</td>
+            <td class="num">${formatarMoeda(p.valor)}</td>
+            <td class="num">${Number(p.estoqueInicial).toLocaleString('pt-BR')}</td>
+            <td class="num">${Number(p.estoque).toLocaleString('pt-BR')}</td>
+            <td class="center">
+                <button class="btn btn-cinza btn-pequeno" data-editar="${p.id}">Editar</button>
+                <button class="btn-icone" data-info="${p.id}" title="Ver movimentos">ℹ️</button>
+            </td>
+        `;
+        corpo.appendChild(tr);
+    });
+    corpo.querySelectorAll('[data-editar]').forEach(btn => {
+        btn.addEventListener('click', () => editarProdutoPrompt(Number(btn.dataset.editar)));
+    });
+    corpo.querySelectorAll('[data-info]').forEach(btn => {
+        btn.addEventListener('click', () => abrirInfoProduto(Number(btn.dataset.info)));
+    });
+}
+
+async function editarProdutoPrompt(id) {
+    const p = produtos.find(x => x.id === id);
+    if (!p) return;
+    const novoValor = prompt(`Novo valor unitário para "${p.nome}":`, p.valor);
+    if (novoValor === null) return;
+    const novoEstoque = prompt(`Novo estoque ATUAL para "${p.nome}" (o estoque inicial não muda):`, p.estoque);
+    if (novoEstoque === null) return;
+    p.valor = parseFloat(String(novoValor).replace(',', '.')) || p.valor;
+    p.estoque = parseFloat(String(novoEstoque).replace(',', '.'));
+    await chamarPost('salvarProduto', { produto: p });
+    await carregarProdutos();
+    renderizarTabelaEstoque(buscarProdutos(document.getElementById('buscaEstoque').value));
+    atualizarTagContagem();
+}
+
+/* ---------- popup: histórico de movimentos de um produto ---------- */
+function abrirInfoProduto(produtoId) {
+    const p = produtos.find(x => x.id === produtoId);
+    if (!p) return;
+
+    const movs = movimentacoes
+        .filter(m => m.produtoId === produtoId)
+        .sort((a, b) => (b.data || '').localeCompare(a.data || ''));
+
+    let html = `
+        <h4 style="margin-top:0;">${escapeHtml(p.nome)}</h4>
+        <p class="subtitulo" style="margin-bottom:14px;">
+            #${p.id} · Estoque inicial: ${Number(p.estoqueInicial).toLocaleString('pt-BR')} · Estoque atual: ${Number(p.estoque).toLocaleString('pt-BR')} ${escapeHtml(p.un)}
+        </p>
+    `;
+
+    if (!movs.length) {
+        html += '<div class="vazio" style="padding:10px 0;">Nenhuma movimentação registrada para este produto ainda.</div>';
+    } else {
+        html += `
+            <div style="max-height:55vh; overflow:auto;">
+            <table class="tabela">
+                <thead>
+                    <tr><th>Data</th><th>Tipo</th><th class="num">Qtd</th><th class="num">Vlr Unit.</th><th>Tag</th><th>Evento</th><th>Projeto</th><th>Responsável</th><th>Obs.</th></tr>
+                </thead>
+                <tbody>
+        `;
+        movs.forEach(m => {
+            const proj = m.projetoId ? projetos.find(pr => String(pr.id) === String(m.projetoId)) : null;
+            html += `
+                <tr>
+                    <td>${m.data}</td>
+                    <td><span class="pill ${m.tipo === 'entrada' ? 'pill-entrada' : 'pill-saida'}">${m.tipo === 'entrada' ? 'Entrada' : 'Saída'}</span></td>
+                    <td class="num">${Number(m.qtd).toLocaleString('pt-BR')}</td>
+                    <td class="num">${formatarMoeda(m.valorUnit)}</td>
+                    <td>${escapeHtml(m.tag) || '-'}</td>
+                    <td>${escapeHtml(m.evento) || '-'}</td>
+                    <td>${proj ? escapeHtml(proj.descricao) : '-'}</td>
+                    <td>${escapeHtml(m.responsavel) || '-'}</td>
+                    <td>${escapeHtml(m.observacao) || '-'}</td>
+                </tr>
+            `;
+        });
+        html += '</tbody></table></div>';
+    }
+
+    document.getElementById('modalInfoProdutoConteudo').innerHTML = html;
+    document.getElementById('modalInfoProduto').classList.add('aberto');
+}
+
+document.getElementById('btnFecharInfoProduto').addEventListener('click', () => {
+    document.getElementById('modalInfoProduto').classList.remove('aberto');
+});
+
+document.getElementById('btnBuscarEstoque').addEventListener('click', () => {
+    renderizarTabelaEstoque(buscarProdutos(document.getElementById('buscaEstoque').value));
+});
+document.getElementById('buscaEstoque').addEventListener('keydown', e => {
+    if (e.key === 'Enter') document.getElementById('btnBuscarEstoque').click();
+});
+document.getElementById('buscaEstoque').addEventListener('input', () => {
+    renderizarTabelaEstoque(buscarProdutos(document.getElementById('buscaEstoque').value));
+});
+
+document.getElementById('btnNovoProduto').addEventListener('click', () => {
+    document.getElementById('painelNovoProduto').style.display = 'block';
+});
+document.getElementById('btnCancelarProduto').addEventListener('click', () => {
+    document.getElementById('painelNovoProduto').style.display = 'none';
+});
+document.getElementById('btnSalvarProduto').addEventListener('click', async () => {
+    const statusEl = document.getElementById('statusNovoProduto');
+    const nome = document.getElementById('npNome').value.trim();
+    if (!nome) {
+        statusEl.className = 'status-msg erro';
+        statusEl.textContent = 'Informe o nome do produto.';
+        return;
+    }
+    const codigo = document.getElementById('npCodigo').value.trim();
+    if (codigo && produtos.some(p => p.id === Number(codigo))) {
+        statusEl.className = 'status-msg erro';
+        statusEl.textContent = 'Já existe um produto com esse código.';
+        return;
+    }
+    const estoqueInicial = parseFloat(document.getElementById('npEstoque').value) || 0;
+    const novo = {
+        id: codigo ? Number(codigo) : null, // null = backend gera o próximo código
+        nome: nome.toUpperCase(),
+        valor: parseFloat(document.getElementById('npValor').value) || 0,
+        un: document.getElementById('npUn').value.trim().toUpperCase() || 'UN',
+        grupo: parseInt(document.getElementById('npGrupo').value) || 1,
+        estoqueInicial: estoqueInicial,
+        estoque: estoqueInicial,
+        almox: 1
+    };
+    statusEl.className = '';
+    statusEl.textContent = 'Salvando...';
+    await chamarPost('salvarProduto', { produto: novo });
+    await carregarProdutos();
+    atualizarTagContagem();
+    statusEl.className = 'status-msg sucesso';
+    statusEl.textContent = '✅ Produto salvo.';
+    ['npCodigo','npNome','npValor'].forEach(id2 => document.getElementById(id2).value = '');
+    document.getElementById('npEstoque').value = 0;
+    renderizarTabelaEstoque(buscarProdutos(document.getElementById('buscaEstoque').value));
+    setTimeout(() => { document.getElementById('painelNovoProduto').style.display = 'none'; statusEl.textContent=''; }, 1200);
+});
+
+/* ============================================================
+   ABA MOVIMENTAÇÃO
+   ============================================================ */
+function renderizarResultadosBusca(containerId, termo, aoSelecionar) {
+    const el = document.getElementById(containerId);
+    const lista = buscarProdutos(termo);
+    if (!lista.length) {
+        el.innerHTML = '<div class="item-resultado">Nenhum produto encontrado.</div>';
+        el.classList.add('aberto');
+        return;
+    }
+    el.innerHTML = '';
+    lista.forEach(p => {
+        const div = document.createElement('div');
+        div.className = 'item-resultado';
+        const estoqueClasse = p.estoque <= 0 ? 'estoque-baixo' : '';
+        div.innerHTML = `
+            <div class="info-resultado">
+                <span class="cod">#${p.id}</span> — ${escapeHtml(p.nome)}<br>
+                <span class="preco">${formatarMoeda(p.valor)}</span> · <span class="${estoqueClasse}">estoque: ${Number(p.estoque).toLocaleString('pt-BR')}</span>
+            </div>
+            <button class="btn btn-verde btn-pequeno">Selecionar</button>
+        `;
+        div.querySelector('button').addEventListener('click', () => aoSelecionar(p));
+        el.appendChild(div);
+    });
+    el.classList.add('aberto');
+}
+
+function popularSelectProjetos(selectEl) {
+    const atual = selectEl.value;
+    selectEl.innerHTML = '<option value="">-- selecione um projeto --</option>';
+    projetos.forEach(p => {
+        const opt = document.createElement('option');
+        opt.value = p.id;
+        opt.textContent = `${p.descricao} (${p.tipo})`;
+        selectEl.appendChild(opt);
+    });
+    selectEl.value = atual;
+}
+
+/* ============================================================
+   ABA PROJETOS
+   ============================================================ */
+document.getElementById('projData').value = hojeISO();
+document.getElementById('cabData').value = hojeISO();
+
+document.getElementById('btnNovoProjeto').addEventListener('click', async () => {
+    const statusEl = document.getElementById('statusProjeto');
+    const descricao = document.getElementById('projDescricao').value.trim();
+    if (!descricao) {
+        statusEl.className = 'status-msg erro';
+        statusEl.textContent = 'Informe a descrição do projeto.';
+        return;
+    }
+    const novo = {
+        descricao: descricao.toUpperCase(),
+        tipo: document.getElementById('projTipo').value,
+        data: document.getElementById('projData').value || hojeISO()
+    };
+    statusEl.className = '';
+    statusEl.textContent = 'Salvando...';
+    await chamarPost('salvarProjeto', { projeto: novo });
+    await carregarProjetos();
+    atualizarTagContagem();
+    statusEl.className = 'status-msg sucesso';
+    statusEl.textContent = '✅ Projeto criado.';
+    document.getElementById('projDescricao').value = '';
+    renderizarListaProjetos();
+    setTimeout(() => statusEl.textContent = '', 1500);
+});
+
+function totaisProjeto(proj) {
+    let requisitado = 0, entregue = 0;
+    (proj.itens || []).forEach(item => {
+        requisitado += item.qtdRequisitada;
+        entregue += entreguePorItem(item.id);
+    });
+    return { requisitado, entregue };
+}
+
+function entreguePorItem(itemId) {
+    return movimentacoes
+        .filter(m => String(m.itemProjetoId) === String(itemId) && m.tipo === 'saida')
+        .reduce((s, m) => s + Number(m.qtd), 0);
+}
+
+function renderizarListaProjetos() {
+    const el = document.getElementById('listaProjetos');
+    const vazio = document.getElementById('vazioProjetos');
+    el.innerHTML = '';
+    if (!projetos.length) { vazio.style.display = 'block'; return; }
+    vazio.style.display = 'none';
+    projetos.forEach(proj => {
+        const { requisitado, entregue } = totaisProjeto(proj);
+        const pct = requisitado > 0 ? Math.min(100, Math.round(entregue / requisitado * 100)) : 0;
+        const div = document.createElement('div');
+        div.className = 'card-projeto';
+        div.innerHTML = `
+            <div>
+                <div class="titulo-projeto">${escapeHtml(proj.descricao)} <span class="pill" style="background:#eef2ff;color:#1565c0;">${proj.tipo === 'conteiner' ? 'Contêiner' : 'Esquadria'}</span></div>
+                <div class="meta-projeto">${(proj.itens || []).length} itens · ${entregue}/${requisitado} entregue (${pct}%) · criado em ${proj.data}</div>
+            </div>
+            <div style="width:120px;"><div class="barra-progresso"><div class="barra-progresso-fill ${entregue > requisitado ? 'excedido' : ''}" style="width:${pct}%;"></div></div></div>
+        `;
+        div.addEventListener('click', () => abrirRequisicao(proj.id));
+        el.appendChild(div);
+    });
+}
+
+function ultimoTagEventoDoProjeto(proj) {
+    const itensOrdenados = [...(proj.itens || [])].sort((a, b) => b.id - a.id);
+    const tagItem = itensOrdenados.find(i => i.tag);
+    const eventoItem = itensOrdenados.find(i => i.evento);
+    return {
+        tag: tagItem ? tagItem.tag : '',
+        evento: eventoItem ? eventoItem.evento : ''
+    };
+}
+
+function aplicarPadraoTagEventoSeVazio(proj) {
+    if (!proj) return;
+    const ultimos = ultimoTagEventoDoProjeto(proj);
+    const tagInput = document.getElementById('cabTag');
+    if (!tagInput.value.trim() && ultimos.tag) {
+        tagInput.value = ultimos.tag;
+    }
+    if (!eventoSelecionadoAtual && ultimos.evento) {
+        const ev = eventos.find(e => e.codigo === ultimos.evento) || { codigo: ultimos.evento, descricao: '' };
+        selecionarEvento(ev);
+    }
+}
+
+function abrirRequisicao(id) {
+    projetoAtualId = id;
+    // reseta o cabeçalho de contexto (tag/evento/data) para cada visita
+    document.getElementById('cabTag').value = '';
+    document.getElementById('cabData').value = hojeISO();
+    document.getElementById('buscaEvento').value = '';
+    document.getElementById('eventoSelecionado').innerHTML = '';
+    document.getElementById('resultadosBuscaEvento').classList.remove('aberto');
+    eventoSelecionadoAtual = null;
+
+    // troca para a aba "Requisição de Saída"
+    document.querySelectorAll('.aba-btn').forEach(b => b.classList.remove('ativa'));
+    document.querySelectorAll('.conteudo-aba').forEach(c => c.classList.remove('ativa'));
+    document.querySelector('.aba-btn[data-aba="movimentacao"]').classList.add('ativa');
+    document.getElementById('aba-movimentacao').classList.add('ativa');
+
+    const select = document.getElementById('reqProjetoSelect');
+    popularSelectProjetos(select);
+    select.value = id;
+
+    const proj = projetos.find(p => p.id === id);
+    aplicarPadraoTagEventoSeVazio(proj);
+
+    renderizarRequisicao(id);
+}
+
+document.getElementById('reqProjetoSelect').addEventListener('change', () => {
+    const valor = document.getElementById('reqProjetoSelect').value;
+    projetoAtualId = valor ? Number(valor) : null;
+    const proj = projetos.find(p => p.id === projetoAtualId);
+    aplicarPadraoTagEventoSeVazio(proj);
+    renderizarRequisicao(projetoAtualId);
+});
+
+function renderizarRequisicao(id) {
+    const bloco = document.getElementById('blocoRequisicao');
+    const aviso = document.getElementById('avisoSemProjeto');
+    const proj = projetos.find(p => p.id === id);
+    if (!proj) {
+        bloco.style.display = 'none';
+        aviso.style.display = 'block';
+        return;
+    }
+    aviso.style.display = 'none';
+    bloco.style.display = 'block';
+
+    const corpo = document.getElementById('corpoTabelaItensProjeto');
+    const vazio = document.getElementById('vazioItensProjeto');
+    corpo.innerHTML = '';
+    let totalPedido = 0;
+    if (!(proj.itens || []).length) { vazio.style.display = 'block'; }
+    else {
+        vazio.style.display = 'none';
+        proj.itens.forEach(item => {
+            const prod = produtos.find(p => p.id === item.produtoId);
+            const ent = entreguePorItem(item.id);
+            const subtotal = item.qtdRequisitada * (prod ? prod.valor : 0);
+            totalPedido += subtotal;
+            let classeBadge = '';
+            if (ent >= item.qtdRequisitada && item.qtdRequisitada > 0) classeBadge = ent > item.qtdRequisitada ? 'excedido' : 'completo';
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${prod ? prod.id : item.produtoId}</td>
+                <td>${prod ? escapeHtml(prod.nome) : ('#' + item.produtoId)}</td>
+                <td><input type="text" class="input-tag-evento" value="${escapeHtml(item.tag)}" data-tag-item="${item.id}"></td>
+                <td><input type="text" class="input-tag-evento" value="${escapeHtml(item.evento)}" data-evento-item="${item.id}"></td>
+                <td class="num">${formatarMoeda(prod ? prod.valor : 0)}</td>
+                <td class="num"><input type="number" step="0.01" class="input-qtd-pedida" value="${item.qtdRequisitada}" data-qtd-item="${item.id}"></td>
+                <td class="center"><span class="badge-atendido ${classeBadge}" data-atender="${item.id}">${ent}</span></td>
+                <td class="num">${formatarMoeda(subtotal)}</td>
+                <td class="center"><button class="btn btn-vermelho btn-pequeno" data-remover-item="${item.id}">×</button></td>
+            `;
+            corpo.appendChild(tr);
+        });
+        corpo.querySelectorAll('[data-remover-item]').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                if (!confirm('Remover este item da requisição? (Movimentações já registradas não serão apagadas.)')) return;
+                await chamarPost('removerItemProjeto', { itemId: Number(btn.dataset.removerItem) });
+                await carregarProjetos();
+                renderizarRequisicao(id);
+                renderizarListaProjetos();
+            });
+        });
+        corpo.querySelectorAll('[data-atender]').forEach(btn => {
+            btn.addEventListener('click', () => abrirModalAtender(Number(btn.dataset.atender)));
+        });
+        corpo.querySelectorAll('[data-qtd-item]').forEach(inp => {
+            inp.addEventListener('change', async () => {
+                const novaQtd = parseFloat(inp.value) || 0;
+                await chamarPost('atualizarQtdItem', { itemId: Number(inp.dataset.qtdItem), novaQtd });
+                await carregarProjetos();
+                renderizarRequisicao(id);
+                renderizarListaProjetos();
+            });
+        });
+        corpo.querySelectorAll('[data-tag-item]').forEach(inp => {
+            inp.addEventListener('change', async () => {
+                const itemId = Number(inp.dataset.tagItem);
+                const itemAtual = proj.itens.find(i => i.id === itemId);
+                await chamarPost('atualizarTagEventoItem', { itemId, tag: inp.value.trim(), evento: itemAtual ? itemAtual.evento : '' });
+                await carregarProjetos();
+                renderizarRequisicao(id);
+            });
+        });
+        corpo.querySelectorAll('[data-evento-item]').forEach(inp => {
+            inp.addEventListener('change', async () => {
+                const itemId = Number(inp.dataset.eventoItem);
+                const itemAtual = proj.itens.find(i => i.id === itemId);
+                await chamarPost('atualizarTagEventoItem', { itemId, tag: itemAtual ? itemAtual.tag : '', evento: inp.value.trim() });
+                await carregarProjetos();
+                renderizarRequisicao(id);
+            });
+        });
+    }
+    document.getElementById('totalPedidoProjeto').textContent = formatarMoeda(totalPedido);
+}
+
+/* ---------- busca/seleção de evento (aba Projetos) ---------- */
+function buscarEventos(termo) {
+    termo = (termo || '').trim().toUpperCase();
+    if (!termo) return eventos.slice(0, 30);
+    const palavras = termo.split(/\s+/).filter(Boolean);
+    return eventos.filter(ev => {
+        const texto = (ev.codigo + ' ' + ev.descricao).toUpperCase();
+        return palavras.every(p => texto.includes(p));
+    }).slice(0, 30);
+}
+
+function renderizarResultadosEvento(termo) {
+    const el = document.getElementById('resultadosBuscaEvento');
+    const lista = buscarEventos(termo);
+    if (!lista.length) {
+        el.innerHTML = '<div class="item-resultado">Nenhum evento encontrado.</div>';
+        el.classList.add('aberto');
+        return;
+    }
+    el.innerHTML = '';
+    lista.forEach(ev => {
+        const div = document.createElement('div');
+        div.className = 'item-resultado';
+        div.innerHTML = `
+            <div class="info-resultado"><span class="cod">${escapeHtml(ev.codigo)}</span> — ${escapeHtml(ev.descricao)}</div>
+            <button class="btn btn-verde btn-pequeno">Selecionar</button>
+        `;
+        div.querySelector('button').addEventListener('click', () => selecionarEvento(ev));
+        el.appendChild(div);
+    });
+    el.classList.add('aberto');
+}
+
+function selecionarEvento(ev) {
+    eventoSelecionadoAtual = ev;
+    document.getElementById('eventoSelecionado').innerHTML =
+        `Selecionado: <strong>${escapeHtml(ev.codigo)} — ${escapeHtml(ev.descricao)}</strong>`;
+    document.getElementById('resultadosBuscaEvento').classList.remove('aberto');
+    document.getElementById('buscaEvento').value = '';
+}
+
+document.getElementById('buscaEvento').addEventListener('input', () => {
+    const termo = document.getElementById('buscaEvento').value;
+    if (termo.trim()) renderizarResultadosEvento(termo);
+    else document.getElementById('resultadosBuscaEvento').classList.remove('aberto');
+});
+document.getElementById('buscaEvento').addEventListener('keydown', e => {
+    if (e.key === 'Enter') renderizarResultadosEvento(document.getElementById('buscaEvento').value);
+});
+
+/* ---------- popup: novo evento ---------- */
+document.getElementById('btnNovoEvento').addEventListener('click', () => {
+    document.getElementById('novoEventoCodigo').value = document.getElementById('buscaEvento').value.trim();
+    document.getElementById('novoEventoDescricao').value = '';
+    document.getElementById('statusNovoEvento').textContent = '';
+    document.getElementById('modalNovoEvento').classList.add('aberto');
+});
+
+document.getElementById('btnCancelarNovoEvento').addEventListener('click', () => {
+    document.getElementById('modalNovoEvento').classList.remove('aberto');
+});
+
+document.getElementById('btnSalvarNovoEvento').addEventListener('click', async () => {
+    const statusEl = document.getElementById('statusNovoEvento');
+    const codigo = document.getElementById('novoEventoCodigo').value.trim();
+    const descricao = document.getElementById('novoEventoDescricao').value.trim();
+    if (!codigo) {
+        statusEl.className = 'status-msg erro';
+        statusEl.textContent = 'Informe o código do evento.';
+        return;
+    }
+    if (eventos.some(e => e.codigo === codigo)) {
+        statusEl.className = 'status-msg erro';
+        statusEl.textContent = 'Já existe um evento com esse código.';
+        return;
+    }
+    statusEl.className = '';
+    statusEl.textContent = 'Salvando...';
+    try {
+        await chamarPost('salvarEvento', { evento: { codigo, descricao } });
+        await carregarEventos();
+        selecionarEvento({ codigo, descricao });
+        document.getElementById('modalNovoEvento').classList.remove('aberto');
+    } catch (err) {
+        console.error(err);
+        statusEl.className = 'status-msg erro';
+        statusEl.textContent = '⚠️ ' + err.message;
+    }
+});
+
+document.getElementById('btnBuscarItemProjeto').addEventListener('click', () => {
+    renderizarResultadosBusca('resultadosBuscaItemProjeto', document.getElementById('buscaItemProjeto').value, adicionarProdutoAoProjeto);
+});
+document.getElementById('buscaItemProjeto').addEventListener('keydown', e => {
+    if (e.key === 'Enter') document.getElementById('btnBuscarItemProjeto').click();
+});
+document.getElementById('buscaItemProjeto').addEventListener('input', () => {
+    const termo = document.getElementById('buscaItemProjeto').value;
+    if (termo.trim()) renderizarResultadosBusca('resultadosBuscaItemProjeto', termo, adicionarProdutoAoProjeto);
+    else document.getElementById('resultadosBuscaItemProjeto').classList.remove('aberto');
+});
+
+let produtoPendenteAdicionar = null;
+
+function adicionarProdutoAoProjeto(p) {
+    const statusEl = document.getElementById('statusItemProjeto');
+    const proj = projetos.find(x => x.id === projetoAtualId);
+    if (!proj) {
+        statusEl.className = 'status-msg erro';
+        statusEl.textContent = 'Selecione um projeto antes de adicionar produtos.';
+        return;
+    }
+    const existente = proj.itens.find(i => i.produtoId === p.id);
+
+    const resultadosEl = document.getElementById('resultadosBuscaItemProjeto');
+    resultadosEl.classList.remove('aberto');
+    resultadosEl.innerHTML = '';
+    document.getElementById('buscaItemProjeto').value = '';
+    statusEl.className = '';
+    statusEl.textContent = '';
+
+    if (existente) {
+        const confirmar = confirm(
+            `O produto "${p.nome}" já está nesta requisição (tag: ${existente.tag || '-'} · evento: ${existente.evento || '-'}).\n\nDeseja adicionar mesmo assim como uma nova linha?`
+        );
+        if (!confirmar) return;
+    }
+
+    produtoPendenteAdicionar = p;
+    document.getElementById('modalQtdInicialProduto').textContent = `#${p.id} — ${p.nome}`;
+    document.getElementById('modalQtdInicialValor').value = 1;
+    document.getElementById('statusModalQtdInicial').textContent = '';
+    document.getElementById('modalQtdInicial').classList.add('aberto');
+    document.getElementById('modalQtdInicialValor').focus();
+    document.getElementById('modalQtdInicialValor').select();
+}
+
+document.getElementById('btnCancelarQtdInicial').addEventListener('click', () => {
+    document.getElementById('modalQtdInicial').classList.remove('aberto');
+    produtoPendenteAdicionar = null;
+});
+
+document.getElementById('modalQtdInicialValor').addEventListener('keydown', e => {
+    if (e.key === 'Enter') document.getElementById('btnConfirmarQtdInicial').click();
+});
+
+document.getElementById('btnConfirmarQtdInicial').addEventListener('click', async () => {
+    const statusModalEl = document.getElementById('statusModalQtdInicial');
+    const statusEl = document.getElementById('statusItemProjeto');
+    const p = produtoPendenteAdicionar;
+    if (!p) return;
+    const qtd = parseFloat(document.getElementById('modalQtdInicialValor').value);
+    if (!qtd || qtd <= 0) {
+        statusModalEl.className = 'status-msg erro';
+        statusModalEl.textContent = 'Informe uma quantidade válida.';
+        return;
+    }
+
+    statusModalEl.className = '';
+    statusModalEl.textContent = 'Salvando...';
+
+    try {
+        await chamarPost('adicionarItemProjeto', {
+            item: {
+                projetoId: projetoAtualId,
+                produtoId: p.id,
+                qtdRequisitada: qtd,
+                responsavel: '',
+                observacao: '',
+                tag: document.getElementById('cabTag').value.trim(),
+                evento: eventoSelecionadoAtual ? eventoSelecionadoAtual.codigo : ''
+            }
+        });
+        await carregarProjetos();
+        document.getElementById('modalQtdInicial').classList.remove('aberto');
+        produtoPendenteAdicionar = null;
+        statusEl.className = 'status-msg sucesso';
+        statusEl.textContent = '✅ Produto adicionado à lista.';
+        renderizarRequisicao(projetoAtualId);
+        renderizarListaProjetos();
+        setTimeout(() => statusEl.textContent = '', 1200);
+    } catch (err) {
+        console.error('Erro ao adicionar produto à requisição:', err);
+        statusModalEl.className = 'status-msg erro';
+        statusModalEl.textContent = '⚠️ ' + err.message;
+    }
+});
+
+
+/* ============================================================
+   MODAL / POPUP: Atender item do projeto
+   (abre uma janela indicando a quantidade atendida e quem retirou;
+   ao confirmar, grava a operação na tabela de movimentação)
+   ============================================================ */
+function abrirModalAtender(itemId) {
+    const proj = projetos.find(p => p.id === projetoAtualId);
+    const item = proj.itens.find(i => i.id === itemId);
+    const prod = produtos.find(p => p.id === item.produtoId);
+    const ent = entreguePorItem(itemId);
+    const restante = item.qtdRequisitada - ent;
+
+    itemAtualAtendimentoId = itemId;
+    document.getElementById('modalAtenderProduto').innerHTML =
+        `<strong>${escapeHtml(prod ? prod.nome : '#' + item.produtoId)}</strong><br>
+         Requisitado: ${item.qtdRequisitada} · já entregue: ${ent} · restante: ${restante}`;
+    document.getElementById('modalAtenderTag').value = item.tag || '';
+    document.getElementById('modalAtenderEvento').value = item.evento || '';
+    document.getElementById('modalQtdAtendida').value = restante > 0 ? restante : '';
+    document.getElementById('modalResponsavelRetirada').value = '';
+    document.getElementById('modalObservacaoRetirada').value = '';
+    document.getElementById('statusModalAtender').textContent = '';
+    renderizarListaAtendimentosItem(itemId);
+    document.getElementById('modalAtender').classList.add('aberto');
+}
+
+function renderizarListaAtendimentosItem(itemId) {
+    const el = document.getElementById('listaAtendimentosItem');
+    const lista = movimentacoes
+        .filter(m => String(m.itemProjetoId) === String(itemId) && m.tipo === 'saida')
+        .sort((a, b) => (b.data || '').localeCompare(a.data || ''));
+
+    if (!lista.length) {
+        el.innerHTML = '<div class="vazio" style="padding:6px 0;">Nenhum atendimento registrado ainda para este item.</div>';
+        return;
+    }
+    el.innerHTML = '';
+    lista.forEach(m => {
+        const div = document.createElement('div');
+        div.className = 'linha-atendimento';
+        div.innerHTML = `
+            <div class="info-atendimento">
+                <strong>${Number(m.qtd).toLocaleString('pt-BR')}</strong> em ${m.data} — ${escapeHtml(m.responsavel) || '-'}
+                ${m.observacao ? `<br><span style="color:#666;">${escapeHtml(m.observacao)}</span>` : ''}
+            </div>
+            <div class="acoes-atendimento">
+                <button class="btn btn-cinza btn-pequeno" data-editar-mov="${m.id}">Editar</button>
+                <button class="btn btn-vermelho btn-pequeno" data-remover-mov="${m.id}">Excluir</button>
+            </div>
+        `;
+        el.appendChild(div);
+    });
+
+    el.querySelectorAll('[data-editar-mov]').forEach(btn => {
+        btn.addEventListener('click', () => abrirModalEditarAtendimento(Number(btn.dataset.editarMov), itemId));
+    });
+    el.querySelectorAll('[data-remover-mov]').forEach(btn => {
+        btn.addEventListener('click', () => excluirAtendimento(Number(btn.dataset.removerMov), itemId));
+    });
+}
+
+let movAtualEdicaoId = null;
+let itemAtualEdicaoId = null;
+
+function abrirModalEditarAtendimento(movId, itemId) {
+    const mov = movimentacoes.find(m => m.id === movId);
+    if (!mov) return;
+    movAtualEdicaoId = movId;
+    itemAtualEdicaoId = itemId;
+    document.getElementById('editAtendQtd').value = mov.qtd;
+    document.getElementById('editAtendResponsavel').value = mov.responsavel;
+    document.getElementById('editAtendTag').value = mov.tag || '';
+    document.getElementById('editAtendEvento').value = mov.evento || '';
+    document.getElementById('editAtendObservacao').value = mov.observacao;
+    document.getElementById('statusEditarAtendimento').textContent = '';
+    document.getElementById('modalEditarAtendimento').classList.add('aberto');
+}
+
+document.getElementById('btnCancelarEditarAtendimento').addEventListener('click', () => {
+    document.getElementById('modalEditarAtendimento').classList.remove('aberto');
+    movAtualEdicaoId = null;
+    itemAtualEdicaoId = null;
+});
+
+document.getElementById('btnSalvarEditarAtendimento').addEventListener('click', async () => {
+    const statusEl = document.getElementById('statusEditarAtendimento');
+    const novaQtd = parseFloat(document.getElementById('editAtendQtd').value);
+    if (!novaQtd || novaQtd <= 0) {
+        statusEl.className = 'status-msg erro';
+        statusEl.textContent = 'Quantidade inválida.';
+        return;
+    }
+    const novoResponsavel = document.getElementById('editAtendResponsavel').value.trim().toUpperCase();
+    const novaObservacao = document.getElementById('editAtendObservacao').value.trim();
+    const novaTag = document.getElementById('editAtendTag').value.trim();
+    const novoEvento = document.getElementById('editAtendEvento').value.trim();
+
+    statusEl.className = '';
+    statusEl.textContent = 'Atualizando...';
+    try {
+        await chamarPost('editarMovimentacao', {
+            movId: movAtualEdicaoId,
+            novaQtd,
+            responsavel: novoResponsavel,
+            observacao: novaObservacao,
+            tag: novaTag,
+            evento: novoEvento
+        });
+        await Promise.all([carregarProdutos(), carregarMovimentacoes()]);
+        atualizarTagContagem();
+        document.getElementById('modalEditarAtendimento').classList.remove('aberto');
+        statusEl.textContent = '';
+        renderizarListaAtendimentosItem(itemAtualEdicaoId);
+        renderizarRequisicao(projetoAtualId);
+        renderizarListaProjetos();
+        renderizarTabelaEstoque(buscarProdutos(document.getElementById('buscaEstoque').value));
+        movAtualEdicaoId = null;
+        itemAtualEdicaoId = null;
+    } catch (err) {
+        console.error(err);
+        statusEl.className = 'status-msg erro';
+        statusEl.textContent = '⚠️ ' + err.message;
+    }
+});
+
+async function excluirAtendimento(movId, itemId) {
+    if (!confirm('Excluir este atendimento? O estoque será devolvido automaticamente.')) return;
+    const statusEl = document.getElementById('statusModalAtender');
+    statusEl.className = '';
+    statusEl.textContent = 'Excluindo...';
+    try {
+        await chamarPost('removerMovimentacao', { movId });
+        await Promise.all([carregarProdutos(), carregarMovimentacoes()]);
+        atualizarTagContagem();
+        statusEl.className = 'status-msg sucesso';
+        statusEl.textContent = '✅ Atendimento excluído.';
+        renderizarListaAtendimentosItem(itemId);
+        renderizarRequisicao(projetoAtualId);
+        renderizarListaProjetos();
+        renderizarTabelaEstoque(buscarProdutos(document.getElementById('buscaEstoque').value));
+    } catch (err) {
+        console.error(err);
+        statusEl.className = 'status-msg erro';
+        statusEl.textContent = '⚠️ ' + err.message;
+    }
+}
+
+document.getElementById('btnCancelarAtender').addEventListener('click', () => {
+    document.getElementById('modalAtender').classList.remove('aberto');
+    itemAtualAtendimentoId = null;
+});
+
+document.getElementById('btnConfirmarAtender').addEventListener('click', async () => {
+    const statusEl = document.getElementById('statusModalAtender');
+    const qtd = parseFloat(document.getElementById('modalQtdAtendida').value);
+    const responsavel = document.getElementById('modalResponsavelRetirada').value.trim().toUpperCase();
+    if (!qtd || qtd <= 0) {
+        statusEl.className = 'status-msg erro';
+        statusEl.textContent = 'Informe a quantidade atendida.';
+        return;
+    }
+    if (!responsavel) {
+        statusEl.className = 'status-msg erro';
+        statusEl.textContent = 'Informe quem retirou.';
+        return;
+    }
+    const proj = projetos.find(p => p.id === projetoAtualId);
+    const item = proj.itens.find(i => i.id === itemAtualAtendimentoId);
+    const prod = produtos.find(p => p.id === item.produtoId);
+
+    if (qtd > prod.estoque) {
+        if (!confirm(`Estoque atual do produto é ${prod.estoque}. Deseja confirmar a retirada de ${qtd} mesmo assim?`)) return;
+    }
+
+    const tagAtual = document.getElementById('modalAtenderTag').value.trim();
+    const eventoAtual = document.getElementById('modalAtenderEvento').value.trim();
+
+    const mov = {
+        data: document.getElementById('cabData').value || hojeISO(),
+        produtoId: prod.id,
+        qtd,
+        valorUnit: prod.valor,
+        tipo: 'saida',
+        tag: tagAtual,
+        evento: eventoAtual,
+        observacao: document.getElementById('modalObservacaoRetirada').value.trim(),
+        responsavel,
+        projetoId: proj.id,
+        itemProjetoId: item.id
+    };
+
+    statusEl.className = '';
+    statusEl.textContent = 'Registrando...';
+    if (tagAtual !== (item.tag || '') || eventoAtual !== (item.evento || '')) {
+        await chamarPost('atualizarTagEventoItem', { itemId: item.id, tag: tagAtual, evento: eventoAtual });
+    }
+    await chamarPost('registrarMovimentacao', { movimentacao: mov });
+    await Promise.all([carregarProdutos(), carregarMovimentacoes(), carregarProjetos()]);
+    atualizarTagContagem();
+
+    document.getElementById('modalAtender').classList.remove('aberto');
+    itemAtualAtendimentoId = null;
+    renderizarRequisicao(projetoAtualId);
+    renderizarListaProjetos();
+    renderizarTabelaEstoque(buscarProdutos(document.getElementById('buscaEstoque').value));
+});
+
+/* ============================================================
+   CONFIGURAÇÕES (URL + chave do Supabase salvas no navegador)
+   ============================================================ */
+function configValida() {
+    return SUPABASE_URL && SUPABASE_URL.indexOf('COLE_AQUI') === -1 &&
+           SUPABASE_ANON_KEY && SUPABASE_ANON_KEY.indexOf('COLE_AQUI') === -1;
+}
+
+function abrirConfiguracoes() {
+    document.getElementById('configSupabaseUrl').value = (SUPABASE_URL && SUPABASE_URL.indexOf('COLE_AQUI') === -1) ? SUPABASE_URL : '';
+    document.getElementById('configSupabaseKey').value = (SUPABASE_ANON_KEY && SUPABASE_ANON_KEY.indexOf('COLE_AQUI') === -1) ? SUPABASE_ANON_KEY : '';
+    document.getElementById('statusConfig').textContent = '';
+    document.getElementById('modalConfig').classList.add('aberto');
+}
+
+document.getElementById('btnConfiguracoes').addEventListener('click', abrirConfiguracoes);
+
+document.getElementById('btnCancelarConfig').addEventListener('click', () => {
+    document.getElementById('modalConfig').classList.remove('aberto');
+});
+
+document.getElementById('btnSalvarConfig').addEventListener('click', () => {
+    const statusEl = document.getElementById('statusConfig');
+    const novaUrl = document.getElementById('configSupabaseUrl').value.trim();
+    const novaKey = document.getElementById('configSupabaseKey').value.trim();
+    if (!novaUrl || !novaKey) {
+        statusEl.className = 'status-msg erro';
+        statusEl.textContent = 'Preencha a Project URL e a chave anon public do Supabase.';
+        return;
+    }
+    localStorage.setItem('estoqueapp_supabase_url', novaUrl);
+    localStorage.setItem('estoqueapp_supabase_key', novaKey);
+    statusEl.className = 'status-msg sucesso';
+    statusEl.textContent = '✅ Salvo! Recarregando...';
+    setTimeout(() => location.reload(), 600);
+});
+
+/* ============================================================
+   RELATÓRIOS (PDF e Excel) da requisição do projeto atual
+   ============================================================ */
+function obterProjetoAtual() {
+    return projetos.find(p => p.id === projetoAtualId);
+}
+
+function itensComDadosProjeto(proj) {
+    return (proj.itens || []).map(item => {
+        const prod = produtos.find(p => p.id === item.produtoId);
+        const entregue = entreguePorItem(item.id);
+        return { item, prod, entregue, subtotal: item.qtdRequisitada * (prod ? prod.valor : 0) };
+    });
+}
+
+function atendimentosDoItem(itemId) {
+    return movimentacoes
+        .filter(m => String(m.itemProjetoId) === String(itemId) && m.tipo === 'saida')
+        .sort((a, b) => (a.data || '').localeCompare(b.data || ''));
+}
+
+function slugArquivo(s) {
+    return String(s || 'projeto')
+        .toLowerCase()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '') || 'projeto';
+}
+
+function exigirProjetoParaRelatorio() {
+    const proj = obterProjetoAtual();
+    if (!proj) {
+        alert('Selecione um projeto antes de gerar o relatório.');
+        return null;
+    }
+    if (!(proj.itens || []).length) {
+        alert('Este projeto ainda não tem itens na requisição.');
+        return null;
+    }
+    return proj;
+}
+
+function cabecalhoRelatorio(doc, proj, subtitulo) {
+    doc.setFontSize(16);
+    doc.text('Requisição de Saída' + (subtitulo ? ' — ' + subtitulo : ''), 14, 18);
+    doc.setFontSize(10);
+    doc.text(`Projeto: ${proj.descricao} (${proj.tipo === 'conteiner' ? 'Contêiner' : 'Esquadria'})`, 14, 26);
+    doc.text(`Data de criação do projeto: ${proj.data}`, 14, 32);
+    doc.text(`Relatório emitido em: ${hojeISO()}`, 14, 38);
+    return 44;
+}
+
+/* ---------- compartilhar (com fallback para download tradicional) ---------- */
+async function compartilharOuBaixarArquivo(blob, nomeArquivo, mimeType, titulo) {
+    try {
+        const file = new File([blob], nomeArquivo, { type: mimeType });
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            await navigator.share({ files: [file], title: titulo || nomeArquivo });
+            return;
+        }
+    } catch (err) {
+        if (err && err.name === 'AbortError') return; // usuário cancelou o compartilhamento
+        console.warn('Compartilhamento não disponível, baixando arquivo:', err);
+    }
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = nomeArquivo;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+}
+
+/* ---------- PDF resumido (igual à tela) ---------- */
+/* ---------- construtores (retornam doc/dados, sem salvar/compartilhar) ---------- */
+function construirPdfProjetoResumo(proj) {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    const startY = cabecalhoRelatorio(doc, proj, 'Resumo');
+
+    const linhas = itensComDadosProjeto(proj);
+    const corpo = linhas.map(l => [
+        l.prod ? l.prod.id : l.item.produtoId,
+        l.prod ? l.prod.nome : '-',
+        l.item.tag || '-',
+        l.item.evento || '-',
+        formatarMoeda(l.prod ? l.prod.valor : 0),
+        Number(l.item.qtdRequisitada).toLocaleString('pt-BR'),
+        Number(l.entregue).toLocaleString('pt-BR'),
+        formatarMoeda(l.subtotal)
+    ]);
+    const totalPedido = linhas.reduce((s, l) => s + l.subtotal, 0);
+
+    doc.autoTable({
+        startY,
+        head: [['Código', 'Descrição', 'Tag', 'Evento', 'Valor Unit.', 'Qtd. Pedida', 'Qtd. Atendida', 'Subtotal']],
+        body: corpo,
+        styles: { fontSize: 8 },
+        headStyles: { fillColor: [21, 101, 192] }
+    });
+
+    const finalY = doc.lastAutoTable.finalY || startY;
+    doc.setFontSize(11);
+    doc.text(`Total pedido: ${formatarMoeda(totalPedido)}`, 14, finalY + 10);
+    return doc;
+}
+
+function construirPdfProjetoDetalhado(proj) {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    let y = cabecalhoRelatorio(doc, proj, 'Detalhado');
+    let totalAtendidoGeral = 0;
+
+    itensComDadosProjeto(proj).forEach(l => {
+        if (y > 255) { doc.addPage(); y = 20; }
+        doc.setFontSize(10);
+        doc.setFont(undefined, 'bold');
+        doc.text(`${l.prod ? l.prod.id : l.item.produtoId} — ${l.prod ? l.prod.nome : ''}`, 14, y);
+        doc.setFont(undefined, 'normal');
+        y += 5;
+        doc.setFontSize(9);
+        doc.text(`Tag: ${l.item.tag || '-'}   ·   Evento: ${l.item.evento || '-'}   ·   Valor Unit.: ${formatarMoeda(l.prod ? l.prod.valor : 0)}   ·   Pedido: ${l.item.qtdRequisitada}   ·   Atendido: ${l.entregue}`, 14, y);
+        y += 6;
+
+        const atendimentos = atendimentosDoItem(l.item.id);
+        if (!atendimentos.length) {
+            doc.text('   Nenhuma retirada registrada ainda.', 14, y);
+            y += 8;
+        } else {
+            const corpo = atendimentos.map(a => {
+                const subtotalRetirada = Number(a.qtd) * Number(a.valorUnit);
+                totalAtendidoGeral += subtotalRetirada;
+                return [
+                    a.data, Number(a.qtd).toLocaleString('pt-BR'), formatarMoeda(a.valorUnit),
+                    formatarMoeda(subtotalRetirada), a.responsavel || '-', a.observacao || '-'
+                ];
+            });
+            doc.autoTable({
+                startY: y,
+                head: [['Data', 'Qtd. retirada', 'Valor Unit.', 'Subtotal', 'Responsável', 'Observação']],
+                body: corpo,
+                styles: { fontSize: 8 },
+                headStyles: { fillColor: [46, 125, 50] },
+                margin: { left: 14, right: 14 }
+            });
+            y = doc.lastAutoTable.finalY + 8;
+        }
+    });
+
+    if (y > 270) { doc.addPage(); y = 20; }
+    doc.setFontSize(12);
+    doc.setFont(undefined, 'bold');
+    doc.text(`Total atendido (R$): ${formatarMoeda(totalAtendidoGeral)}`, 14, y + 4);
+    doc.setFont(undefined, 'normal');
+    return doc;
+}
+
+function construirDadosExcelProjetoResumo(proj) {
+    return itensComDadosProjeto(proj).map(l => ({
+        'Código': l.prod ? l.prod.id : l.item.produtoId,
+        'Descrição': l.prod ? l.prod.nome : '',
+        'Tag': l.item.tag || '',
+        'Evento': l.item.evento || '',
+        'Valor Unit.': l.prod ? l.prod.valor : 0,
+        'Qtd. Pedida': l.item.qtdRequisitada,
+        'Qtd. Atendida': l.entregue,
+        'Subtotal': l.subtotal
+    }));
+}
+
+function construirDadosExcelProjetoDetalhado(proj) {
+    const colunas = ['Código', 'Descrição', 'Tag', 'Evento', 'Valor Unit.', 'Qtd. Pedida', 'Data retirada', 'Qtd. retirada', 'Subtotal retirada', 'Responsável', 'Observação'];
+    const dados = [];
+    let totalAtendido = 0;
+    itensComDadosProjeto(proj).forEach(l => {
+        const atendimentos = atendimentosDoItem(l.item.id);
+        const base = {
+            'Código': l.prod ? l.prod.id : l.item.produtoId,
+            'Descrição': l.prod ? l.prod.nome : '',
+            'Tag': l.item.tag || '',
+            'Evento': l.item.evento || '',
+            'Valor Unit.': l.prod ? l.prod.valor : 0,
+            'Qtd. Pedida': l.item.qtdRequisitada
+        };
+        if (!atendimentos.length) {
+            dados.push({ ...base, 'Data retirada': '', 'Qtd. retirada': '', 'Subtotal retirada': '', 'Responsável': '', 'Observação': '' });
+        } else {
+            atendimentos.forEach(a => {
+                const subtotalRetirada = Number(a.qtd) * Number(a.valorUnit);
+                totalAtendido += subtotalRetirada;
+                dados.push({
+                    ...base,
+                    'Data retirada': a.data,
+                    'Qtd. retirada': a.qtd,
+                    'Subtotal retirada': subtotalRetirada,
+                    'Responsável': a.responsavel || '',
+                    'Observação': a.observacao || ''
+                });
+            });
+        }
+    });
+    dados.push({});
+    dados.push({ 'Qtd. retirada': 'TOTAL ATENDIDO (R$):', 'Subtotal retirada': totalAtendido });
+    dados._colunas = colunas;
+    return dados;
+}
+
+function baixarExcel(wb, nomeArquivo) {
+    XLSX.writeFile(wb, nomeArquivo);
+}
+
+function blobExcel(wb) {
+    return new Blob([XLSX.write(wb, { bookType: 'xlsx', type: 'array' })], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+}
+
+function montarWorkbook(dados, nomeAba, colunas) {
+    const ws = XLSX.utils.json_to_sheet(dados, colunas ? { header: colunas } : undefined);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, nomeAba);
+    return wb;
+}
+
+/* ---------- pré-visualização de tabelas (Excel) num popup ---------- */
+function visualizarTabelaHtml(titulo, dados) {
+    const colunas = dados._colunas || Object.keys(dados.find(d => Object.keys(d).length) || {});
+    let html = `<h4 style="margin-top:0;">${escapeHtml(titulo)}</h4><div style="max-height:60vh; overflow:auto;"><table class="tabela"><thead><tr>${colunas.map(c => `<th>${escapeHtml(c)}</th>`).join('')}</tr></thead><tbody>`;
+    dados.forEach(row => {
+        html += '<tr>' + colunas.map(c => `<td>${row[c] !== undefined && row[c] !== null ? escapeHtml(String(row[c])) : ''}</td>`).join('') + '</tr>';
+    });
+    html += '</tbody></table></div>';
+    document.getElementById('modalPreviewConteudo').innerHTML = html;
+    document.getElementById('modalPreview').classList.add('aberto');
+}
+document.getElementById('btnFecharPreview').addEventListener('click', () => {
+    document.getElementById('modalPreview').classList.remove('aberto');
+});
+
+/* ---------- ação genérica: ver / compartilhar / salvar (PDF ou Excel) ---------- */
+function executarAcaoPdf(acao, doc, nomeArquivo) {
+    if (acao === 'ver') { window.open(doc.output('bloburl'), '_blank'); return; }
+    if (acao === 'salvar') { doc.save(nomeArquivo); return; }
+    if (acao === 'compartilhar') { compartilharOuBaixarArquivo(doc.output('blob'), nomeArquivo, 'application/pdf', nomeArquivo); return; }
+}
+function executarAcaoExcel(acao, dados, nomeAba, nomeArquivo, titulo) {
+    if (acao === 'ver') { visualizarTabelaHtml(titulo, dados); return; }
+    const wb = montarWorkbook(dados, nomeAba, dados._colunas);
+    if (acao === 'salvar') { baixarExcel(wb, nomeArquivo); return; }
+    if (acao === 'compartilhar') { compartilharOuBaixarArquivo(blobExcel(wb), nomeArquivo, blobExcel(wb).type, nomeArquivo); return; }
+}
+
+/* ---------- Requisição de Saída: botões existentes (sempre "compartilhar") ---------- */
+function gerarPdfResumo() {
+    const proj = exigirProjetoParaRelatorio();
+    if (!proj) return;
+    const doc = construirPdfProjetoResumo(proj);
+    executarAcaoPdf('compartilhar', doc, `requisicao-${slugArquivo(proj.descricao)}-resumo.pdf`);
+}
+function gerarPdfDetalhado() {
+    const proj = exigirProjetoParaRelatorio();
+    if (!proj) return;
+    const doc = construirPdfProjetoDetalhado(proj);
+    executarAcaoPdf('compartilhar', doc, `requisicao-${slugArquivo(proj.descricao)}-detalhado.pdf`);
+}
+function gerarExcelResumo() {
+    const proj = exigirProjetoParaRelatorio();
+    if (!proj) return;
+    const dados = construirDadosExcelProjetoResumo(proj);
+    executarAcaoExcel('compartilhar', dados, 'Resumo', `requisicao-${slugArquivo(proj.descricao)}-resumo.xlsx`, proj.descricao);
+}
+function gerarExcelDetalhado() {
+    const proj = exigirProjetoParaRelatorio();
+    if (!proj) return;
+    const dados = construirDadosExcelProjetoDetalhado(proj);
+    executarAcaoExcel('compartilhar', dados, 'Detalhado', `requisicao-${slugArquivo(proj.descricao)}-detalhado.xlsx`, proj.descricao);
+}
+
+document.getElementById('btnPdfResumo').addEventListener('click', gerarPdfResumo);
+document.getElementById('btnPdfDetalhado').addEventListener('click', gerarPdfDetalhado);
+document.getElementById('btnExcelResumo').addEventListener('click', gerarExcelResumo);
+document.getElementById('btnExcelDetalhado').addEventListener('click', gerarExcelDetalhado);
+
+/* ============================================================
+   ABA RELATÓRIOS (por Evento, por Tag, por Projeto)
+   ============================================================ */
+let eventoSelecionadoRelatorio = null;
+
+function construirLinhasMovimentacoes(lista) {
+    return lista.map(m => {
+        const prod = produtos.find(p => p.id === m.produtoId);
+        const proj = m.projetoId ? projetos.find(p => String(p.id) === String(m.projetoId)) : null;
+        return { m, prod, proj, subtotal: Number(m.qtd) * Number(m.valorUnit) };
+    });
+}
+function movimentacoesPorEvento(codigoEvento) {
+    const alvo = String(codigoEvento || '').trim();
+    return movimentacoes.filter(m => m.tipo === 'saida' && String(m.evento || '').trim() === alvo)
+        .sort((a, b) => (a.data || '').localeCompare(b.data || ''));
+}
+function movimentacoesPorTag(tag) {
+    const alvo = String(tag || '').trim().toLowerCase();
+    return movimentacoes.filter(m => m.tipo === 'saida' && String(m.tag || '').trim().toLowerCase() === alvo)
+        .sort((a, b) => (a.data || '').localeCompare(b.data || ''));
+}
+
+function construirPdfListaMovimentacoes(titulo, subtitulo, linhas, colunaExtra) {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    doc.setFontSize(16);
+    doc.text(titulo, 14, 18);
+    doc.setFontSize(10);
+    doc.text(subtitulo, 14, 26);
+    doc.text(`Relatório emitido em: ${hojeISO()}`, 14, 32);
+
+    const corpo = linhas.map(l => [
+        l.m.data,
+        l.prod ? l.prod.nome : ('#' + l.m.produtoId),
+        colunaExtra.getter(l.m) || '-',
+        l.proj ? l.proj.descricao : '-',
+        Number(l.m.qtd).toLocaleString('pt-BR'),
+        formatarMoeda(l.m.valorUnit),
+        formatarMoeda(l.subtotal),
+        l.m.responsavel || '-'
+    ]);
+    const total = linhas.reduce((s, l) => s + l.subtotal, 0);
+
+    doc.autoTable({
+        startY: 38,
+        head: [['Data', 'Produto', colunaExtra.header, 'Projeto', 'Qtd', 'Valor Unit.', 'Subtotal', 'Responsável']],
+        body: corpo,
+        styles: { fontSize: 8 },
+        headStyles: { fillColor: [21, 101, 192] }
+    });
+    const finalY = doc.lastAutoTable.finalY || 38;
+    doc.setFontSize(11);
+    doc.text(`Total (R$): ${formatarMoeda(total)}`, 14, finalY + 10);
+    return doc;
+}
+
+function construirDadosExcelMovimentacoes(linhas, colunaExtra) {
+    const colunas = ['Data', 'Produto', colunaExtra.header, 'Projeto', 'Qtd', 'Valor Unit.', 'Subtotal', 'Responsável', 'Observação'];
+    const dados = linhas.map(l => ({
+        'Data': l.m.data,
+        'Produto': l.prod ? l.prod.nome : ('#' + l.m.produtoId),
+        [colunaExtra.header]: colunaExtra.getter(l.m) || '',
+        'Projeto': l.proj ? l.proj.descricao : '',
+        'Qtd': l.m.qtd,
+        'Valor Unit.': l.m.valorUnit,
+        'Subtotal': l.subtotal,
+        'Responsável': l.m.responsavel || '',
+        'Observação': l.m.observacao || ''
+    }));
+    const total = linhas.reduce((s, l) => s + l.subtotal, 0);
+    dados.push({});
+    dados.push({ 'Produto': 'TOTAL (R$):', 'Subtotal': total });
+    dados._colunas = colunas;
+    return dados;
+}
+
+/* ---------- módulo: por Evento ---------- */
+function renderizarResultadosEventoRelatorio(termo) {
+    const el = document.getElementById('relResultadosEvento');
+    const lista = buscarEventos(termo);
+    if (!lista.length) {
+        el.innerHTML = '<div class="item-resultado">Nenhum evento encontrado.</div>';
+        el.classList.add('aberto');
+        return;
+    }
+    el.innerHTML = '';
+    lista.forEach(ev => {
+        const div = document.createElement('div');
+        div.className = 'item-resultado';
+        div.innerHTML = `
+            <div class="info-resultado"><span class="cod">${escapeHtml(ev.codigo)}</span> — ${escapeHtml(ev.descricao)}</div>
+            <button class="btn btn-verde btn-pequeno">Selecionar</button>
+        `;
+        div.querySelector('button').addEventListener('click', () => {
+            eventoSelecionadoRelatorio = ev;
+            document.getElementById('relEventoSelecionado').innerHTML = `Selecionado: <strong>${escapeHtml(ev.codigo)} — ${escapeHtml(ev.descricao)}</strong>`;
+            el.classList.remove('aberto');
+            document.getElementById('relBuscaEvento').value = '';
+        });
+        el.appendChild(div);
+    });
+    el.classList.add('aberto');
+}
+document.getElementById('relBtnBuscarEvento').addEventListener('click', () => renderizarResultadosEventoRelatorio(document.getElementById('relBuscaEvento').value));
+document.getElementById('relBuscaEvento').addEventListener('input', () => {
+    const termo = document.getElementById('relBuscaEvento').value;
+    if (termo.trim()) renderizarResultadosEventoRelatorio(termo);
+    else document.getElementById('relResultadosEvento').classList.remove('aberto');
+});
+document.getElementById('relBuscaEvento').addEventListener('keydown', e => {
+    if (e.key === 'Enter') renderizarResultadosEventoRelatorio(document.getElementById('relBuscaEvento').value);
+});
+
+function executarRelatorioEvento(acao) {
+    if (!eventoSelecionadoRelatorio) { alert('Selecione um evento primeiro.'); return; }
+    const linhas = construirLinhasMovimentacoes(movimentacoesPorEvento(eventoSelecionadoRelatorio.codigo));
+    if (!linhas.length) { alert('Nenhuma retirada encontrada para esse evento.'); return; }
+    const formato = document.getElementById('relEventoFormato').value;
+    const titulo = 'Relatório por Evento — Detalhado';
+    const subtitulo = `Evento: ${eventoSelecionadoRelatorio.codigo} — ${eventoSelecionadoRelatorio.descricao || ''}`;
+    const nomeBase = `relatorio-evento-${slugArquivo(eventoSelecionadoRelatorio.codigo)}`;
+    const colunaExtra = { header: 'Tag', getter: m => m.tag };
+    if (formato === 'pdf') {
+        executarAcaoPdf(acao, construirPdfListaMovimentacoes(titulo, subtitulo, linhas, colunaExtra), `${nomeBase}.pdf`);
+    } else {
+        executarAcaoExcel(acao, construirDadosExcelMovimentacoes(linhas, colunaExtra), 'Relatório', `${nomeBase}.xlsx`, titulo);
+    }
+}
+document.getElementById('relEventoVer').addEventListener('click', () => executarRelatorioEvento('ver'));
+document.getElementById('relEventoCompartilhar').addEventListener('click', () => executarRelatorioEvento('compartilhar'));
+document.getElementById('relEventoSalvar').addEventListener('click', () => executarRelatorioEvento('salvar'));
+
+/* ---------- módulo: por Tag ---------- */
+function executarRelatorioTag(acao) {
+    const tag = document.getElementById('relBuscaTag').value.trim();
+    if (!tag) { alert('Informe uma tag primeiro.'); return; }
+    const linhas = construirLinhasMovimentacoes(movimentacoesPorTag(tag));
+    if (!linhas.length) { alert('Nenhuma retirada encontrada para essa tag.'); return; }
+    const formato = document.getElementById('relTagFormato').value;
+    const titulo = 'Relatório por Tag — Detalhado';
+    const subtitulo = `Tag: ${tag}`;
+    const nomeBase = `relatorio-tag-${slugArquivo(tag)}`;
+    const colunaExtra = { header: 'Evento', getter: m => m.evento };
+    if (formato === 'pdf') {
+        executarAcaoPdf(acao, construirPdfListaMovimentacoes(titulo, subtitulo, linhas, colunaExtra), `${nomeBase}.pdf`);
+    } else {
+        executarAcaoExcel(acao, construirDadosExcelMovimentacoes(linhas, colunaExtra), 'Relatório', `${nomeBase}.xlsx`, titulo);
+    }
+}
+document.getElementById('relTagVer').addEventListener('click', () => executarRelatorioTag('ver'));
+document.getElementById('relTagCompartilhar').addEventListener('click', () => executarRelatorioTag('compartilhar'));
+document.getElementById('relTagSalvar').addEventListener('click', () => executarRelatorioTag('salvar'));
+
+/* ---------- módulo: por Projeto ---------- */
+function executarRelatorioProjeto(acao) {
+    const valor = document.getElementById('relProjetoSelect').value;
+    if (!valor) { alert('Selecione um projeto primeiro.'); return; }
+    const proj = projetos.find(p => p.id === Number(valor));
+    if (!proj || !(proj.itens || []).length) { alert('Esse projeto ainda não tem itens na requisição.'); return; }
+
+    const tipo = document.getElementById('relProjetoTipo').value;
+    const formato = document.getElementById('relProjetoFormato').value;
+    const nomeBase = `requisicao-${slugArquivo(proj.descricao)}-${tipo}`;
+    const titulo = `Requisição — ${proj.descricao} (${tipo === 'resumo' ? 'Resumo' : 'Detalhado'})`;
+
+    if (formato === 'pdf') {
+        const doc = tipo === 'resumo' ? construirPdfProjetoResumo(proj) : construirPdfProjetoDetalhado(proj);
+        executarAcaoPdf(acao, doc, `${nomeBase}.pdf`);
+    } else {
+        const dados = tipo === 'resumo' ? construirDadosExcelProjetoResumo(proj) : construirDadosExcelProjetoDetalhado(proj);
+        executarAcaoExcel(acao, dados, tipo === 'resumo' ? 'Resumo' : 'Detalhado', `${nomeBase}.xlsx`, titulo);
+    }
+}
+document.getElementById('relProjetoVer').addEventListener('click', () => executarRelatorioProjeto('ver'));
+document.getElementById('relProjetoCompartilhar').addEventListener('click', () => executarRelatorioProjeto('compartilhar'));
+document.getElementById('relProjetoSalvar').addEventListener('click', () => executarRelatorioProjeto('salvar'));
+
+
+/* ---------- inicialização ---------- */
+(async function iniciar() {
+    if (!configValida()) {
+        document.getElementById('tagContagem').textContent = '⚠️ Configure a conexão com o Supabase clicando na engrenagem ⚙️ no topo.';
+        abrirConfiguracoes();
+        return;
+    }
+    sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    await carregarTudo();
+    renderizarTabelaEstoque(buscarProdutos(''));
+    renderizarListaProjetos();
+    popularSelectProjetos(document.getElementById('reqProjetoSelect'));
+    renderizarRequisicao(null);
+})();
+
+</script>
+</body>
+</html>
