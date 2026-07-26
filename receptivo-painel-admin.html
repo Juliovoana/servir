@@ -192,6 +192,78 @@
   .btn-link-hotel:hover{ background:#DCEAE2; }
   .btn-link-hotel svg{ width:14px; height:14px; }
 
+  /* ---------- OCORRÊNCIAS ---------- */
+  .filtros-ocorrencias{
+    display:flex; gap:14px; flex-wrap:wrap; align-items:flex-end; margin-bottom:20px;
+    background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:16px 18px;
+  }
+  .filtro-campo{ display:flex; flex-direction:column; gap:6px; min-width:130px; }
+  .filtro-campo label{ font-size:.72rem; font-weight:600; color:var(--muted); }
+  .filtro-campo select, .filtro-campo input{
+    padding:8px 11px; border-radius:8px; border:1.5px solid var(--border); font-size:.82rem;
+    background:var(--surface); color:var(--ink);
+  }
+
+  .tabela-ocorrencias-wrap{ background:var(--surface); border:1px solid var(--border); border-radius:12px; overflow:auto; }
+  .tabela-ocorrencias{ width:100%; border-collapse:collapse; font-size:.84rem; }
+  .tabela-ocorrencias th{
+    text-align:left; padding:12px 16px; background:var(--bg); color:var(--muted); font-size:.72rem;
+    font-weight:700; text-transform:uppercase; letter-spacing:.04em; border-bottom:1px solid var(--border); white-space:nowrap;
+  }
+  .tabela-ocorrencias td{ padding:12px 16px; border-bottom:1px solid var(--border); vertical-align:top; }
+  .tabela-ocorrencias tbody tr{ cursor:pointer; transition:background .15s; }
+  .tabela-ocorrencias tbody tr:hover{ background:var(--bg); }
+  .tabela-ocorrencias tbody tr:last-child td{ border-bottom:none; }
+  .celula-reserva{ font-weight:700; color:var(--brand); white-space:nowrap; }
+  .celula-descricao{ max-width:360px; color:var(--ink); line-height:1.5; }
+  .celula-protocolo{ font-family:'JetBrains Mono', monospace; font-size:.78rem; color:var(--muted); white-space:nowrap; }
+
+  .status-tag.aberta{ background:#FEF3E2; color:var(--accent-ink); }
+  .status-tag.aberta::before{ background:var(--accent); }
+  .status-tag.em_andamento{ background:#EEF1F4; color:#4B5A68; }
+  .status-tag.em_andamento::before{ background:#7C8EA0; }
+  .status-tag.resolvida{ background:var(--success-soft); color:var(--brand-2); }
+  .status-tag.resolvida::before{ background:var(--brand-2); }
+
+  .campo-com-add{ display:flex; gap:8px; align-items:flex-end; }
+  .campo-com-add .field-group{ flex:1; margin-bottom:0; }
+  .btn-add-inline{
+    width:38px; height:38px; border-radius:9px; border:none; background:var(--brand-2); color:#fff;
+    font-size:1.1rem; font-weight:700; cursor:pointer; flex-shrink:0; transition:background .15s;
+  }
+  .btn-add-inline:hover{ background:#245a41; }
+
+  .audit-info{
+    font-size:.76rem; color:var(--muted); background:var(--bg); border-radius:8px; padding:10px 12px;
+    line-height:1.6; margin-top:4px;
+  }
+
+  /* ---------- POPUP: GERENCIAR SETORES/TIPOS ---------- */
+  .modal-lista-overlay{
+    position:fixed; inset:0; background:rgba(23,30,26,.5); z-index:70; display:none; align-items:center; justify-content:center; padding:20px;
+  }
+  .modal-lista-overlay.show{ display:flex; }
+  .modal-lista{ background:var(--bg); width:100%; max-width:520px; max-height:80vh; border-radius:16px; overflow:hidden; display:flex; flex-direction:column; box-shadow:var(--shadow-lg); }
+  .modal-lista-head{ background:var(--surface); border-bottom:1px solid var(--border); padding:18px 22px; display:flex; align-items:center; justify-content:space-between; }
+  .modal-lista-head h3{ font-size:1rem; font-weight:700; }
+  .modal-lista-body{ padding:16px 22px; overflow-y:auto; flex:1; }
+  .modal-lista-row{
+    display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid var(--border); flex-wrap:wrap;
+  }
+  .modal-lista-row:last-child{ border-bottom:none; }
+  .modal-lista-desc{
+    flex:1; min-width:140px; padding:8px 11px; border-radius:8px; border:1.5px solid var(--border);
+    font-size:.85rem; background:var(--surface); color:var(--ink);
+  }
+  .modal-lista-radio, .modal-lista-check{ display:flex; align-items:center; gap:5px; font-size:.78rem; color:var(--muted); white-space:nowrap; }
+  .modal-lista-salvar{
+    background:var(--brand); color:#fff; border:none; font-size:.78rem; font-weight:600; padding:8px 14px; border-radius:8px; cursor:pointer;
+  }
+  .modal-lista-salvar:hover:not(:disabled){ background:#143327; }
+  .modal-lista-salvar:disabled{ opacity:.6; cursor:not-allowed; }
+  .modal-lista-add{ background:var(--surface); border-top:1px solid var(--border); padding:16px 22px; display:flex; gap:10px; }
+  .modal-lista-add input{ flex:1; padding:10px 13px; border-radius:9px; border:1.5px solid var(--border); font-size:.85rem; }
+
   .image-upload-box{ display:flex; align-items:center; gap:14px; }
   .image-preview-wrap{
     width:64px; height:64px; border-radius:10px; overflow:hidden; flex-shrink:0;
@@ -402,6 +474,10 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-4"/><line x1="9" y1="9" x2="9" y2="9.01"/><line x1="9" y1="12" x2="9" y2="12.01"/><line x1="9" y1="15" x2="9" y2="15.01"/></svg>
           Hotéis
         </button>
+        <button class="nav-item tab-app-btn" data-app-tab="ocorrencias">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg>
+          Ocorrências
+        </button>
         <div class="sidebar-spacer"></div>
         <button class="btn-sair" id="btnSair">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
@@ -478,6 +554,56 @@
             </div>
             <div class="lista-cadastro" id="listaHoteis"></div>
           </div>
+
+          <div class="panel-app" id="app-panel-ocorrencias">
+            <div class="filtros-ocorrencias">
+              <div class="filtro-campo">
+                <label>Setor</label>
+                <select id="filtroOcorrenciaSetor"><option value="">Todos</option></select>
+              </div>
+              <div class="filtro-campo">
+                <label>Situação</label>
+                <select id="filtroOcorrenciaSituacao">
+                  <option value="">Todas</option>
+                  <option value="aberta">Aberta</option>
+                  <option value="em_andamento">Em andamento</option>
+                  <option value="resolvida">Resolvida</option>
+                  <option value="cancelada">Cancelada</option>
+                </select>
+              </div>
+              <div class="filtro-campo">
+                <label>Tipo</label>
+                <select id="filtroOcorrenciaTipo"><option value="">Todos</option></select>
+              </div>
+              <div class="filtro-campo">
+                <label>De</label>
+                <input type="date" id="filtroOcorrenciaDe">
+              </div>
+              <div class="filtro-campo">
+                <label>Até</label>
+                <input type="date" id="filtroOcorrenciaAte">
+              </div>
+              <button class="btn-novo" id="btnNovaOcorrencia" style="margin-left:auto; align-self:flex-end;">+ Nova ocorrência</button>
+            </div>
+
+            <div class="tabela-ocorrencias-wrap">
+              <table class="tabela-ocorrencias">
+                <thead>
+                  <tr>
+                    <th>Reserva</th>
+                    <th>Data</th>
+                    <th>Descrição</th>
+                    <th>Hotel</th>
+                    <th>Situação</th>
+                    <th>Protocolo</th>
+                    <th>Tipo</th>
+                  </tr>
+                </thead>
+                <tbody id="corpoTabelaOcorrencias"></tbody>
+              </table>
+              <div class="vazio" id="ocorrenciasVazio" style="display:none;">Nenhuma ocorrência encontrada.</div>
+            </div>
+          </div>
         </main>
       </div>
     </div>
@@ -513,6 +639,21 @@
     </div>
   </div>
 
+  <!-- ================= POPUP: GERENCIAR SETORES / TIPOS DE OCORRÊNCIA ================= -->
+  <div class="modal-lista-overlay" id="modalListaOverlay">
+    <div class="modal-lista">
+      <div class="modal-lista-head">
+        <h3 id="modalListaTitulo">Gerenciar</h3>
+        <button class="drawer-close" id="btnFecharModalLista">✕</button>
+      </div>
+      <div class="modal-lista-body" id="modalListaBody"></div>
+      <div class="modal-lista-add">
+        <input type="text" id="modalListaNovoInput" placeholder="Nova descrição">
+        <button class="btn-novo" id="modalListaBtnAdicionar">Adicionar</button>
+      </div>
+    </div>
+  </div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
   // =================================================================
@@ -535,7 +676,10 @@
   let todasReservas = [];
   let todosServicos = [];
   let todosHoteis = [];
-  let cadastroTipoAtual = null; // 'servico' | 'hotel'
+  let todosSetores = [];
+  let todosTiposOcorrencia = [];
+  let todasOcorrencias = [];
+  let cadastroTipoAtual = null; // 'servico' | 'hotel' | 'ocorrencia'
   let cadastroIdAtual = null;   // null = criando novo registro
 
   // =================================================================
@@ -639,7 +783,7 @@
   // =================================================================
   // TABS DO APP
   // =================================================================
-  const titulosAba = { dashboard: 'Dashboard', reservas: 'Reservas', servicos: 'Serviços', hoteis: 'Hotéis' };
+  const titulosAba = { dashboard: 'Dashboard', reservas: 'Reservas', servicos: 'Serviços', hoteis: 'Hotéis', ocorrencias: 'Ocorrências' };
   document.querySelectorAll('.tab-app-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.tab-app-btn').forEach(b => b.classList.remove('active'));
@@ -671,7 +815,7 @@
     renderDashboard();
     renderListaReservas();
 
-    await Promise.all([carregarServicos(), carregarHoteis()]);
+    await Promise.all([carregarServicos(), carregarHoteis(), carregarSetores(), carregarTiposOcorrencia(), carregarOcorrencias()]);
   }
 
   async function carregarServicos(){
@@ -694,6 +838,78 @@
     if(error){ alert('Erro ao carregar hotéis: ' + error.message); return; }
     todosHoteis = data || [];
     renderListaHoteis();
+  }
+
+  let filtroSetorJaInicializado = false;
+  let filtroTipoJaInicializado = false;
+
+  async function carregarSetores(){
+    const { data, error } = await sb
+      .from('receptivo_setores')
+      .select('*')
+      .eq('agencia_id', agenciaId)
+      .order('descricao', { ascending: true });
+    if(error){ alert('Erro ao carregar setores: ' + error.message); return; }
+    todosSetores = data || [];
+    popularSelectsSetorETipo();
+  }
+
+  async function carregarTiposOcorrencia(){
+    const { data, error } = await sb
+      .from('receptivo_tipo_ocorrencia')
+      .select('*')
+      .eq('agencia_id', agenciaId)
+      .order('descricao', { ascending: true });
+    if(error){ alert('Erro ao carregar tipos de ocorrência: ' + error.message); return; }
+    todosTiposOcorrencia = data || [];
+    popularSelectsSetorETipo();
+  }
+
+  function popularSelectsSetorETipo(){
+    const setoresAtivos = todosSetores.filter(s => s.ativo);
+    const tiposAtivos = todosTiposOcorrencia.filter(t => t.ativo);
+
+    const filtroSetor = document.getElementById('filtroOcorrenciaSetor');
+    const valorAtualSetor = filtroSetor.value;
+    filtroSetor.innerHTML = '<option value="">Todos</option>' +
+      setoresAtivos.map(s => `<option value="${s.id}">${s.descricao}</option>`).join('');
+    if(!filtroSetorJaInicializado && setoresAtivos.length){
+      const padrao = setoresAtivos.find(s => s.padrao);
+      if(padrao){ filtroSetor.value = padrao.id; }
+      filtroSetorJaInicializado = true;
+      renderTabelaOcorrencias();
+    } else {
+      filtroSetor.value = valorAtualSetor;
+    }
+
+    const filtroTipo = document.getElementById('filtroOcorrenciaTipo');
+    const valorAtualTipo = filtroTipo.value;
+    filtroTipo.innerHTML = '<option value="">Todos</option>' +
+      tiposAtivos.map(t => `<option value="${t.id}">${t.descricao}</option>`).join('');
+    if(!filtroTipoJaInicializado && tiposAtivos.length){
+      const padrao = tiposAtivos.find(t => t.padrao);
+      if(padrao){ filtroTipo.value = padrao.id; }
+      filtroTipoJaInicializado = true;
+      renderTabelaOcorrencias();
+    } else {
+      filtroTipo.value = valorAtualTipo;
+    }
+  }
+
+  async function carregarOcorrencias(){
+    const { data, error } = await sb
+      .from('receptivo_livro_ocorrencias')
+      .select(`
+        id, reserva, hotel, data_ocorrencia, historico_ocorrencia, protocolo, situacao,
+        created_at, updated_at, user_created, user_updated,
+        receptivo_setores ( id, descricao ),
+        receptivo_tipo_ocorrencia ( id, descricao )
+      `)
+      .eq('agencia_id', agenciaId)
+      .order('data_ocorrencia', { ascending: false });
+    if(error){ alert('Erro ao carregar ocorrências: ' + error.message); return; }
+    todasOcorrencias = data || [];
+    renderTabelaOcorrencias();
   }
 
   // =================================================================
@@ -863,6 +1079,73 @@
       lista.appendChild(row);
     });
   }
+
+  // =================================================================
+  // TABELA DE OCORRÊNCIAS
+  // =================================================================
+  const mapaSituacaoLabel = { aberta: 'Aberta', em_andamento: 'Em andamento', resolvida: 'Resolvida', cancelada: 'Cancelada' };
+
+  function renderTabelaOcorrencias(){
+    const setorFiltro = document.getElementById('filtroOcorrenciaSetor').value;
+    const situacaoFiltro = document.getElementById('filtroOcorrenciaSituacao').value;
+    const tipoFiltro = document.getElementById('filtroOcorrenciaTipo').value;
+    const deFiltro = document.getElementById('filtroOcorrenciaDe').value;
+    const ateFiltro = document.getElementById('filtroOcorrenciaAte').value;
+
+    let filtradas = todasOcorrencias.filter(o => {
+      if(setorFiltro && o.receptivo_setores?.id !== setorFiltro) return false;
+      if(situacaoFiltro && o.situacao !== situacaoFiltro) return false;
+      if(tipoFiltro && o.receptivo_tipo_ocorrencia?.id !== tipoFiltro) return false;
+      if(deFiltro && o.data_ocorrencia && o.data_ocorrencia.slice(0,10) < deFiltro) return false;
+      if(ateFiltro && o.data_ocorrencia && o.data_ocorrencia.slice(0,10) > ateFiltro) return false;
+      return true;
+    });
+
+    const corpo = document.getElementById('corpoTabelaOcorrencias');
+    const vazio = document.getElementById('ocorrenciasVazio');
+
+    if(filtradas.length === 0){
+      corpo.innerHTML = '';
+      vazio.style.display = 'block';
+      return;
+    }
+    vazio.style.display = 'none';
+
+    corpo.innerHTML = filtradas.map(o => {
+      const dataFormatada = o.data_ocorrencia ? new Date(o.data_ocorrencia).toLocaleDateString('pt-BR') : '—';
+      return `
+        <tr data-ocorrencia-id="${o.id}">
+          <td class="celula-reserva">${o.reserva || '—'}</td>
+          <td>${dataFormatada}</td>
+          <td class="celula-descricao">${(o.historico_ocorrencia || '').slice(0, 160)}${(o.historico_ocorrencia || '').length > 160 ? '…' : ''}</td>
+          <td>${o.hotel || '—'}</td>
+          <td><span class="status-tag ${o.situacao}">${mapaSituacaoLabel[o.situacao] || o.situacao}</span></td>
+          <td class="celula-protocolo">${o.protocolo || '—'}</td>
+          <td>${o.receptivo_tipo_ocorrencia?.descricao || '—'}</td>
+        </tr>
+      `;
+    }).join('');
+
+    corpo.querySelectorAll('tr').forEach(tr => {
+      tr.addEventListener('click', () => abrirDrawerCadastro('ocorrencia', tr.dataset.ocorrenciaId));
+    });
+  }
+
+  ['filtroOcorrenciaSetor', 'filtroOcorrenciaSituacao', 'filtroOcorrenciaTipo', 'filtroOcorrenciaDe', 'filtroOcorrenciaAte'].forEach(id => {
+    document.getElementById(id).addEventListener('change', renderTabelaOcorrencias);
+  });
+
+  document.getElementById('btnNovaOcorrencia').addEventListener('click', () => abrirDrawerCadastro('ocorrencia', null));
+
+  // período padrão do filtro: últimos 30 dias
+  (function initPeriodoOcorrencias(){
+    const hoje = new Date();
+    const ha30dias = new Date();
+    ha30dias.setDate(hoje.getDate() - 30);
+    const iso = d => d.toISOString().slice(0, 10);
+    document.getElementById('filtroOcorrenciaDe').value = iso(ha30dias);
+    document.getElementById('filtroOcorrenciaAte').value = iso(hoje);
+  })();
 
   // =================================================================
   // URL de publicação do formulário: configurável pelo operador,
@@ -1045,7 +1328,7 @@
         if(!arquivo) return;
         await enviarImagemServico(arquivo);
       });
-    } else {
+    } else if(tipo === 'hotel'){
       const h = id ? todosHoteis.find(x => x.id === id) : {};
       titulo.textContent = id ? 'Editar hotel' : 'Novo hotel';
       const regrasTexto = Array.isArray(h.popup_regras) ? h.popup_regras.join('\n') : '';
@@ -1077,9 +1360,186 @@
           <div class="field-group"><label>Observação de urgência</label><input type="text" id="c_popup_obs_urgencia" value="${h.popup_obs_urgencia || ''}"></div>
         </div>
       `;
+    } else if(tipo === 'ocorrencia'){
+      const o = id ? todasOcorrencias.find(x => x.id === id) : {};
+      titulo.textContent = id ? 'Editar ocorrência' : 'Nova ocorrência';
+
+      const setoresAtivos = todosSetores.filter(s => s.ativo);
+      const tiposAtivos = todosTiposOcorrencia.filter(t => t.ativo);
+      const setorSelecionadoId = o.receptivo_setores?.id || (id ? '' : (setoresAtivos.find(s => s.padrao)?.id || ''));
+      const tipoSelecionadoId = o.receptivo_tipo_ocorrencia?.id || (id ? '' : (tiposAtivos.find(t => t.padrao)?.id || ''));
+
+      const optionsSetor = setoresAtivos.map(s => `<option value="${s.id}" ${setorSelecionadoId === s.id ? 'selected' : ''}>${s.descricao}</option>`).join('');
+      const optionsTipo = tiposAtivos.map(t => `<option value="${t.id}" ${tipoSelecionadoId === t.id ? 'selected' : ''}>${t.descricao}</option>`).join('');
+      const dataOcorrenciaValor = o.data_ocorrencia ? o.data_ocorrencia.slice(0, 10) : new Date().toISOString().slice(0, 10);
+
+      body.innerHTML = `
+        <div class="drawer-section">
+          <div class="field-group">
+            <label>Setor</label>
+            <div class="campo-com-add">
+              <div class="field-group"><select id="c_id_setor"><option value="">Selecione...</option>${optionsSetor}</select></div>
+              <button type="button" class="btn-add-inline" id="btnAddSetorInline" title="Novo setor">+</button>
+            </div>
+          </div>
+          <div class="field-group">
+            <label>Tipo de ocorrência</label>
+            <div class="campo-com-add">
+              <div class="field-group"><select id="c_id_tipo"><option value="">Selecione...</option>${optionsTipo}</select></div>
+              <button type="button" class="btn-add-inline" id="btnAddTipoInline" title="Novo tipo">+</button>
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field-group"><label>Data da ocorrência</label><input type="date" id="c_data_ocorrencia" value="${dataOcorrenciaValor}"></div>
+            <div class="field-group">
+              <label>Situação</label>
+              <select id="c_situacao">
+                <option value="aberta" ${(o.situacao || 'aberta') === 'aberta' ? 'selected' : ''}>Aberta</option>
+                <option value="em_andamento" ${o.situacao === 'em_andamento' ? 'selected' : ''}>Em andamento</option>
+                <option value="resolvida" ${o.situacao === 'resolvida' ? 'selected' : ''}>Resolvida</option>
+                <option value="cancelada" ${o.situacao === 'cancelada' ? 'selected' : ''}>Cancelada</option>
+              </select>
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field-group"><label>Reserva (opcional)</label><input type="text" id="c_reserva" placeholder="Código, localizador ou voucher" value="${o.reserva || ''}"></div>
+            <div class="field-group"><label>Hotel (opcional)</label><input type="text" id="c_hotel" placeholder="Nome do hotel" value="${o.hotel || ''}"></div>
+          </div>
+          <div class="field-group">
+            <label>Descrição da ocorrência</label>
+            <textarea id="c_historico" rows="5" style="width:100%; padding:11px 14px; border-radius:10px; border:1.5px solid var(--border); font-family:'Inter', sans-serif; font-size:.9rem; resize:vertical;">${o.historico_ocorrencia || ''}</textarea>
+          </div>
+          <div class="field-group">
+            <label>Protocolo (preencha quando a operadora responder)</label>
+            <input type="text" id="c_protocolo" placeholder="Ex: RITMV0063605" value="${o.protocolo || ''}">
+          </div>
+        </div>
+        ${id ? `<div class="audit-info" id="infoAuditoriaOcorrencia">Carregando informações de criação/alteração…</div>` : ''}
+      `;
+
+      document.getElementById('btnAddSetorInline').addEventListener('click', () => abrirModalGerenciarLista('setor'));
+      document.getElementById('btnAddTipoInline').addEventListener('click', () => abrirModalGerenciarLista('tipo'));
+
+      if(id) carregarInfoAuditoriaOcorrencia(o);
+    } else {
+      // (bloco antigo do hotel foi movido pro branch "else if" acima)
     }
 
     drawerCadastroOverlay.classList.add('show');
+  }
+
+  // =================================================================
+  // POPUP DE GERENCIAMENTO (setores / tipos de ocorrência)
+  // Editar descrição, marcar padrão e ativar/desativar.
+  // =================================================================
+  let modalListaTipoAtual = null; // 'setor' | 'tipo'
+
+  function abrirModalGerenciarLista(tipo){
+    modalListaTipoAtual = tipo;
+    document.getElementById('modalListaTitulo').textContent = tipo === 'setor' ? 'Gerenciar setores' : 'Gerenciar tipos de ocorrência';
+    renderModalListaBody();
+    document.getElementById('modalListaOverlay').classList.add('show');
+  }
+
+  function renderModalListaBody(){
+    const itens = modalListaTipoAtual === 'setor' ? todosSetores : todosTiposOcorrencia;
+    const body = document.getElementById('modalListaBody');
+
+    if(itens.length === 0){
+      body.innerHTML = '<p style="font-size:.85rem; color:var(--muted); padding:8px 0;">Nada cadastrado ainda.</p>';
+      return;
+    }
+
+    body.innerHTML = itens.map(item => `
+      <div class="modal-lista-row" data-id="${item.id}">
+        <input type="text" class="modal-lista-desc" value="${item.descricao}">
+        <label class="modal-lista-radio"><input type="radio" name="modalListaPadrao" ${item.padrao ? 'checked' : ''}> Padrão</label>
+        <label class="modal-lista-check"><input type="checkbox" class="modal-lista-ativo-check" ${item.ativo ? 'checked' : ''}> Ativo</label>
+        <button class="modal-lista-salvar" title="Salvar alterações">Salvar</button>
+      </div>
+    `).join('');
+
+    body.querySelectorAll('.modal-lista-row').forEach(row => {
+      row.querySelector('.modal-lista-salvar').addEventListener('click', () => salvarItemModalLista(row));
+    });
+  }
+
+  async function salvarItemModalLista(row){
+    const btn = row.querySelector('.modal-lista-salvar');
+    const id = row.dataset.id;
+    const tabela = modalListaTipoAtual === 'setor' ? 'receptivo_setores' : 'receptivo_tipo_ocorrencia';
+    const payload = {
+      descricao: row.querySelector('.modal-lista-desc').value.trim(),
+      padrao: row.querySelector('input[type="radio"]').checked,
+      ativo: row.querySelector('.modal-lista-ativo-check').checked
+    };
+    if(!payload.descricao){ alert('A descrição não pode ficar em branco.'); return; }
+
+    btn.disabled = true;
+    btn.textContent = 'Salvando...';
+    const { error } = await sb.from(tabela).update(payload).eq('id', id);
+    if(error){ alert('Erro ao salvar: ' + error.message); btn.disabled = false; btn.textContent = 'Salvar'; return; }
+
+    if(modalListaTipoAtual === 'setor') await carregarSetores(); else await carregarTiposOcorrencia();
+    renderModalListaBody();
+    atualizarSelectsAbertosNoDrawer();
+  }
+
+  document.getElementById('modalListaBtnAdicionar').addEventListener('click', async () => {
+    const input = document.getElementById('modalListaNovoInput');
+    const descricao = input.value.trim();
+    if(!descricao) return;
+
+    const tabela = modalListaTipoAtual === 'setor' ? 'receptivo_setores' : 'receptivo_tipo_ocorrencia';
+    const { error } = await sb.from(tabela).insert({ descricao, agencia_id: agenciaId });
+    if(error){ alert('Erro ao adicionar: ' + error.message); return; }
+
+    input.value = '';
+    if(modalListaTipoAtual === 'setor') await carregarSetores(); else await carregarTiposOcorrencia();
+    renderModalListaBody();
+    atualizarSelectsAbertosNoDrawer();
+  });
+
+  document.getElementById('btnFecharModalLista').addEventListener('click', () => {
+    document.getElementById('modalListaOverlay').classList.remove('show');
+    atualizarSelectsAbertosNoDrawer();
+  });
+
+  // mantém os selects de setor/tipo do drawer de ocorrência em dia
+  // com o que foi editado no popup, preservando a seleção atual
+  function atualizarSelectsAbertosNoDrawer(){
+    const selectSetor = document.getElementById('c_id_setor');
+    if(selectSetor){
+      const atual = selectSetor.value;
+      selectSetor.innerHTML = '<option value="">Selecione...</option>' +
+        todosSetores.filter(s => s.ativo).map(s => `<option value="${s.id}" ${s.id === atual ? 'selected' : ''}>${s.descricao}</option>`).join('');
+    }
+    const selectTipo = document.getElementById('c_id_tipo');
+    if(selectTipo){
+      const atual = selectTipo.value;
+      selectTipo.innerHTML = '<option value="">Selecione...</option>' +
+        todosTiposOcorrencia.filter(t => t.ativo).map(t => `<option value="${t.id}" ${t.id === atual ? 'selected' : ''}>${t.descricao}</option>`).join('');
+    }
+  }
+
+
+  async function carregarInfoAuditoriaOcorrencia(o){
+    const box = document.getElementById('infoAuditoriaOcorrencia');
+    if(!box) return;
+    try{
+      const [criadoPor, alteradoPor] = await Promise.all([
+        o.user_created ? sb.rpc('fn_obter_email_usuario', { p_user_id: o.user_created }) : Promise.resolve({ data: null }),
+        o.user_updated ? sb.rpc('fn_obter_email_usuario', { p_user_id: o.user_updated }) : Promise.resolve({ data: null })
+      ]);
+      const criadoEm = o.created_at ? new Date(o.created_at).toLocaleString('pt-BR') : '—';
+      const alteradoEm = o.updated_at ? new Date(o.updated_at).toLocaleString('pt-BR') : '—';
+      box.innerHTML = `
+        Criado por: ${criadoPor.data || '—'} em: ${criadoEm}<br>
+        Alterado em: ${alteradoEm} por: ${alteradoPor.data || '—'}
+      `;
+    } catch(erro){
+      box.textContent = 'Não foi possível carregar as informações de auditoria.';
+    }
   }
 
   document.getElementById('btnNovoServico').addEventListener('click', () => abrirDrawerCadastro('servico', null));
@@ -1120,7 +1580,7 @@
         if(error) throw new Error(error.message);
 
         await carregarServicos();
-      } else {
+      } else if(cadastroTipoAtual === 'hotel'){
         const regrasArray = document.getElementById('c_popup_regras').value
           .split('\n').map(l => l.trim()).filter(Boolean);
 
@@ -1147,6 +1607,30 @@
         if(error) throw new Error(error.message);
 
         await carregarHoteis();
+      } else if(cadastroTipoAtual === 'ocorrencia'){
+        const payload = {
+          agencia_id: agenciaId,
+          id_setor: document.getElementById('c_id_setor').value || null,
+          id_tipo: document.getElementById('c_id_tipo').value || null,
+          data_ocorrencia: document.getElementById('c_data_ocorrencia').value || null,
+          situacao: document.getElementById('c_situacao').value,
+          reserva: document.getElementById('c_reserva').value.trim() || null,
+          hotel: document.getElementById('c_hotel').value.trim() || null,
+          historico_ocorrencia: document.getElementById('c_historico').value.trim(),
+          protocolo: document.getElementById('c_protocolo').value.trim() || null
+        };
+
+        if(!payload.id_setor){ throw new Error('Selecione o setor.'); }
+        if(!payload.id_tipo){ throw new Error('Selecione o tipo de ocorrência.'); }
+        if(!payload.historico_ocorrencia){ throw new Error('Descreva a ocorrência.'); }
+
+        const query = cadastroIdAtual
+          ? sb.from('receptivo_livro_ocorrencias').update(payload).eq('id', cadastroIdAtual)
+          : sb.from('receptivo_livro_ocorrencias').insert(payload);
+        const { error } = await query;
+        if(error) throw new Error(error.message);
+
+        await carregarOcorrencias();
       }
 
       drawerCadastroOverlay.classList.remove('show');
