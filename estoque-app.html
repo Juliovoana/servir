@@ -155,6 +155,11 @@
     .btn-icone:hover { background: #f0f0f0; }
     .modal-caixa.larga { max-width: 780px; }
 
+    .th-ordenavel { cursor: pointer; user-select: none; }
+    .th-ordenavel:hover { background: #e4e4e4; }
+    .seta-ordem { font-size: 0.8em; color: #999; }
+    .seta-ordem.ativa { color: #1565c0; font-weight: bold; }
+
     .linha-atendimento {
         display: flex; justify-content: space-between; align-items: center;
         padding: 8px 0; border-bottom: 1px solid #eee; font-size: 0.85em; gap: 8px;
@@ -196,12 +201,15 @@
             <button class="btn btn-azul" id="btnBuscarEstoque">Buscar</button>
         </div>
         <button class="btn btn-verde" id="btnNovoProduto" style="margin-top:8px;">+ Novo produto</button>
+        <button class="btn btn-azul" id="btnBaixaDireta" style="margin-top:8px;">⬇️ Baixa direta (sem projeto)</button>
+        <button class="btn btn-cinza" id="btnImportarNFe" style="margin-top:8px;">📄 Importar NF-e (XML)</button>
     </div>
 
     <div class="caixa" id="painelNovoProduto" style="display:none;">
         <h4 style="margin-top:0;">Novo produto</h4>
         <div class="grade col4">
-            <div class="campo"><label>Código (opcional)</label><input type="text" id="npCodigo" placeholder="auto"></div>
+            <div class="campo"><label>Código interno (opcional)</label><input type="text" id="npCodigo" placeholder="auto"></div>
+            <div class="campo"><label>Código externo (opcional)</label><input type="text" id="npCodigoExterno" placeholder="código no sistema externo"></div>
             <div class="campo" style="grid-column: span 2;"><label>Nome do produto</label><input type="text" id="npNome"></div>
             <div class="campo"><label>Unidade</label><input type="text" id="npUn" value="UN"></div>
             <div class="campo"><label>Valor unitário (R$)</label><input type="number" step="0.01" id="npValor"></div>
@@ -217,7 +225,7 @@
 
     <table class="tabela" id="tabelaEstoque">
         <thead>
-            <tr><th>Código</th><th>Produto</th><th>Un</th><th class="num">Valor (R$)</th><th class="num">Estoque Inicial</th><th class="num">Estoque Atual</th><th class="center">Ações</th></tr>
+            <tr><th>Código</th><th>Cód. Externo</th><th>Produto</th><th>Un</th><th class="num">Valor (R$)</th><th class="num">Estoque Inicial</th><th class="num">Estoque Atual</th><th class="center">Ações</th></tr>
         </thead>
         <tbody id="corpoTabelaEstoque"></tbody>
     </table>
@@ -257,7 +265,17 @@
 
         <table class="tabela" id="tabelaItensProjeto" style="margin-top:14px;">
             <thead>
-                <tr><th>Código</th><th>Descrição</th><th>Tag</th><th>Evento</th><th class="num">Valor Unit.</th><th class="num">Qtd. Pedida</th><th class="center">Qtd. Atendida</th><th class="num">Subtotal</th><th class="center">Ações</th></tr>
+                <tr>
+                    <th class="th-ordenavel" data-ordenar="codigo">Código <span class="seta-ordem"></span></th>
+                    <th class="th-ordenavel" data-ordenar="descricao">Descrição <span class="seta-ordem"></span></th>
+                    <th class="th-ordenavel" data-ordenar="tag">Tag <span class="seta-ordem"></span></th>
+                    <th class="th-ordenavel" data-ordenar="evento">Evento <span class="seta-ordem"></span></th>
+                    <th class="num">Valor Unit.</th>
+                    <th class="num">Qtd. Pedida</th>
+                    <th class="center">Qtd. Atendida</th>
+                    <th class="num">Subtotal</th>
+                    <th class="center">Ações</th>
+                </tr>
             </thead>
             <tbody id="corpoTabelaItensProjeto"></tbody>
         </table>
@@ -295,6 +313,9 @@
 
     <h4>Projetos</h4>
     <p class="subtitulo">Clique em um projeto para abrir a requisição de saída dele.</p>
+    <div class="linha-busca" style="margin-bottom:10px;">
+        <input type="text" id="buscaProjetos" placeholder="Buscar projeto por nome, tipo ou código...">
+    </div>
     <div class="lista-projetos" id="listaProjetos"></div>
     <div class="vazio" id="vazioProjetos" style="display:none;">Nenhum projeto cadastrado ainda.</div>
 </div>
@@ -361,6 +382,93 @@
 
 <!-- ===================== MODAL / POPUP: Pré-visualização (Excel) ===================== -->
 <!-- ===================== MODAL / POPUP: Histórico do produto ===================== -->
+<!-- ===================== MODAL / POPUP: Baixa direta (sem projeto) ===================== -->
+<!-- ===================== MODAL / POPUP: Importar NF-e (XML) ===================== -->
+<div class="modal-overlay" id="modalImportarNFe">
+    <div class="modal-caixa larga">
+        <h4 style="margin-top:0;">Importar NF-e (XML)</h4>
+        <p class="subtitulo" style="margin-bottom:10px;">Carrega os itens da nota e permite lançar tudo como entrada em estoque ou baixa direta.</p>
+
+        <div class="campo">
+            <label>Arquivo XML da NF-e</label>
+            <input type="file" id="nfeArquivo" accept=".xml">
+        </div>
+        <div id="nfeInfo" style="margin-top:10px; font-size:0.9em;"></div>
+
+        <div id="nfeBlocoItens" style="display:none;">
+            <div class="grade col4" style="margin-top:14px;">
+                <div class="campo"><label>Data de lançamento</label><input type="date" id="nfeDataLancamento"></div>
+                <div class="campo"><label>Responsável</label><input type="text" id="nfeResponsavel"></div>
+                <div class="campo"><label>Tag (opcional)</label><input type="text" id="nfeTag"></div>
+                <div class="campo"><label>Evento (opcional)</label><input type="text" id="nfeEvento"></div>
+            </div>
+            <div class="campo" style="margin-top:8px;"><label>Observação (opcional)</label><input type="text" id="nfeObservacao"></div>
+
+            <div style="max-height:40vh; overflow:auto; margin-top:14px;">
+                <table class="tabela">
+                    <thead>
+                        <tr><th>Cód. NF</th><th>Descrição na NF</th><th>Un</th><th class="num">Qtd</th><th class="num">Valor Unit.</th><th>Produto no sistema</th><th class="center">Ações</th></tr>
+                    </thead>
+                    <tbody id="corpoTabelaNFe"></tbody>
+                </table>
+            </div>
+
+            <div style="margin-top:16px; text-align:right; display:flex; gap:8px; justify-content:flex-end; flex-wrap:wrap;">
+                <button class="btn btn-cinza" id="btnCancelarImportarNFe">Sair</button>
+                <button class="btn btn-azul" id="btnNfeBaixa">⬇️ Registrar como Baixa Direta</button>
+                <button class="btn btn-verde" id="btnNfeEntrada">📥 Registrar como Entrada em Estoque</button>
+            </div>
+        </div>
+        <span class="status-msg" id="statusImportarNFe"></span>
+    </div>
+</div>
+
+<!-- ===================== MODAL / POPUP: Vincular produto (dentro da importação de NF) ===================== -->
+<div class="modal-overlay" id="modalVincularNFe" style="z-index:1002;">
+    <div class="modal-caixa">
+        <h4 style="margin-top:0;">Vincular produto</h4>
+        <div class="linha-busca">
+            <input type="text" id="nfeVinculoBusca" placeholder="Digite código ou descrição do produto...">
+        </div>
+        <div id="nfeVinculoResultados"></div>
+        <div style="margin-top:16px; display:flex; justify-content:space-between; align-items:center;">
+            <button class="btn btn-cinza" id="btnNfeMarcarNovo" type="button">+ Criar como produto novo</button>
+            <button class="btn btn-cinza" id="btnCancelarVincularNFe">Sair</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="modalBaixaDireta">
+    <div class="modal-caixa">
+        <h4 style="margin-top:0;">Baixa direta de estoque</h4>
+        <p class="subtitulo" style="margin-bottom:10px;">Use quando o material foi direto pra produção, sem passar por um projeto/requisição.</p>
+
+        <div class="linha-busca">
+            <input type="text" id="baixaBuscaProduto" placeholder="Digite código ou descrição do produto...">
+            <button class="btn btn-azul" id="baixaBtnBuscarProduto" type="button">Buscar</button>
+        </div>
+        <div id="baixaResultadosProduto"></div>
+        <div id="baixaProdutoSelecionado" style="margin:8px 0; font-size:0.9em;"></div>
+
+        <div class="grade col2" style="margin-top:8px;">
+            <div class="campo"><label>Quantidade</label><input type="number" step="0.01" id="baixaQtd"></div>
+            <div class="campo"><label>Data</label><input type="date" id="baixaData"></div>
+        </div>
+        <div class="grade col2" style="margin-top:8px;">
+            <div class="campo"><label>Tag (opcional)</label><input type="text" id="baixaTag"></div>
+            <div class="campo"><label>Evento (opcional)</label><input type="text" id="baixaEvento"></div>
+        </div>
+        <div class="campo" style="margin-top:8px;"><label>Responsável pela retirada</label><input type="text" id="baixaResponsavel"></div>
+        <div class="campo" style="margin-top:8px;"><label>Observação (opcional)</label><input type="text" id="baixaObservacao"></div>
+
+        <div style="margin-top:16px; text-align:right;">
+            <button class="btn btn-cinza" id="btnCancelarBaixaDireta">Sair</button>
+            <button class="btn btn-verde" id="btnConfirmarBaixaDireta">Registrar baixa</button>
+        </div>
+        <span class="status-msg" id="statusBaixaDireta"></span>
+    </div>
+</div>
+
 <div class="modal-overlay" id="modalInfoProduto">
     <div class="modal-caixa larga">
         <div id="modalInfoProdutoConteudo"></div>
@@ -436,6 +544,16 @@
         <div class="campo">
             <label>Quantidade</label>
             <input type="number" step="0.01" id="modalQtdInicialValor" value="1">
+        </div>
+        <div style="margin-top:10px;">
+            <label style="font-size:0.9em; display:flex; align-items:center; gap:6px; cursor:pointer;">
+                <input type="checkbox" id="modalQtdInicialAtenderJa">
+                Atender imediatamente (foi direto pra produção, sem passar pelo almoxarifado)
+            </label>
+        </div>
+        <div class="campo" id="campoResponsavelAtendeJa" style="margin-top:10px; display:none;">
+            <label>Responsável pela retirada</label>
+            <input type="text" id="modalQtdInicialResponsavel">
         </div>
         <div style="margin-top:16px; text-align:right;">
             <button class="btn btn-cinza" id="btnCancelarQtdInicial">Sair</button>
@@ -522,11 +640,14 @@ function formatarData(v) {
 function escapeHtml(s) {
     return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
+function proximoIdProduto() {
+    return produtos.reduce((m, p) => Math.max(m, p.id), 0) + 1;
+}
 
 /* ---------- comunicação com o backend (Supabase) ---------- */
 async function chamarGet(acao) {
     if (acao === 'listarProdutos') {
-        const { data, error } = await sb.from('fabrica_produtos').select('*');
+        const { data, error } = await sb.from('fabrica_produtos').select('*').range(0, 9999);
         if (error) throw error;
         return data;
     }
@@ -536,12 +657,12 @@ async function chamarGet(acao) {
         return data;
     }
     if (acao === 'listarProjetos') {
-        const { data, error } = await sb.from('fabrica_projetos').select('*, fabrica_itens_projeto(*)');
+        const { data, error } = await sb.from('fabrica_projetos').select('*, fabrica_itens_projeto(*)').range(0, 9999);
         if (error) throw error;
         return (data || []).map(p => ({ ...p, itens: p.fabrica_itens_projeto || [] }));
     }
     if (acao === 'listarEventos') {
-        const { data, error } = await sb.from('fabrica_eventos').select('*');
+        const { data, error } = await sb.from('fabrica_eventos').select('*').range(0, 9999);
         if (error) throw error;
         return data;
     }
@@ -553,12 +674,13 @@ async function chamarPost(acao, d) {
         const p = d.produto;
         const registro = {
             nome: p.nome, un: p.un, valor: p.valor, grupo: p.grupo,
-            estoque_inicial: p.estoqueInicial, estoque: p.estoque, almox: p.almox || 1
+            estoque_inicial: p.estoqueInicial, estoque: p.estoque, almox: p.almox || 1,
+            codigo_externo: p.codigoExterno || null
         };
-        if (p.id) registro.id = p.id;
-        const { error } = await sb.from('fabrica_produtos').upsert(registro);
+        if (p.id) registro.id = p.id; // se não informado, o banco gera automaticamente
+        const { data, error } = await sb.from('fabrica_produtos').upsert(registro).select().single();
         if (error) throw error;
-        return;
+        return data;
     }
     if (acao === 'registrarMovimentacao') {
         const m = d.movimentacao;
@@ -582,12 +704,12 @@ async function chamarPost(acao, d) {
     }
     if (acao === 'adicionarItemProjeto') {
         const it = d.item;
-        const { error } = await sb.from('fabrica_itens_projeto').insert({
+        const { data, error } = await sb.from('fabrica_itens_projeto').insert({
             projeto_id: it.projetoId, produto_id: it.produtoId, qtd_requisitada: it.qtdRequisitada,
             responsavel: it.responsavel || '', observacao: it.observacao || '', tag: it.tag || '', evento: it.evento || ''
-        });
+        }).select().single();
         if (error) throw error;
-        return;
+        return data;
     }
     if (acao === 'atualizarQtdItem') {
         const { error } = await sb.from('fabrica_itens_projeto').update({ qtd_requisitada: d.novaQtd }).eq('id', d.itemId);
@@ -642,6 +764,7 @@ async function carregarProdutos() {
     const lista = await chamarGet('listarProdutos');
     produtos = (lista || []).map(p => ({
         id: Number(p.id),
+        codigoExterno: p.codigo_externo || '',
         nome: String(p.nome || ''),
         un: String(p.un || 'UN'),
         valor: Number(p.valor) || 0,
@@ -740,7 +863,7 @@ function buscarProdutos(termo) {
     if (!termo) return produtos.slice(0, 60);
     const palavras = termo.split(/\s+/).filter(Boolean);
     return produtos.filter(p => {
-        const texto = (String(p.id) + ' ' + p.nome).toUpperCase();
+        const texto = (String(p.id) + ' ' + (p.codigoExterno || '') + ' ' + p.nome).toUpperCase();
         return palavras.every(palavra => texto.includes(palavra));
     }).slice(0, 60);
 }
@@ -755,6 +878,7 @@ function renderizarTabelaEstoque(lista) {
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td>${p.id}</td>
+            <td>${escapeHtml(p.codigoExterno) || '-'}</td>
             <td>${escapeHtml(p.nome)}</td>
             <td>${escapeHtml(p.un)}</td>
             <td class="num">${formatarMoeda(p.valor)}</td>
@@ -802,7 +926,7 @@ function abrirInfoProduto(produtoId) {
     let html = `
         <h4 style="margin-top:0;">${escapeHtml(p.nome)}</h4>
         <p class="subtitulo" style="margin-bottom:14px;">
-            #${p.id} · Estoque inicial: ${Number(p.estoqueInicial).toLocaleString('pt-BR')} · Estoque atual: ${Number(p.estoque).toLocaleString('pt-BR')} ${escapeHtml(p.un)}
+            #${p.id}${p.codigoExterno ? ' · Código externo: ' + escapeHtml(p.codigoExterno) : ''} · Estoque inicial: ${Number(p.estoqueInicial).toLocaleString('pt-BR')} · Estoque atual: ${Number(p.estoque).toLocaleString('pt-BR')} ${escapeHtml(p.un)}
         </p>
     `;
 
@@ -844,6 +968,360 @@ document.getElementById('btnFecharInfoProduto').addEventListener('click', () => 
     document.getElementById('modalInfoProduto').classList.remove('aberto');
 });
 
+/* ---------- popup: Baixa direta de estoque (sem projeto) ---------- */
+let produtoSelecionadoBaixa = null;
+
+document.getElementById('btnBaixaDireta').addEventListener('click', () => {
+    produtoSelecionadoBaixa = null;
+    document.getElementById('baixaBuscaProduto').value = '';
+    document.getElementById('baixaResultadosProduto').innerHTML = '';
+    document.getElementById('baixaResultadosProduto').classList.remove('aberto');
+    document.getElementById('baixaProdutoSelecionado').innerHTML = '';
+    document.getElementById('baixaQtd').value = '';
+    document.getElementById('baixaData').value = hojeISO();
+    document.getElementById('baixaTag').value = '';
+    document.getElementById('baixaEvento').value = '';
+    document.getElementById('baixaResponsavel').value = '';
+    document.getElementById('baixaObservacao').value = '';
+    document.getElementById('statusBaixaDireta').textContent = '';
+    document.getElementById('modalBaixaDireta').classList.add('aberto');
+});
+
+document.getElementById('btnCancelarBaixaDireta').addEventListener('click', () => {
+    document.getElementById('modalBaixaDireta').classList.remove('aberto');
+});
+
+document.getElementById('baixaBtnBuscarProduto').addEventListener('click', () => {
+    renderizarResultadosBusca('baixaResultadosProduto', document.getElementById('baixaBuscaProduto').value, selecionarProdutoBaixa);
+});
+document.getElementById('baixaBuscaProduto').addEventListener('input', () => {
+    const termo = document.getElementById('baixaBuscaProduto').value;
+    if (termo.trim()) renderizarResultadosBusca('baixaResultadosProduto', termo, selecionarProdutoBaixa);
+    else document.getElementById('baixaResultadosProduto').classList.remove('aberto');
+});
+document.getElementById('baixaBuscaProduto').addEventListener('keydown', e => {
+    if (e.key === 'Enter') document.getElementById('baixaBtnBuscarProduto').click();
+});
+
+function selecionarProdutoBaixa(p) {
+    produtoSelecionadoBaixa = p;
+    document.getElementById('baixaProdutoSelecionado').innerHTML =
+        `Selecionado: <strong>#${p.id} — ${escapeHtml(p.nome)}</strong> (estoque atual: ${Number(p.estoque).toLocaleString('pt-BR')} ${escapeHtml(p.un)})`;
+    document.getElementById('baixaResultadosProduto').classList.remove('aberto');
+    document.getElementById('baixaBuscaProduto').value = '';
+}
+
+document.getElementById('btnConfirmarBaixaDireta').addEventListener('click', async () => {
+    const statusEl = document.getElementById('statusBaixaDireta');
+    if (!produtoSelecionadoBaixa) {
+        statusEl.className = 'status-msg erro';
+        statusEl.textContent = 'Selecione um produto.';
+        return;
+    }
+    const qtd = parseFloat(document.getElementById('baixaQtd').value);
+    if (!qtd || qtd <= 0) {
+        statusEl.className = 'status-msg erro';
+        statusEl.textContent = 'Informe uma quantidade válida.';
+        return;
+    }
+    const responsavel = document.getElementById('baixaResponsavel').value.trim().toUpperCase();
+    if (!responsavel) {
+        statusEl.className = 'status-msg erro';
+        statusEl.textContent = 'Informe o responsável pela retirada.';
+        return;
+    }
+    const prod = produtos.find(p => p.id === produtoSelecionadoBaixa.id);
+    if (qtd > prod.estoque) {
+        if (!confirm(`Estoque atual é ${prod.estoque}. Deseja confirmar a baixa de ${qtd} mesmo assim (estoque ficará negativo)?`)) return;
+    }
+
+    statusEl.className = '';
+    statusEl.textContent = 'Registrando...';
+    try {
+        await chamarPost('registrarMovimentacao', {
+            movimentacao: {
+                data: document.getElementById('baixaData').value || hojeISO(),
+                produtoId: prod.id,
+                qtd,
+                valorUnit: prod.valor,
+                tipo: 'saida',
+                tag: document.getElementById('baixaTag').value.trim(),
+                evento: document.getElementById('baixaEvento').value.trim(),
+                observacao: document.getElementById('baixaObservacao').value.trim(),
+                responsavel,
+                projetoId: null,
+                itemProjetoId: null
+            }
+        });
+        await Promise.all([carregarProdutos(), carregarMovimentacoes()]);
+        atualizarTagContagem();
+        statusEl.className = 'status-msg sucesso';
+        statusEl.textContent = '✅ Baixa registrada.';
+        renderizarTabelaEstoque(buscarProdutos(document.getElementById('buscaEstoque').value));
+        setTimeout(() => {
+            document.getElementById('modalBaixaDireta').classList.remove('aberto');
+            statusEl.textContent = '';
+        }, 1200);
+    } catch (err) {
+        console.error(err);
+        statusEl.className = 'status-msg erro';
+        statusEl.textContent = '⚠️ ' + err.message;
+    }
+});
+
+/* ============================================================
+   IMPORTAÇÃO DE NF-e (XML)
+   ============================================================ */
+let nfeItensParseados = [];
+let nfeIndiceVinculoAtual = null;
+
+function parsearXmlNFe(xmlText) {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(xmlText, 'text/xml');
+    if (doc.querySelector('parsererror')) throw new Error('Arquivo XML inválido ou corrompido.');
+
+    const get = (parent, tag) => {
+        if (!parent) return '';
+        const el = parent.getElementsByTagName(tag)[0];
+        return el ? el.textContent.trim() : '';
+    };
+
+    const ide = doc.getElementsByTagName('ide')[0];
+    const emit = doc.getElementsByTagName('emit')[0];
+    const dest = doc.getElementsByTagName('dest')[0];
+    const dets = Array.from(doc.getElementsByTagName('det'));
+
+    if (!dets.length) throw new Error('Nenhum item (tag <det>) encontrado nesse XML. Confira se é uma NF-e válida.');
+
+    const itens = dets.map(det => {
+        const prod = det.getElementsByTagName('prod')[0];
+        return {
+            cProd: get(prod, 'cProd'),
+            xProd: get(prod, 'xProd'),
+            uCom: get(prod, 'uCom') || 'UN',
+            qCom: parseFloat(get(prod, 'qCom')) || 0,
+            vUnCom: parseFloat(get(prod, 'vUnCom')) || 0
+        };
+    });
+
+    return {
+        nNF: get(ide, 'nNF'),
+        dhEmi: get(ide, 'dhEmi') || get(ide, 'dEmi'),
+        emitNome: get(emit, 'xNome'),
+        destNome: get(dest, 'xNome'),
+        itens
+    };
+}
+
+function encontrarProdutoCorrespondenteNFe(itemNfe) {
+    const codigoNum = String(itemNfe.cProd || '').replace(/\D/g, '');
+    if (codigoNum) {
+        const porCodigo = produtos.find(p => String(p.id) === codigoNum);
+        if (porCodigo) return porCodigo;
+    }
+    const nomeNfe = (itemNfe.xProd || '').toUpperCase().trim();
+    if (!nomeNfe) return null;
+    return produtos.find(p => {
+        const nomeProd = p.nome.toUpperCase();
+        return nomeProd === nomeNfe || nomeProd.includes(nomeNfe) || nomeNfe.includes(nomeProd);
+    }) || null;
+}
+
+document.getElementById('btnImportarNFe').addEventListener('click', () => {
+    document.getElementById('nfeArquivo').value = '';
+    document.getElementById('nfeInfo').innerHTML = '';
+    document.getElementById('nfeBlocoItens').style.display = 'none';
+    document.getElementById('statusImportarNFe').textContent = '';
+    document.getElementById('nfeDataLancamento').value = hojeISO();
+    document.getElementById('nfeResponsavel').value = '';
+    document.getElementById('nfeTag').value = '';
+    document.getElementById('nfeEvento').value = '';
+    document.getElementById('nfeObservacao').value = '';
+    nfeItensParseados = [];
+    document.getElementById('modalImportarNFe').classList.add('aberto');
+});
+
+document.getElementById('btnCancelarImportarNFe').addEventListener('click', () => {
+    document.getElementById('modalImportarNFe').classList.remove('aberto');
+});
+
+document.getElementById('nfeArquivo').addEventListener('change', async (e) => {
+    const arquivo = e.target.files[0];
+    if (!arquivo) return;
+    const statusEl = document.getElementById('statusImportarNFe');
+    statusEl.className = '';
+    statusEl.textContent = 'Lendo arquivo...';
+    try {
+        const texto = await arquivo.text();
+        const nfe = parsearXmlNFe(texto);
+
+        document.getElementById('nfeInfo').innerHTML = `
+            <strong>NF nº ${escapeHtml(nfe.nNF) || '-'}</strong> · Emitida em ${escapeHtml(formatarData(nfe.dhEmi))}<br>
+            Emitente: ${escapeHtml(nfe.emitNome) || '-'}<br>
+            Destinatário: ${escapeHtml(nfe.destNome) || '-'}<br>
+            ${nfe.itens.length} item(ns) encontrado(s).
+        `;
+
+        nfeItensParseados = nfe.itens.map(it => {
+            const match = encontrarProdutoCorrespondenteNFe(it);
+            return {
+                cProd: it.cProd,
+                xProdOriginal: it.xProd,
+                un: it.uCom,
+                qtd: it.qCom,
+                valorUnit: it.vUnCom,
+                produtoVinculadoId: match ? match.id : null,
+                criarNovo: !match
+            };
+        });
+
+        if (nfe.dhEmi) document.getElementById('nfeDataLancamento').value = String(nfe.dhEmi).slice(0, 10);
+        renderizarTabelaNFe();
+        document.getElementById('nfeBlocoItens').style.display = 'block';
+        statusEl.textContent = '';
+    } catch (err) {
+        console.error(err);
+        statusEl.className = 'status-msg erro';
+        statusEl.textContent = '⚠️ ' + err.message;
+    }
+});
+
+function renderizarTabelaNFe() {
+    const corpo = document.getElementById('corpoTabelaNFe');
+    corpo.innerHTML = '';
+    nfeItensParseados.forEach((item, idx) => {
+        const prodVinculado = item.produtoVinculadoId ? produtos.find(p => p.id === item.produtoVinculadoId) : null;
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${escapeHtml(item.cProd)}</td>
+            <td>${escapeHtml(item.xProdOriginal)}</td>
+            <td>${escapeHtml(item.un)}</td>
+            <td class="num"><input type="number" step="0.01" class="input-qtd-pedida" value="${item.qtd}" data-nfe-qtd="${idx}"></td>
+            <td class="num"><input type="number" step="0.01" class="input-qtd-pedida" value="${item.valorUnit}" data-nfe-valor="${idx}"></td>
+            <td>${item.criarNovo
+                ? `<span class="pill" style="background:#fff3e0;color:#e65100;">+ Novo produto</span>`
+                : `<span class="pill pill-entrada">${prodVinculado ? '#' + prodVinculado.id + ' — ' + escapeHtml(prodVinculado.nome) : '-'}</span>`
+            }</td>
+            <td class="center"><button class="btn btn-cinza btn-pequeno" data-nfe-vincular="${idx}">🔍 Vincular</button></td>
+        `;
+        corpo.appendChild(tr);
+    });
+    corpo.querySelectorAll('[data-nfe-qtd]').forEach(inp => {
+        inp.addEventListener('change', () => { nfeItensParseados[Number(inp.dataset.nfeQtd)].qtd = parseFloat(inp.value) || 0; });
+    });
+    corpo.querySelectorAll('[data-nfe-valor]').forEach(inp => {
+        inp.addEventListener('change', () => { nfeItensParseados[Number(inp.dataset.nfeValor)].valorUnit = parseFloat(inp.value) || 0; });
+    });
+    corpo.querySelectorAll('[data-nfe-vincular]').forEach(btn => {
+        btn.addEventListener('click', () => abrirVinculoProdutoNFe(Number(btn.dataset.nfeVincular)));
+    });
+}
+
+function abrirVinculoProdutoNFe(idx) {
+    nfeIndiceVinculoAtual = idx;
+    document.getElementById('nfeVinculoBusca').value = '';
+    document.getElementById('nfeVinculoResultados').innerHTML = '';
+    document.getElementById('nfeVinculoResultados').classList.remove('aberto');
+    document.getElementById('modalVincularNFe').classList.add('aberto');
+}
+
+document.getElementById('nfeVinculoBusca').addEventListener('input', () => {
+    const termo = document.getElementById('nfeVinculoBusca').value;
+    if (termo.trim()) {
+        renderizarResultadosBusca('nfeVinculoResultados', termo, (p) => {
+            nfeItensParseados[nfeIndiceVinculoAtual].produtoVinculadoId = p.id;
+            nfeItensParseados[nfeIndiceVinculoAtual].criarNovo = false;
+            document.getElementById('modalVincularNFe').classList.remove('aberto');
+            renderizarTabelaNFe();
+        });
+    } else {
+        document.getElementById('nfeVinculoResultados').classList.remove('aberto');
+    }
+});
+
+document.getElementById('btnNfeMarcarNovo').addEventListener('click', () => {
+    nfeItensParseados[nfeIndiceVinculoAtual].criarNovo = true;
+    nfeItensParseados[nfeIndiceVinculoAtual].produtoVinculadoId = null;
+    document.getElementById('modalVincularNFe').classList.remove('aberto');
+    renderizarTabelaNFe();
+});
+
+document.getElementById('btnCancelarVincularNFe').addEventListener('click', () => {
+    document.getElementById('modalVincularNFe').classList.remove('aberto');
+});
+
+async function processarImportacaoNFe(tipo) {
+    const statusEl = document.getElementById('statusImportarNFe');
+    if (!nfeItensParseados.length) {
+        statusEl.className = 'status-msg erro';
+        statusEl.textContent = 'Nenhum item carregado.';
+        return;
+    }
+    const data = document.getElementById('nfeDataLancamento').value || hojeISO();
+    const responsavel = document.getElementById('nfeResponsavel').value.trim().toUpperCase();
+    if (!responsavel) {
+        statusEl.className = 'status-msg erro';
+        statusEl.textContent = 'Informe o responsável.';
+        return;
+    }
+    const tag = document.getElementById('nfeTag').value.trim();
+    const evento = document.getElementById('nfeEvento').value.trim();
+    const observacaoBase = document.getElementById('nfeObservacao').value.trim();
+
+    if (tipo === 'saida' && nfeItensParseados.some(i => i.criarNovo)) {
+        if (!confirm('Alguns itens estão marcados como "novo produto" e serão criados com estoque zerado antes da baixa (o estoque pode ficar negativo). Deseja continuar?')) return;
+    }
+
+    statusEl.className = '';
+    statusEl.textContent = `Processando ${nfeItensParseados.length} item(ns)...`;
+
+    try {
+        for (const item of nfeItensParseados) {
+            let produtoId = item.produtoVinculadoId;
+            if (item.criarNovo || !produtoId) {
+                const criado = await chamarPost('salvarProduto', {
+                    produto: {
+                        id: undefined, // banco gera automaticamente
+                        codigoExterno: item.cProd || null,
+                        nome: (item.xProdOriginal || ('PRODUTO NF ' + item.cProd)).toUpperCase(),
+                        un: item.un || 'UN',
+                        valor: item.valorUnit,
+                        grupo: 1,
+                        estoqueInicial: 0,
+                        estoque: 0,
+                        almox: 1
+                    }
+                });
+                await carregarProdutos();
+                produtoId = criado.id;
+            }
+            await chamarPost('registrarMovimentacao', {
+                movimentacao: {
+                    data, produtoId, qtd: item.qtd, valorUnit: item.valorUnit, tipo,
+                    tag, evento,
+                    observacao: observacaoBase || `Importado da NF-e`,
+                    responsavel, projetoId: null, itemProjetoId: null
+                }
+            });
+        }
+        await Promise.all([carregarProdutos(), carregarMovimentacoes()]);
+        atualizarTagContagem();
+        statusEl.className = 'status-msg sucesso';
+        statusEl.textContent = `✅ ${nfeItensParseados.length} item(ns) registrado(s) como ${tipo === 'entrada' ? 'entrada em estoque' : 'baixa direta'}.`;
+        renderizarTabelaEstoque(buscarProdutos(document.getElementById('buscaEstoque').value));
+        setTimeout(() => {
+            document.getElementById('modalImportarNFe').classList.remove('aberto');
+        }, 2000);
+    } catch (err) {
+        console.error(err);
+        statusEl.className = 'status-msg erro';
+        statusEl.textContent = '⚠️ ' + err.message;
+    }
+}
+
+document.getElementById('btnNfeEntrada').addEventListener('click', () => processarImportacaoNFe('entrada'));
+document.getElementById('btnNfeBaixa').addEventListener('click', () => processarImportacaoNFe('saida'));
+
 document.getElementById('btnBuscarEstoque').addEventListener('click', () => {
     renderizarTabelaEstoque(buscarProdutos(document.getElementById('buscaEstoque').value));
 });
@@ -874,9 +1352,11 @@ document.getElementById('btnSalvarProduto').addEventListener('click', async () =
         statusEl.textContent = 'Já existe um produto com esse código.';
         return;
     }
+    const codigoExterno = document.getElementById('npCodigoExterno').value.trim();
     const estoqueInicial = parseFloat(document.getElementById('npEstoque').value) || 0;
     const novo = {
-        id: codigo ? Number(codigo) : null, // null = backend gera o próximo código
+        id: codigo ? Number(codigo) : undefined, // se não informado, o banco gera automaticamente
+        codigoExterno: codigoExterno || null,
         nome: nome.toUpperCase(),
         valor: parseFloat(document.getElementById('npValor').value) || 0,
         un: document.getElementById('npUn').value.trim().toUpperCase() || 'UN',
@@ -887,15 +1367,21 @@ document.getElementById('btnSalvarProduto').addEventListener('click', async () =
     };
     statusEl.className = '';
     statusEl.textContent = 'Salvando...';
-    await chamarPost('salvarProduto', { produto: novo });
-    await carregarProdutos();
-    atualizarTagContagem();
-    statusEl.className = 'status-msg sucesso';
-    statusEl.textContent = '✅ Produto salvo.';
-    ['npCodigo','npNome','npValor'].forEach(id2 => document.getElementById(id2).value = '');
-    document.getElementById('npEstoque').value = 0;
-    renderizarTabelaEstoque(buscarProdutos(document.getElementById('buscaEstoque').value));
-    setTimeout(() => { document.getElementById('painelNovoProduto').style.display = 'none'; statusEl.textContent=''; }, 1200);
+    try {
+        await chamarPost('salvarProduto', { produto: novo });
+        await carregarProdutos();
+        atualizarTagContagem();
+        statusEl.className = 'status-msg sucesso';
+        statusEl.textContent = '✅ Produto salvo.';
+        ['npCodigo', 'npCodigoExterno', 'npNome', 'npValor'].forEach(id2 => document.getElementById(id2).value = '');
+        document.getElementById('npEstoque').value = 0;
+        renderizarTabelaEstoque(buscarProdutos(document.getElementById('buscaEstoque').value));
+        setTimeout(() => { document.getElementById('painelNovoProduto').style.display = 'none'; statusEl.textContent = ''; }, 1200);
+    } catch (err) {
+        console.error(err);
+        statusEl.className = 'status-msg erro';
+        statusEl.textContent = '⚠️ ' + err.message;
+    }
 });
 
 /* ============================================================
@@ -985,13 +1471,25 @@ function entreguePorItem(itemId) {
         .reduce((s, m) => s + Number(m.qtd), 0);
 }
 
+function buscarProjetosLista(termo) {
+    termo = (termo || '').trim().toUpperCase();
+    const listaOrdenada = [...projetos].sort((a, b) => b.id - a.id); // mais recente primeiro
+    if (!termo) return listaOrdenada;
+    const palavras = termo.split(/\s+/).filter(Boolean);
+    return listaOrdenada.filter(p => {
+        const texto = (String(p.id) + ' ' + p.descricao + ' ' + p.tipo).toUpperCase();
+        return palavras.every(pal => texto.includes(pal));
+    });
+}
+
 function renderizarListaProjetos() {
     const el = document.getElementById('listaProjetos');
     const vazio = document.getElementById('vazioProjetos');
+    const lista = buscarProjetosLista(document.getElementById('buscaProjetos').value);
     el.innerHTML = '';
-    if (!projetos.length) { vazio.style.display = 'block'; return; }
+    if (!lista.length) { vazio.style.display = 'block'; return; }
     vazio.style.display = 'none';
-    projetos.forEach(proj => {
+    lista.forEach(proj => {
         const { requisitado, entregue } = totaisProjeto(proj);
         const pct = requisitado > 0 ? Math.min(100, Math.round(entregue / requisitado * 100)) : 0;
         const div = document.createElement('div');
@@ -1007,6 +1505,7 @@ function renderizarListaProjetos() {
         el.appendChild(div);
     });
 }
+document.getElementById('buscaProjetos').addEventListener('input', () => renderizarListaProjetos());
 
 function ultimoTagEventoDoProjeto(proj) {
     const itensOrdenados = [...(proj.itens || [])].sort((a, b) => b.id - a.id);
@@ -1041,6 +1540,10 @@ function abrirRequisicao(id) {
     document.getElementById('resultadosBuscaEvento').classList.remove('aberto');
     eventoSelecionadoAtual = null;
 
+    // reseta a ordenação da tabela (volta pro padrão: lançamento mais recente primeiro)
+    itensOrdenacao = { coluna: null, direcao: 'asc' };
+    document.querySelectorAll('.th-ordenavel .seta-ordem').forEach(s => { s.textContent = ''; s.classList.remove('ativa'); });
+
     // troca para a aba "Requisição de Saída"
     document.querySelectorAll('.aba-btn').forEach(b => b.classList.remove('ativa'));
     document.querySelectorAll('.conteudo-aba').forEach(c => c.classList.remove('ativa'));
@@ -1065,6 +1568,45 @@ document.getElementById('reqProjetoSelect').addEventListener('change', () => {
     renderizarRequisicao(projetoAtualId);
 });
 
+let itensOrdenacao = { coluna: null, direcao: 'asc' };
+
+function ordenarItensRequisicao(itens) {
+    const lista = [...itens];
+    if (!itensOrdenacao.coluna) {
+        return lista.sort((a, b) => b.id - a.id); // padrão: lançamento mais recente primeiro
+    }
+    const dir = itensOrdenacao.direcao === 'asc' ? 1 : -1;
+    lista.sort((a, b) => {
+        let va, vb;
+        if (itensOrdenacao.coluna === 'codigo') { va = a.produtoId; vb = b.produtoId; }
+        else if (itensOrdenacao.coluna === 'descricao') {
+            const pa = produtos.find(p => p.id === a.produtoId);
+            const pb = produtos.find(p => p.id === b.produtoId);
+            va = pa ? pa.nome : ''; vb = pb ? pb.nome : '';
+        } else if (itensOrdenacao.coluna === 'tag') { va = a.tag || ''; vb = b.tag || ''; }
+        else if (itensOrdenacao.coluna === 'evento') { va = a.evento || ''; vb = b.evento || ''; }
+        if (typeof va === 'string') return va.localeCompare(vb) * dir;
+        return ((va || 0) - (vb || 0)) * dir;
+    });
+    return lista;
+}
+
+document.querySelectorAll('.th-ordenavel').forEach(th => {
+    th.addEventListener('click', () => {
+        const coluna = th.dataset.ordenar;
+        if (itensOrdenacao.coluna === coluna) {
+            itensOrdenacao.direcao = itensOrdenacao.direcao === 'asc' ? 'desc' : 'asc';
+        } else {
+            itensOrdenacao = { coluna, direcao: 'asc' };
+        }
+        document.querySelectorAll('.th-ordenavel .seta-ordem').forEach(s => { s.textContent = ''; s.classList.remove('ativa'); });
+        const seta = th.querySelector('.seta-ordem');
+        seta.textContent = itensOrdenacao.direcao === 'asc' ? '▲' : '▼';
+        seta.classList.add('ativa');
+        if (projetoAtualId) renderizarRequisicao(projetoAtualId);
+    });
+});
+
 function renderizarRequisicao(id) {
     const bloco = document.getElementById('blocoRequisicao');
     const aviso = document.getElementById('avisoSemProjeto');
@@ -1084,7 +1626,7 @@ function renderizarRequisicao(id) {
     if (!(proj.itens || []).length) { vazio.style.display = 'block'; }
     else {
         vazio.style.display = 'none';
-        proj.itens.forEach(item => {
+        ordenarItensRequisicao(proj.itens).forEach(item => {
             const prod = produtos.find(p => p.id === item.produtoId);
             const ent = entreguePorItem(item.id);
             const subtotal = item.qtdRequisitada * (prod ? prod.valor : 0);
@@ -1279,11 +1821,19 @@ function adicionarProdutoAoProjeto(p) {
     produtoPendenteAdicionar = p;
     document.getElementById('modalQtdInicialProduto').textContent = `#${p.id} — ${p.nome}`;
     document.getElementById('modalQtdInicialValor').value = 1;
+    document.getElementById('modalQtdInicialAtenderJa').checked = false;
+    document.getElementById('modalQtdInicialResponsavel').value = '';
+    document.getElementById('campoResponsavelAtendeJa').style.display = 'none';
     document.getElementById('statusModalQtdInicial').textContent = '';
     document.getElementById('modalQtdInicial').classList.add('aberto');
     document.getElementById('modalQtdInicialValor').focus();
     document.getElementById('modalQtdInicialValor').select();
 }
+
+document.getElementById('modalQtdInicialAtenderJa').addEventListener('change', () => {
+    document.getElementById('campoResponsavelAtendeJa').style.display =
+        document.getElementById('modalQtdInicialAtenderJa').checked ? 'block' : 'none';
+});
 
 document.getElementById('btnCancelarQtdInicial').addEventListener('click', () => {
     document.getElementById('modalQtdInicial').classList.remove('aberto');
@@ -1305,30 +1855,62 @@ document.getElementById('btnConfirmarQtdInicial').addEventListener('click', asyn
         statusModalEl.textContent = 'Informe uma quantidade válida.';
         return;
     }
+    const atenderJa = document.getElementById('modalQtdInicialAtenderJa').checked;
+    const responsavelAtendeJa = document.getElementById('modalQtdInicialResponsavel').value.trim().toUpperCase();
+    if (atenderJa && !responsavelAtendeJa) {
+        statusModalEl.className = 'status-msg erro';
+        statusModalEl.textContent = 'Informe quem retirou, pra atender imediatamente.';
+        return;
+    }
 
     statusModalEl.className = '';
     statusModalEl.textContent = 'Salvando...';
 
     try {
-        await chamarPost('adicionarItemProjeto', {
+        const tagAtual = document.getElementById('cabTag').value.trim();
+        const eventoAtual = eventoSelecionadoAtual ? eventoSelecionadoAtual.codigo : '';
+        const novoItem = await chamarPost('adicionarItemProjeto', {
             item: {
                 projetoId: projetoAtualId,
                 produtoId: p.id,
                 qtdRequisitada: qtd,
                 responsavel: '',
                 observacao: '',
-                tag: document.getElementById('cabTag').value.trim(),
-                evento: eventoSelecionadoAtual ? eventoSelecionadoAtual.codigo : ''
+                tag: tagAtual,
+                evento: eventoAtual
             }
         });
+
+        if (atenderJa && novoItem && novoItem.id) {
+            await chamarPost('registrarMovimentacao', {
+                movimentacao: {
+                    data: document.getElementById('cabData').value || hojeISO(),
+                    produtoId: p.id,
+                    qtd,
+                    valorUnit: p.valor,
+                    tipo: 'saida',
+                    tag: tagAtual,
+                    evento: eventoAtual,
+                    observacao: 'Atendimento imediato (foi direto pra produção)',
+                    responsavel: responsavelAtendeJa,
+                    projetoId: projetoAtualId,
+                    itemProjetoId: novoItem.id
+                }
+            });
+            await carregarProdutos();
+            await carregarMovimentacoes();
+        }
+
         await carregarProjetos();
+        atualizarTagContagem();
         document.getElementById('modalQtdInicial').classList.remove('aberto');
         produtoPendenteAdicionar = null;
         statusEl.className = 'status-msg sucesso';
-        statusEl.textContent = '✅ Produto adicionado à lista.';
+        statusEl.textContent = atenderJa ? '✅ Produto adicionado e já atendido.' : '✅ Produto adicionado à lista.';
         renderizarRequisicao(projetoAtualId);
         renderizarListaProjetos();
-        setTimeout(() => statusEl.textContent = '', 1200);
+        renderizarTabelaEstoque(buscarProdutos(document.getElementById('buscaEstoque').value));
+        setTimeout(() => statusEl.textContent = '', 1500);
     } catch (err) {
         console.error('Erro ao adicionar produto à requisição:', err);
         statusModalEl.className = 'status-msg erro';
