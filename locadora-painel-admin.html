@@ -487,16 +487,16 @@
         Servir
       </div>
       <div class="quote">Cada locação organizada de ponta a ponta, da retirada à devolução.</div>
-      <div class="foot">Painel de agências parceiras · Locadora</div>
+      <div class="foot">Painel de unidades de negócio parceiras · Locadora</div>
     </div>
     <div class="login-form-side">
       <div class="login-card">
         <div id="blocoLoginForm">
           <h1>Bem-vindo de volta</h1>
-          <p class="sub">Entre com sua conta da agência.</p>
+          <p class="sub">Entre com sua conta da unidade de negócio.</p>
           <div class="field-group">
             <label>E-mail</label>
-            <input type="email" id="loginEmail" placeholder="voce@agencia.com.br">
+            <input type="email" id="loginEmail" placeholder="voce@unidade.com.br">
           </div>
           <div class="field-group">
             <label>Senha</label>
@@ -508,14 +508,14 @@
           <p class="link-esqueci-senha"><a href="#" id="linkEsqueciSenha">Esqueci minha senha</a></p>
           <button class="btn-primary" id="btnEntrar">Entrar</button>
           <div class="login-erro" id="loginErro"></div>
-          <p class="toggle-auth">Ainda não tem conta? <a href="#" id="linkIrParaCadastro">Criar agência</a> · <a href="#" id="linkIrParaConvite">Tenho um convite</a></p>
+          <p class="toggle-auth">Ainda não tem conta? <a href="#" id="linkIrParaCadastro">Criar unidade</a> · <a href="#" id="linkIrParaConvite">Tenho um convite</a></p>
         </div>
 
         <div id="blocoCadastroForm" style="display:none;">
           <h1>Criar sua conta</h1>
-          <p class="sub">Cadastre sua agência na Servir.</p>
+          <p class="sub">Cadastre sua unidade de negócio na Servir.</p>
           <div class="field-group">
-            <label>Nome da agência</label>
+            <label>Nome da unidade de negócio</label>
             <input type="text" id="cadAgenciaNome" placeholder="Ex: Nativa Locações">
           </div>
           <div class="field-group">
@@ -547,7 +547,7 @@
 
         <div id="blocoConviteForm" style="display:none;">
           <h1>Entrar com convite</h1>
-          <p class="sub">Peça o código de convite pra quem já administra a agência.</p>
+          <p class="sub">Peça o código de convite pra quem já administra a unidade de negócio.</p>
           <div class="field-group">
             <label>Código de convite</label>
             <input type="text" id="convCodigo" placeholder="Ex: A1B2C3D4" style="text-transform:uppercase;">
@@ -585,7 +585,7 @@
           <p class="sub">Informe seu e-mail. Enviaremos um link pra você definir uma nova senha.</p>
           <div class="field-group">
             <label>E-mail</label>
-            <input type="email" id="recuperarEmail" placeholder="voce@agencia.com.br">
+            <input type="email" id="recuperarEmail" placeholder="voce@unidade.com.br">
           </div>
           <button class="btn-primary" id="btnEnviarRecuperacao">Enviar link de recuperação</button>
           <div class="login-erro" id="recuperarErro"></div>
@@ -639,17 +639,17 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h18v4H3z"/><path d="M5 7v13a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V7"/><path d="M10 12h4"/></svg>
           <span class="nav-label">Reservas</span>
         </button>
-        <button class="nav-item tab-app-btn" data-app-tab="veiculos" title="Veículos">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 16H9m10 0h3v-3.15a1 1 0 0 0-.84-.99L16 11l-2.7-3.6a1 1 0 0 0-.8-.4H5.24a2 2 0 0 0-1.8 1.1l-.8 1.63A6 6 0 0 0 2 12.42V16h2"/><circle cx="6.5" cy="16.5" r="2.5"/><circle cx="16.5" cy="16.5" r="2.5"/></svg>
-          <span class="nav-label">Veículos</span>
+        <button class="nav-item tab-app-btn" data-app-tab="veiculos" title="Grupo Veículos">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"/><path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/></svg>
+          <span class="nav-label">Grupo Veículos</span>
         </button>
         <button class="nav-item tab-app-btn" data-app-tab="lojas" title="Lojas">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-4"/><line x1="9" y1="9" x2="9" y2="9.01"/><line x1="9" y1="12" x2="9" y2="12.01"/><line x1="9" y1="15" x2="9" y2="15.01"/></svg>
           <span class="nav-label">Lojas</span>
         </button>
-        <button class="nav-item tab-app-btn" data-app-tab="frota" title="Frota">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
-          <span class="nav-label">Frota</span>
+        <button class="nav-item tab-app-btn" data-app-tab="frota" title="Veículos Frota">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 16H9m10 0h3v-3.15a1 1 0 0 0-.84-.99L16 11l-2.7-3.6a1 1 0 0 0-.8-.4H5.24a2 2 0 0 0-1.8 1.1l-.8 1.63A6 6 0 0 0 2 12.42V16h2"/><circle cx="6.5" cy="16.5" r="2.5"/><circle cx="16.5" cy="16.5" r="2.5"/></svg>
+          <span class="nav-label">Veículos Frota</span>
         </button>
         <button class="nav-item tab-app-btn" data-app-tab="vendas" title="Vendas">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1v22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
@@ -672,9 +672,9 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="17" y1="11" x2="23" y2="11"/></svg>
           <span class="nav-label">Convidar colaborador</span>
         </button>
-        <button class="btn-sair" id="btnTrocarAgencia" title="Trocar agência" style="display:none; margin-bottom:8px;">
+        <button class="btn-sair" id="btnTrocarAgencia" title="Trocar unidade" style="display:none; margin-bottom:8px;">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
-          <span class="nav-label">Trocar agência</span>
+          <span class="nav-label">Trocar unidade</span>
         </button>
         <button class="btn-sair" id="btnSair" title="Sair">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
@@ -909,8 +909,8 @@
   <!-- ================= POPUP: SELECIONAR AGÊNCIA (quando o usuário pertence a mais de uma) ================= -->
   <div class="modal-lista-overlay" id="seletorAgenciaOverlay" style="z-index:200;">
     <div class="seletor-agencia-card">
-      <h3>Escolha a agência</h3>
-      <p>Seu login está vinculado a mais de uma agência. Selecione com qual você quer trabalhar agora.</p>
+      <h3>Escolha a unidade de negócio</h3>
+      <p>Seu login está vinculado a mais de uma unidade de negócio. Selecione com qual você quer trabalhar agora.</p>
       <div class="lista-seletor-agencia" id="listaSeletorAgencia"></div>
     </div>
   </div>
@@ -1010,7 +1010,7 @@
 <script>
   // =================================================================
   // CONFIGURAÇÃO DO SUPABASE (mesmo projeto do módulo Receptivo — a
-  // tabela de agências é compartilhada entre todos os módulos)
+  // tabela de unidades de negócio é compartilhada entre todos os módulos)
   // =================================================================
   const SUPABASE_URL = 'https://frzvcrcshkpvjdbbqkhz.supabase.co';
   const SUPABASE_ANON_KEY = 'sb_publishable_h-JuDyjYgb5YKGYFRKtLEg_8gnJor9w';
@@ -1043,7 +1043,7 @@
   // =================================================================
   // LOGIN (mesmas tabelas/RPCs do Receptivo — plataforma Servir
   // compartilhada entre módulos: um usuário pode operar uma ou mais
-  // agências, inclusive de módulos diferentes, com o mesmo login)
+  // unidades de negócio, inclusive de módulos diferentes, com o mesmo login)
   // =================================================================
   const telaLogin = document.getElementById('telaLogin');
   const loadingScreen = document.getElementById('loadingScreen');
@@ -1086,21 +1086,21 @@
 
   // -----------------------------------------------------------------
   // Busca TODOS os vínculos do usuário (nunca .single()/.maybeSingle(),
-  // já que o mesmo user_id pode estar em 0, 1 ou várias agências —
+  // já que o mesmo user_id pode estar em 0, 1 ou várias unidades de negócio —
   // era exatamente isso que gerava o erro antes, com .maybeSingle()
   // quebrando assim que existisse mais de uma linha).
   // -----------------------------------------------------------------
   async function carregarAgenciaDoUsuario(user){
     const { data: vinculos, error: erroVinculo } = await sb
-      .from('receptivo_agencia_usuarios')
-      .select('agencia_id, eh_principal, receptivo_agencias_receptivo ( nome )')
+      .from('servir_unidade_usuarios')
+      .select('unidade_negocio_id, eh_principal, servir_unidades_negocio ( nome )')
       .eq('user_id', user.id);
 
-    if(erroVinculo) throw new Error('Erro ao buscar sua agência: ' + erroVinculo.message);
+    if(erroVinculo) throw new Error('Erro ao buscar sua unidade de negócio: ' + erroVinculo.message);
 
     // Primeiro acesso após confirmar o e-mail: ainda não existe vínculo.
     // Duas possibilidades guardadas nos metadados do usuário:
-    // - agencia_nome_pendente: veio do cadastro "Criar agência" -> cria a agência
+    // - agencia_nome_pendente: veio do cadastro "Criar unidade" -> cria a unidade de negócio
     // - convite_codigo_pendente: veio do cadastro "Tenho um convite" -> só vincula
     if(!vinculos || vinculos.length === 0){
       const nomePendente = user.user_metadata?.agencia_nome_pendente;
@@ -1109,23 +1109,23 @@
 
       if(nomePendente){
         const { data: novaAgencia, error: erroNovaAgencia } = await sb
-          .from('receptivo_agencias_receptivo')
+          .from('servir_unidades_negocio')
           .insert({ nome: nomePendente, whatsapp_contato: (whatsappPendente || '').replace(/\D/g, ''), ativo: true })
           .select()
           .single();
-        if(erroNovaAgencia) throw new Error('Erro ao finalizar cadastro da agência: ' + erroNovaAgencia.message);
+        if(erroNovaAgencia) throw new Error('Erro ao finalizar cadastro da unidade de negócio: ' + erroNovaAgencia.message);
 
-        const { error: erroVinculoNovo } = await sb.from('receptivo_agencia_usuarios').insert({
-          agencia_id: novaAgencia.id,
+        const { error: erroVinculoNovo } = await sb.from('servir_unidade_usuarios').insert({
+          unidade_negocio_id: novaAgencia.id,
           user_id: user.id,
           eh_principal: true
         });
-        if(erroVinculoNovo) throw new Error('Erro ao vincular sua conta à agência: ' + erroVinculoNovo.message);
+        if(erroVinculoNovo) throw new Error('Erro ao vincular sua conta à unidade de negócio: ' + erroVinculoNovo.message);
 
         agenciaId = novaAgencia.id;
         agenciaNome = novaAgencia.nome;
         ehPrincipalAtual = true;
-        vinculosDoUsuario = [{ agencia_id: novaAgencia.id, eh_principal: true, receptivo_agencias_receptivo: { nome: novaAgencia.nome } }];
+        vinculosDoUsuario = [{ unidade_negocio_id: novaAgencia.id, eh_principal: true, servir_unidades_negocio: { nome: novaAgencia.nome } }];
         atualizarUiAgencia();
         return;
       }
@@ -1135,7 +1135,7 @@
         if(erroConvite) throw new Error(erroConvite.message);
 
         const { data: agenciaInfo, error: erroInfo } = await sb
-          .from('receptivo_agencias_receptivo')
+          .from('servir_unidades_negocio')
           .select('nome')
           .eq('id', agenciaIdRetornada)
           .single();
@@ -1144,26 +1144,26 @@
         agenciaId = agenciaIdRetornada;
         agenciaNome = agenciaInfo.nome;
         ehPrincipalAtual = false;
-        vinculosDoUsuario = [{ agencia_id: agenciaIdRetornada, eh_principal: false, receptivo_agencias_receptivo: { nome: agenciaInfo.nome } }];
+        vinculosDoUsuario = [{ unidade_negocio_id: agenciaIdRetornada, eh_principal: false, servir_unidades_negocio: { nome: agenciaInfo.nome } }];
         atualizarUiAgencia();
         return;
       }
 
-      throw new Error('Este login não está vinculado a nenhuma agência ainda.');
+      throw new Error('Este login não está vinculado a nenhuma unidade de negócio ainda.');
     }
 
     vinculosDoUsuario = vinculos;
 
-    // só uma agência vinculada: segue direto, sem perguntar nada
+    // só uma unidade de negócio vinculada: segue direto, sem perguntar nada
     if(vinculos.length === 1){
-      agenciaId = vinculos[0].agencia_id;
-      agenciaNome = vinculos[0].receptivo_agencias_receptivo.nome;
+      agenciaId = vinculos[0].unidade_negocio_id;
+      agenciaNome = vinculos[0].servir_unidades_negocio.nome;
       ehPrincipalAtual = !!vinculos[0].eh_principal;
       atualizarUiAgencia();
       return;
     }
 
-    // múltiplas agências vinculadas: mostra o seletor e espera a escolha
+    // múltiplas unidades de negócio vinculadas: mostra o seletor e espera a escolha
     await mostrarSeletorAgencia(vinculos);
   }
 
@@ -1180,12 +1180,12 @@
       lista.innerHTML = '';
       vinculos.forEach(v => {
         const btn = document.createElement('button');
-        const eAtual = v.agencia_id === agenciaId;
+        const eAtual = v.unidade_negocio_id === agenciaId;
         btn.className = 'opcao-agencia' + (eAtual ? ' selected' : '');
-        btn.innerHTML = `<span class="opcao-agencia-nome">${v.receptivo_agencias_receptivo?.nome || 'Agência sem nome'}</span>`;
+        btn.innerHTML = `<span class="opcao-agencia-nome">${v.servir_unidades_negocio?.nome || 'Agência sem nome'}</span>`;
         btn.addEventListener('click', async () => {
-          agenciaId = v.agencia_id;
-          agenciaNome = v.receptivo_agencias_receptivo?.nome || '';
+          agenciaId = v.unidade_negocio_id;
+          agenciaNome = v.servir_unidades_negocio?.nome || '';
           ehPrincipalAtual = !!v.eh_principal;
           atualizarUiAgencia();
           document.getElementById('seletorAgenciaOverlay').classList.remove('show');
@@ -1384,7 +1384,7 @@
 
     document.getElementById('cadastroErro').classList.remove('show');
 
-    if(!nome){ mostrarErroCadastro('Informe o nome da agência.'); return; }
+    if(!nome){ mostrarErroCadastro('Informe o nome da unidade de negócio.'); return; }
     if(!/^\(\d{2}\) \d{4,5}-\d{4}$/.test(whatsapp)){ mostrarErroCadastro('WhatsApp em formato inválido. Use (DD) 9XXXX-XXXX.'); return; }
     if(!email){ mostrarErroCadastro('Informe seu e-mail.'); return; }
     if(senha.length < 6){ mostrarErroCadastro('A senha precisa ter pelo menos 6 caracteres.'); return; }
@@ -1472,7 +1472,7 @@
 
     try{
       // Caminho 1: e-mail já tem conta na Servir (mesmo que em outro
-      // módulo/agência) — só loga e afilia, não cria usuário novo
+      // módulo/unidade) — só loga e afilia, não cria usuário novo
       if(modoConviteExistente){
         btn.textContent = 'Entrando...';
         const { data: loginData, error: loginError } = await sb.auth.signInWithPassword({ email, password: senha });
@@ -1534,7 +1534,7 @@
   });
 
   // -----------------------------------------------------------------
-  // CONVIDAR COLABORADOR (só aparece pro usuário principal da agência)
+  // CONVIDAR COLABORADOR (só aparece pro usuário principal da unidade de negócio)
   // -----------------------------------------------------------------
   document.getElementById('btnConvidarColaborador').addEventListener('click', async () => {
     const btn = document.getElementById('btnConvidarColaborador');
@@ -1574,7 +1574,7 @@
   // =================================================================
   // TABS DO APP
   // =================================================================
-  const titulosAba = { dashboard: 'Dashboard', reservas: 'Reservas', veiculos: 'Veículos', lojas: 'Lojas', frota: 'Frota', vendas: 'Vendas', contratos: 'Contratos', parcelas: 'Parcelas', ocorrencias: 'Ocorrências' };
+  const titulosAba = { dashboard: 'Dashboard', reservas: 'Reservas', veiculos: 'Grupo Veículos', lojas: 'Lojas', frota: 'Veículos Frota', vendas: 'Vendas', contratos: 'Contratos', parcelas: 'Parcelas', ocorrencias: 'Ocorrências' };
   document.querySelectorAll('.tab-app-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.tab-app-btn').forEach(b => b.classList.remove('active'));
@@ -1619,7 +1619,7 @@
     const { data, error } = await sb
       .from('locadora_veiculos')
       .select('*')
-      .eq('agencia_id', agenciaId)
+      .eq('unidade_negocio_id', agenciaId)
       .order('ordem_exibicao', { ascending: true });
     if(error){ alert('Erro ao carregar veículos: ' + error.message); return; }
     todosVeiculos = data || [];
@@ -1630,7 +1630,7 @@
     const { data, error } = await sb
       .from('locadora_lojas')
       .select('*')
-      .eq('agencia_id', agenciaId)
+      .eq('unidade_negocio_id', agenciaId)
       .order('nome', { ascending: true });
     if(error){ alert('Erro ao carregar lojas: ' + error.message); return; }
     todasLojas = data || [];
@@ -1641,7 +1641,7 @@
     const { data, error } = await sb
       .from('locadora_unidades')
       .select('*')
-      .eq('agencia_id', agenciaId)
+      .eq('unidade_negocio_id', agenciaId)
       .order('placa', { ascending: true });
     if(error){ alert('Erro ao carregar a frota: ' + error.message); return; }
     todasUnidades = data || [];
@@ -1652,7 +1652,7 @@
     const { data, error } = await sb
       .from('locadora_config_contrato')
       .select('*')
-      .eq('agencia_id', agenciaId)
+      .eq('unidade_negocio_id', agenciaId)
       .maybeSingle();
     if(error){ alert('Erro ao carregar dados do contrato: ' + error.message); return; }
     configContrato = data || null;
@@ -1675,7 +1675,7 @@
     const { data, error } = await sb
       .from('locadora_vendas')
       .select('*, locadora_unidades ( id, placa, veiculo_id )')
-      .eq('agencia_id', agenciaId)
+      .eq('unidade_negocio_id', agenciaId)
       .order('created_at', { ascending: false });
     if(error){ alert('Erro ao carregar vendas: ' + error.message); return; }
     todasVendas = data || [];
@@ -1690,7 +1690,7 @@
         *,
         locadora_vendas ( id, comprador_nome, forma_pagamento, locadora_unidades ( placa ) )
       `)
-      .eq('agencia_id', agenciaId)
+      .eq('unidade_negocio_id', agenciaId)
       .order('vencimento', { ascending: true });
     if(error){ alert('Erro ao carregar parcelas: ' + error.message); return; }
     todasParcelas = data || [];
@@ -1704,7 +1704,7 @@
     btn.textContent = 'Salvando...';
     try{
       const payload = {
-        agencia_id: agenciaId,
+        unidade_negocio_id: agenciaId,
         razao_social: document.getElementById('cc_razao_social').value.trim() || null,
         cnpj: document.getElementById('cc_cnpj').value.trim() || null,
         endereco: document.getElementById('cc_endereco').value.trim() || null,
@@ -1715,7 +1715,7 @@
         clausulas_adicionais: document.getElementById('cc_clausulas_adicionais').value.trim() || null
       };
 
-      const { error } = await sb.from('locadora_config_contrato').upsert(payload, { onConflict: 'agencia_id' });
+      const { error } = await sb.from('locadora_config_contrato').upsert(payload, { onConflict: 'unidade_negocio_id' });
       if(error) throw new Error(error.message);
 
       await carregarConfigContrato();
@@ -1735,7 +1735,7 @@
     const { data, error } = await sb
       .from('locadora_setores')
       .select('*')
-      .eq('agencia_id', agenciaId)
+      .eq('unidade_negocio_id', agenciaId)
       .order('descricao', { ascending: true });
     if(error){ alert('Erro ao carregar setores: ' + error.message); return; }
     todosSetores = data || [];
@@ -1746,7 +1746,7 @@
     const { data, error } = await sb
       .from('locadora_tipo_ocorrencia')
       .select('*')
-      .eq('agencia_id', agenciaId)
+      .eq('unidade_negocio_id', agenciaId)
       .order('descricao', { ascending: true });
     if(error){ alert('Erro ao carregar tipos de ocorrência: ' + error.message); return; }
     todosTiposOcorrencia = data || [];
@@ -1793,7 +1793,7 @@
         locadora_setores ( id, descricao ),
         locadora_tipo_ocorrencia ( id, descricao )
       `)
-      .eq('agencia_id', agenciaId)
+      .eq('unidade_negocio_id', agenciaId)
       .order('data_ocorrencia', { ascending: false });
     if(error){ alert('Erro ao carregar ocorrências: ' + error.message); return; }
     todasOcorrencias = data || [];
@@ -2537,7 +2537,7 @@
       let vencimento = i === 1 ? primeiroVencimento : addMeses(primeiroVencimento, i - 1);
       if(diaVencimento) vencimento = ajustarDiaVencimento(vencimento, diaVencimento);
       linhas.push({
-        agencia_id: agenciaId,
+        unidade_negocio_id: agenciaId,
         venda_id: venda.id,
         numero_parcela: i,
         valor: valorParcela,
@@ -3274,7 +3274,7 @@
     btn.textContent = 'Salvando...';
     try{
       const payload = {
-        agencia_id: agenciaId,
+        unidade_negocio_id: agenciaId,
         unidade_id: unidadeId,
         data_servico: dataServico,
         tipo_servico: tipoServico,
@@ -3316,7 +3316,7 @@
     try{
       if(cadastroTipoAtual === 'veiculo'){
         const payload = {
-          agencia_id: agenciaId,
+          unidade_negocio_id: agenciaId,
           nome: document.getElementById('c_nome').value.trim(),
           categoria: document.getElementById('c_categoria').value.trim() || null,
           descricao: document.getElementById('c_descricao').value.trim() || null,
@@ -3357,7 +3357,7 @@
           .split('\n').map(l => l.trim()).filter(Boolean);
 
         const payload = {
-          agencia_id: agenciaId,
+          unidade_negocio_id: agenciaId,
           nome: document.getElementById('c_nome').value.trim(),
           endereco: document.getElementById('c_endereco').value.trim() || null,
           telefone: document.getElementById('c_telefone').value.trim() || null,
@@ -3382,7 +3382,7 @@
         await carregarLojas();
       } else if(cadastroTipoAtual === 'unidade'){
         const payload = {
-          agencia_id: agenciaId,
+          unidade_negocio_id: agenciaId,
           veiculo_id: document.getElementById('c_veiculo_id').value || null,
           placa: document.getElementById('c_placa').value.trim().toUpperCase(),
           cor: document.getElementById('c_cor').value.trim() || null,
@@ -3422,7 +3422,7 @@
         };
 
         const payload = {
-          agencia_id: agenciaId,
+          unidade_negocio_id: agenciaId,
           unidade_id: document.getElementById('c_unidade_venda_id').value || null,
           comprador_nome: document.getElementById('c_comprador_nome').value.trim(),
           comprador_cpf_cnpj: campoOuNulo('c_comprador_cpf_cnpj', false),
@@ -3459,7 +3459,7 @@
         await carregarUnidades(); // status da unidade pode ter mudado (venda concluída)
       } else if(cadastroTipoAtual === 'ocorrencia'){
         const payload = {
-          agencia_id: agenciaId,
+          unidade_negocio_id: agenciaId,
           id_setor: document.getElementById('c_id_setor').value || null,
           id_tipo: document.getElementById('c_id_tipo').value || null,
           data_ocorrencia: document.getElementById('c_data_ocorrencia').value || null,
@@ -4324,7 +4324,7 @@
     if(!descricao) return;
 
     const tabela = modalListaTipoAtual === 'setor' ? 'locadora_setores' : 'locadora_tipo_ocorrencia';
-    const { error } = await sb.from(tabela).insert({ descricao, agencia_id: agenciaId });
+    const { error } = await sb.from(tabela).insert({ descricao, unidade_negocio_id: agenciaId });
     if(error){ alert('Erro ao adicionar: ' + error.message); return; }
 
     input.value = '';
