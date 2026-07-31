@@ -46,6 +46,15 @@
   .btn-primary:hover{background:var(--verde-escuro-2);}
   .msg-erro{color:var(--saida-txt);font-size:.82rem;margin-top:10px;min-height:1.1em;}
   .msg-ok{color:var(--entrada-txt);font-size:.82rem;margin-top:10px;min-height:1.1em;}
+  .campo-senha-wrap{position:relative;}
+  .campo-senha-wrap input{padding-right:38px;}
+  .btn-olho-senha{
+    position:absolute;top:50%;right:5px;transform:translateY(-50%);background:none;border:none;
+    padding:6px;cursor:pointer;color:var(--texto-fraco);display:flex;align-items:center;justify-content:center;
+    border-radius:6px;
+  }
+  .btn-olho-senha:hover{color:var(--verde-escuro);}
+  .btn-olho-senha svg{width:17px;height:17px;}
 
   /* ---------- topbar ---------- */
   header.topbar{background:var(--verde-escuro);color:#fff;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
@@ -202,50 +211,166 @@
      ============================================================ -->
 <div id="login-screen">
   <div class="login-card">
-    <p class="wordmark">SICON</p>
-    <p class="tag">Verba de Operação — entre com seu usuário</p>
-    <div class="field">
-      <label for="login-email">E-mail</label>
-      <input type="email" id="login-email" autocomplete="username" placeholder="seu@email.com">
-    </div>
-    <div class="field">
-      <label for="login-senha">Senha</label>
-      <input type="password" id="login-senha" autocomplete="current-password" placeholder="••••••••">
-    </div>
-    <div class="field hidden" id="campo-confirmar-senha">
-      <label for="login-senha-confirmar">Confirmar senha</label>
-      <input type="password" id="login-senha-confirmar" autocomplete="new-password" placeholder="••••••••">
-    </div>
-
-    <button class="btn btn-primary" id="btn-login" style="margin-top:4px;">Entrar</button>
-    <button class="btn btn-primary hidden" id="btn-cadastrar" style="margin-top:4px;">Criar conta</button>
-    <p class="msg-erro" id="login-erro"></p>
-
-    <p style="text-align:center;margin-top:10px;">
-      <button id="btn-alternar-cadastro" style="background:none;border:none;color:var(--texto-fraco);font-size:.8rem;cursor:pointer;text-decoration:underline;">Ainda não tem conta? Criar conta</button>
-    </p>
-
-    <p style="text-align:center;margin-top:6px;">
-      <button id="btn-abrir-config" style="background:none;border:none;color:var(--texto-fraco);font-size:.78rem;cursor:pointer;text-decoration:underline;">⚙️ Configurações do banco de dados</button>
-    </p>
-
-    <div id="painel-config" class="hidden" style="margin-top:14px;border-top:1px solid var(--linha);padding-top:14px;">
+    <div id="bloco-entrar">
+      <p class="wordmark">SICON</p>
+      <p class="tag">Verba de Operação — entre com seu usuário</p>
       <div class="field">
-        <label for="cfg-url">Supabase URL</label>
-        <input type="text" id="cfg-url" placeholder="https://xxxxx.supabase.co">
+        <label for="login-email">E-mail</label>
+        <input type="email" id="login-email" autocomplete="username" placeholder="seu@email.com">
       </div>
       <div class="field">
-        <label for="cfg-key">Supabase anon key</label>
-        <input type="text" id="cfg-key" placeholder="eyJhbGci...">
+        <label for="login-senha">Senha</label>
+        <div class="campo-senha-wrap">
+          <input type="password" id="login-senha" autocomplete="current-password" placeholder="••••••••">
+          <button type="button" class="btn-olho-senha" data-alvo="login-senha" aria-label="Mostrar senha"></button>
+        </div>
       </div>
-      <div style="display:flex;gap:8px;">
-        <button class="btn" id="btn-salvar-config" style="background:var(--verde-escuro);color:#fff;flex:1;">Salvar e recarregar</button>
-        <button class="btn" id="btn-restaurar-config" style="background:var(--fundo);border:1px solid var(--linha);color:var(--texto-fraco);flex:1;">Restaurar padrão</button>
-      </div>
-      <p style="font-size:.72rem;color:var(--texto-fraco);margin-top:8px;">
-        Fica salvo só neste navegador/aparelho. Pra usar em outro caixa/projeto, troque aqui — não precisa editar o arquivo.
+      <p style="text-align:right;margin:-6px 0 12px;">
+        <button id="btn-ir-esqueci-senha" style="background:none;border:none;color:var(--verde-escuro);font-size:.78rem;font-weight:600;cursor:pointer;text-decoration:underline;">Esqueci minha senha</button>
       </p>
-      <p class="msg-ok" id="config-status"></p>
+
+      <button class="btn btn-primary" id="btn-login">Entrar</button>
+      <p class="msg-erro" id="login-erro"></p>
+
+      <p style="text-align:center;margin-top:10px;">
+        <button id="btn-ir-cadastro" style="background:none;border:none;color:var(--texto-fraco);font-size:.8rem;cursor:pointer;text-decoration:underline;">Ainda não tem conta? Criar unidade</button>
+        ·
+        <button id="btn-ir-convite" style="background:none;border:none;color:var(--texto-fraco);font-size:.8rem;cursor:pointer;text-decoration:underline;">Tenho um convite</button>
+      </p>
+
+      <p style="text-align:center;margin-top:6px;">
+        <button id="btn-abrir-config" style="background:none;border:none;color:var(--texto-fraco);font-size:.78rem;cursor:pointer;text-decoration:underline;">⚙️ Configurações do banco de dados</button>
+      </p>
+
+      <div id="painel-config" class="hidden" style="margin-top:14px;border-top:1px solid var(--linha);padding-top:14px;">
+        <div class="field">
+          <label for="cfg-url">Supabase URL</label>
+          <input type="text" id="cfg-url" placeholder="https://xxxxx.supabase.co">
+        </div>
+        <div class="field">
+          <label for="cfg-key">Supabase anon key</label>
+          <input type="text" id="cfg-key" placeholder="eyJhbGci...">
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn" id="btn-salvar-config" style="background:var(--verde-escuro);color:#fff;flex:1;">Salvar e recarregar</button>
+          <button class="btn" id="btn-restaurar-config" style="background:var(--fundo);border:1px solid var(--linha);color:var(--texto-fraco);flex:1;">Restaurar padrão</button>
+        </div>
+        <p style="font-size:.72rem;color:var(--texto-fraco);margin-top:8px;">
+          Fica salvo só neste navegador/aparelho. Pra usar em outro caixa/projeto, troque aqui — não precisa editar o arquivo.
+        </p>
+        <p class="msg-ok" id="config-status"></p>
+      </div>
+    </div>
+
+    <div id="bloco-criar-unidade" class="hidden">
+      <p class="wordmark">SICON</p>
+      <p class="tag">Criar sua unidade de negócio</p>
+      <div class="field">
+        <label for="cu-nome">Nome da unidade</label>
+        <input type="text" id="cu-nome" placeholder="Ex: Nativa Turismo">
+      </div>
+      <div class="field">
+        <label for="cu-whatsapp">WhatsApp de contato</label>
+        <input type="tel" id="cu-whatsapp" placeholder="(00) 00000-0000" maxlength="15">
+      </div>
+      <div class="field">
+        <label for="cu-email">E-mail</label>
+        <input type="email" id="cu-email" placeholder="seu@email.com">
+      </div>
+      <div class="field">
+        <label for="cu-senha">Senha</label>
+        <div class="campo-senha-wrap">
+          <input type="password" id="cu-senha" placeholder="Mínimo 6 caracteres">
+          <button type="button" class="btn-olho-senha" data-alvo="cu-senha" aria-label="Mostrar senha"></button>
+        </div>
+      </div>
+      <div class="field">
+        <label for="cu-senha-confirma">Confirmar senha</label>
+        <div class="campo-senha-wrap">
+          <input type="password" id="cu-senha-confirma">
+          <button type="button" class="btn-olho-senha" data-alvo="cu-senha-confirma" aria-label="Mostrar senha"></button>
+        </div>
+      </div>
+      <button class="btn btn-primary" id="btn-criar-unidade">Criar unidade</button>
+      <p class="msg-erro" id="cu-erro"></p>
+      <p style="text-align:center;margin-top:10px;">
+        <button id="btn-cu-para-entrar" style="background:none;border:none;color:var(--texto-fraco);font-size:.8rem;cursor:pointer;text-decoration:underline;">Já tem conta? Entrar</button>
+      </p>
+    </div>
+
+    <div id="bloco-convite" class="hidden">
+      <p class="wordmark">SICON</p>
+      <p class="tag">Entrar com convite</p>
+      <div class="field">
+        <label for="cv-codigo">Código de convite</label>
+        <input type="text" id="cv-codigo" placeholder="Ex: A1B2C3D4" style="text-transform:uppercase;">
+      </div>
+      <div class="field">
+        <label for="cv-email">E-mail</label>
+        <input type="email" id="cv-email" placeholder="seu@email.com">
+      </div>
+      <div class="field">
+        <label for="cv-senha" id="cv-senha-label">Senha</label>
+        <div class="campo-senha-wrap">
+          <input type="password" id="cv-senha" placeholder="Mínimo 6 caracteres">
+          <button type="button" class="btn-olho-senha" data-alvo="cv-senha" aria-label="Mostrar senha"></button>
+        </div>
+      </div>
+      <div class="field" id="cv-campo-confirma">
+        <label for="cv-senha-confirma">Confirmar senha</label>
+        <div class="campo-senha-wrap">
+          <input type="password" id="cv-senha-confirma">
+          <button type="button" class="btn-olho-senha" data-alvo="cv-senha-confirma" aria-label="Mostrar senha"></button>
+        </div>
+      </div>
+      <button class="btn btn-primary" id="btn-entrar-convite">Entrar com convite</button>
+      <p class="msg-erro" id="cv-erro"></p>
+      <p style="text-align:center;margin-top:10px;">
+        <button id="btn-cv-para-entrar" style="background:none;border:none;color:var(--texto-fraco);font-size:.8rem;cursor:pointer;text-decoration:underline;">Já tem conta? Entrar</button>
+      </p>
+    </div>
+
+    <div id="bloco-esqueci-senha" class="hidden">
+      <p class="wordmark">SICON</p>
+      <p class="tag">Recuperar senha</p>
+      <div class="field">
+        <label for="es-email">E-mail</label>
+        <input type="email" id="es-email" placeholder="seu@email.com">
+      </div>
+      <button class="btn btn-primary" id="btn-enviar-recuperacao">Enviar link de recuperação</button>
+      <p class="msg-erro" id="es-erro"></p>
+      <p style="text-align:center;margin-top:10px;">
+        <button id="btn-es-para-entrar" style="background:none;border:none;color:var(--texto-fraco);font-size:.8rem;cursor:pointer;text-decoration:underline;">Lembrou a senha? Entrar</button>
+      </p>
+    </div>
+
+    <div id="bloco-recuperacao-enviada" class="hidden">
+      <p class="wordmark">SICON</p>
+      <p class="tag">Confira seu e-mail — enviamos um link de recuperação. Clique nele pra definir uma nova senha.</p>
+      <p style="text-align:center;margin-top:10px;">
+        <button id="btn-rec-para-entrar" style="background:none;border:none;color:var(--texto-fraco);font-size:.8rem;cursor:pointer;text-decoration:underline;">Voltar para o login</button>
+      </p>
+    </div>
+
+    <div id="bloco-nova-senha" class="hidden">
+      <p class="wordmark">SICON</p>
+      <p class="tag">Defina sua nova senha</p>
+      <div class="field">
+        <label for="ns-senha">Nova senha</label>
+        <div class="campo-senha-wrap">
+          <input type="password" id="ns-senha" placeholder="Mínimo 6 caracteres">
+          <button type="button" class="btn-olho-senha" data-alvo="ns-senha" aria-label="Mostrar senha"></button>
+        </div>
+      </div>
+      <div class="field">
+        <label for="ns-senha-confirma">Confirmar nova senha</label>
+        <div class="campo-senha-wrap">
+          <input type="password" id="ns-senha-confirma">
+          <button type="button" class="btn-olho-senha" data-alvo="ns-senha-confirma" aria-label="Mostrar senha"></button>
+        </div>
+      </div>
+      <button class="btn btn-primary" id="btn-salvar-nova-senha">Salvar nova senha</button>
+      <p class="msg-erro" id="ns-erro"></p>
     </div>
   </div>
 </div>
@@ -260,6 +385,8 @@
       <button id="btn-sair">Log out</button>
       <button class="icon" title="Imprimir (em breve)">🖨️</button>
       <button class="icon" title="Excluir sub-conta (em breve)">🗑️</button>
+      <button class="icon hidden" id="btn-convidar-colaborador" title="Convidar colaborador">👤+</button>
+      <button class="icon hidden" id="btn-trocar-unidade" title="Trocar unidade">⇄</button>
       <span id="agencia-logada" style="font-size:.78rem;opacity:.9;"></span>
     </div>
     <div class="modo-wrap">
@@ -426,9 +553,22 @@
        ============================================================ -->
   <div id="modal-agencia" class="modal-overlay hidden">
     <div class="modal-card">
-      <h3>Escolha a agência</h3>
-      <p class="sub">Sua conta está vinculada a mais de uma agência. Selecione com qual vai trabalhar agora.</p>
+      <h3>Escolha a unidade</h3>
+      <p class="sub">Sua conta está vinculada a mais de uma unidade de negócio. Selecione com qual vai trabalhar agora.</p>
       <div id="lista-agencias-escolha"></div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       MODAL: convidar colaborador
+       ============================================================ -->
+  <div id="modal-convite" class="modal-overlay hidden">
+    <div class="modal-card" style="text-align:center;">
+      <h3>Convidar colaborador</h3>
+      <p class="sub">Compartilhe este código com quem você quer convidar. A pessoa deve usar "Tenho um convite" na tela de login. Gerar um novo código invalida o anterior.</p>
+      <p class="mono" id="codigo-convite-texto" style="font-size:1.5rem;font-weight:700;letter-spacing:.15em;color:var(--verde-escuro);background:var(--entrada-bg);border:1.5px dashed var(--verde-escuro);border-radius:8px;padding:14px;">— — — —</p>
+      <button class="btn btn-primary" id="btn-copiar-codigo-convite" style="margin-top:10px;">Copiar código</button>
+      <button class="btn" id="btn-fechar-modal-convite" style="margin-top:8px;width:100%;background:var(--fundo);border:1px solid var(--linha);color:var(--texto-fraco);">Fechar</button>
     </div>
   </div>
 
@@ -483,6 +623,36 @@
 
   let cache = { subcontas:[], contas:[], centrocusto:[], empresas:[], pessoas:[], eventos:[], setores:[], veiculos:[] };
 
+  // ---------- olho de mostrar/ocultar senha (todo campo de senha) ----------
+  const svgOlhoAberto = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+  const svgOlhoFechado = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A10.94 10.94 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
+  document.querySelectorAll('.btn-olho-senha').forEach(btn => {
+    btn.innerHTML = svgOlhoFechado;
+    btn.addEventListener('click', () => {
+      const input = $(btn.dataset.alvo);
+      if(!input) return;
+      const mostrando = input.type === 'text';
+      input.type = mostrando ? 'password' : 'text';
+      btn.innerHTML = mostrando ? svgOlhoFechado : svgOlhoAberto;
+    });
+  });
+
+  // ---------- alternar entre os blocos da tela de login ----------
+  const blocosLogin = ['bloco-entrar','bloco-criar-unidade','bloco-convite','bloco-esqueci-senha','bloco-recuperacao-enviada','bloco-nova-senha'];
+  function mostrarBlocoLogin(idAlvo){
+    blocosLogin.forEach(id => $(id).classList.toggle('hidden', id !== idAlvo));
+  }
+  $('btn-ir-cadastro').addEventListener('click', () => mostrarBlocoLogin('bloco-criar-unidade'));
+  $('btn-cu-para-entrar').addEventListener('click', () => mostrarBlocoLogin('bloco-entrar'));
+  $('btn-ir-convite').addEventListener('click', () => { resetarModoConviteExistente(); mostrarBlocoLogin('bloco-convite'); });
+  $('btn-cv-para-entrar').addEventListener('click', () => { resetarModoConviteExistente(); mostrarBlocoLogin('bloco-entrar'); });
+  $('btn-ir-esqueci-senha').addEventListener('click', () => {
+    $('es-email').value = $('login-email').value.trim();
+    mostrarBlocoLogin('bloco-esqueci-senha');
+  });
+  $('btn-es-para-entrar').addEventListener('click', () => mostrarBlocoLogin('bloco-entrar'));
+  $('btn-rec-para-entrar').addEventListener('click', () => mostrarBlocoLogin('bloco-entrar'));
+
   // ---------- login ----------
   $('btn-login').addEventListener('click', async () => {
     if(!sb){ $('login-erro').textContent = 'Configure a URL e a chave do Supabase antes de entrar.'; return; }
@@ -501,61 +671,190 @@
   });
 
   $('btn-sair').addEventListener('click', async () => { await sb.auth.signOut(); location.reload(); });
+  document.getElementById('login-senha').addEventListener('keydown', e => { if(e.key === 'Enter') $('btn-login').click(); });
 
-  // ---------- alternar entre login e criar conta ----------
-  let modoCadastro = false;
-  $('btn-alternar-cadastro').addEventListener('click', () => {
-    modoCadastro = !modoCadastro;
-    $('campo-confirmar-senha').classList.toggle('hidden', !modoCadastro);
-    $('btn-login').classList.toggle('hidden', modoCadastro);
-    $('btn-cadastrar').classList.toggle('hidden', !modoCadastro);
-    $('btn-alternar-cadastro').textContent = modoCadastro ? 'Já tem conta? Entrar' : 'Ainda não tem conta? Criar conta';
-    $('login-erro').className = 'msg-erro';
-    $('login-erro').textContent = '';
-  });
+  // ---------- criar unidade (agência) ----------
+  $('cu-whatsapp') && null; // placeholder pra manter padrão, sem máscara obrigatória aqui
+  $('btn-criar-unidade').addEventListener('click', async () => {
+    const nome = $('cu-nome').value.trim();
+    const whatsapp = $('cu-whatsapp').value.trim();
+    const email = $('cu-email').value.trim();
+    const senha = $('cu-senha').value;
+    const confirma = $('cu-senha-confirma').value;
+    $('cu-erro').className = 'msg-erro';
+    $('cu-erro').textContent = '';
 
-  $('btn-cadastrar').addEventListener('click', async () => {
-    if(!sb){ $('login-erro').textContent = 'Configure a URL e a chave do Supabase antes de criar conta.'; return; }
-    const email = $('login-email').value.trim();
-    const senha = $('login-senha').value;
-    const confirmar = $('login-senha-confirmar').value;
-    $('login-erro').className = 'msg-erro';
-    $('login-erro').textContent = '';
+    if(!nome){ $('cu-erro').textContent = 'Informe o nome da unidade.'; return; }
+    if(!email){ $('cu-erro').textContent = 'Informe seu e-mail.'; return; }
+    if(senha.length < 6){ $('cu-erro').textContent = 'A senha precisa ter pelo menos 6 caracteres.'; return; }
+    if(senha !== confirma){ $('cu-erro').textContent = 'As senhas não coincidem.'; return; }
 
-    if(!email || !senha || !confirmar){ $('login-erro').textContent = 'Preencha e-mail, senha e confirmação.'; return; }
-    if(senha.length < 6){ $('login-erro').textContent = 'A senha precisa ter pelo menos 6 caracteres.'; return; }
-    if(senha !== confirmar){ $('login-erro').textContent = 'As senhas não coincidem.'; return; }
-
+    const btn = $('btn-criar-unidade');
+    btn.disabled = true;
     try{
-      $('btn-cadastrar').disabled = true;
-      const { data, error } = await sb.auth.signUp({ email, password: senha });
-      $('btn-cadastrar').disabled = false;
-      if(error){ $('login-erro').textContent = 'Não foi possível criar a conta: ' + error.message; return; }
+      const { data, error } = await sb.auth.signUp({
+        email, password: senha,
+        options: { data: { unidade_nome_pendente: nome, unidade_whatsapp_pendente: whatsapp } }
+      });
+      if(error){ $('cu-erro').textContent = 'Não foi possível criar a conta: ' + error.message; return; }
 
       if(data.session){
         await onLogin();
       } else {
-        $('login-erro').className = 'msg-ok';
-        $('login-erro').textContent = 'Conta criada! Verifique seu e-mail para confirmar antes de entrar.';
+        $('cu-erro').className = 'msg-ok';
+        $('cu-erro').textContent = 'Conta criada! Verifique seu e-mail para confirmar antes de entrar.';
       }
     }catch(e){
-      $('btn-cadastrar').disabled = false;
-      $('login-erro').textContent = 'Erro de conexão ao criar conta. (' + (e?.message||e) + ')';
+      $('cu-erro').textContent = 'Erro de conexão. (' + (e?.message||e) + ')';
       console.error(e);
+    }finally{
+      btn.disabled = false;
     }
   });
+
+  // ---------- entrar com convite ----------
+  let modoConviteExistente = false;
+  function resetarModoConviteExistente(){
+    modoConviteExistente = false;
+    $('cv-campo-confirma').classList.remove('hidden');
+    $('cv-senha-label').textContent = 'Senha';
+    $('cv-senha').placeholder = 'Mínimo 6 caracteres';
+    $('btn-entrar-convite').textContent = 'Entrar com convite';
+    $('cv-senha').value = '';
+    $('cv-senha-confirma').value = '';
+  }
+
+  $('btn-entrar-convite').addEventListener('click', async () => {
+    const codigo = $('cv-codigo').value.trim().toUpperCase();
+    const email = $('cv-email').value.trim();
+    const senha = $('cv-senha').value;
+    const confirma = $('cv-senha-confirma').value;
+    $('cv-erro').className = 'msg-erro';
+    $('cv-erro').textContent = '';
+
+    if(!codigo){ $('cv-erro').textContent = 'Informe o código de convite.'; return; }
+    if(!email){ $('cv-erro').textContent = 'Informe seu e-mail.'; return; }
+    if(senha.length < 6){ $('cv-erro').textContent = 'A senha precisa ter pelo menos 6 caracteres.'; return; }
+
+    const btn = $('btn-entrar-convite');
+    btn.disabled = true;
+    try{
+      if(modoConviteExistente){
+        const { error: erroLogin } = await sb.auth.signInWithPassword({ email, password: senha });
+        if(erroLogin){ $('cv-erro').textContent = 'E-mail ou senha inválidos.'; return; }
+
+        const { error: erroConvite } = await sb.rpc('fn_entrar_com_convite', { p_codigo: codigo });
+        if(erroConvite){ $('cv-erro').textContent = erroConvite.message; return; }
+
+        await onLogin();
+        return;
+      }
+
+      if(senha !== confirma){ $('cv-erro').textContent = 'As senhas não coincidem.'; return; }
+
+      const { data, error } = await sb.auth.signUp({
+        email, password: senha,
+        options: { data: { convite_codigo_pendente: codigo } }
+      });
+      if(error){ $('cv-erro').textContent = 'Não foi possível criar a conta: ' + error.message; return; }
+
+      const jaExistia = data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0;
+      if(jaExistia){
+        modoConviteExistente = true;
+        $('cv-campo-confirma').classList.add('hidden');
+        $('cv-senha-label').textContent = 'Sua senha atual';
+        $('cv-senha').placeholder = 'Digite sua senha existente';
+        $('btn-entrar-convite').textContent = 'Entrar e aplicar convite';
+        $('cv-erro').textContent = 'Esse e-mail já tem conta. Confirme sua senha atual pra aplicar o convite.';
+        return;
+      }
+
+      if(data.session){
+        await onLogin();
+      } else {
+        $('cv-erro').className = 'msg-ok';
+        $('cv-erro').textContent = 'Conta criada! Verifique seu e-mail para confirmar antes de entrar.';
+      }
+    }catch(e){
+      $('cv-erro').textContent = 'Erro de conexão. (' + (e?.message||e) + ')';
+      console.error(e);
+    }finally{
+      btn.disabled = false;
+      btn.textContent = modoConviteExistente ? 'Entrar e aplicar convite' : 'Entrar com convite';
+    }
+  });
+
+  // ---------- esqueci minha senha ----------
+  $('btn-enviar-recuperacao').addEventListener('click', async () => {
+    const email = $('es-email').value.trim();
+    $('es-erro').className = 'msg-erro';
+    $('es-erro').textContent = '';
+    if(!email){ $('es-erro').textContent = 'Informe seu e-mail.'; return; }
+
+    const btn = $('btn-enviar-recuperacao');
+    btn.disabled = true;
+    try{
+      const { error } = await sb.auth.resetPasswordForEmail(email, {
+        redirectTo: window.location.href.split('?')[0].split('#')[0]
+      });
+      if(error){ $('es-erro').textContent = error.message; return; }
+      mostrarBlocoLogin('bloco-recuperacao-enviada');
+    }catch(e){
+      $('es-erro').textContent = 'Erro de conexão. (' + (e?.message||e) + ')';
+    }finally{
+      btn.disabled = false;
+    }
+  });
+
+  $('btn-salvar-nova-senha').addEventListener('click', async () => {
+    const novaSenha = $('ns-senha').value;
+    const confirma = $('ns-senha-confirma').value;
+    $('ns-erro').className = 'msg-erro';
+    $('ns-erro').textContent = '';
+
+    if(novaSenha.length < 6){ $('ns-erro').textContent = 'A senha precisa ter pelo menos 6 caracteres.'; return; }
+    if(novaSenha !== confirma){ $('ns-erro').textContent = 'As senhas não coincidem.'; return; }
+
+    const btn = $('btn-salvar-nova-senha');
+    btn.disabled = true;
+    try{
+      const { error } = await sb.auth.updateUser({ password: novaSenha });
+      if(error){ $('ns-erro').textContent = error.message; return; }
+      await onLogin();
+    }catch(e){
+      $('ns-erro').textContent = 'Erro de conexão. (' + (e?.message||e) + ')';
+    }finally{
+      btn.disabled = false;
+    }
+  });
+
+  // Supabase dispara PASSWORD_RECOVERY quando a página abre a partir
+  // do link de recuperação recebido por e-mail.
+  if(sb){
+    sb.auth.onAuthStateChange((event) => {
+      if(event === 'PASSWORD_RECOVERY'){
+        $('app').classList.add('hidden');
+        $('login-screen').classList.remove('hidden');
+        mostrarBlocoLogin('bloco-nova-senha');
+      }
+    });
+  }
 
   async function checkSession(){
     const { data:{ session } } = await sb.auth.getSession();
     if(session){ await onLogin(); }
   }
 
-  let meuPerfil = { agenciaId: null, agenciaNome: '' };
+  let meuPerfil = { agenciaId: null, agenciaNome: '', ehPrincipal: false };
+  let vinculosGlobais = [];
 
   function definirAgenciaAtiva(vinculo){
     meuPerfil.agenciaId = vinculo.agencia_id;
     meuPerfil.agenciaNome = vinculo.nome || '';
+    meuPerfil.ehPrincipal = !!vinculo.eh_principal;
     $('agencia-logada').textContent = meuPerfil.agenciaNome ? ('· ' + meuPerfil.agenciaNome) : '';
+    $('btn-convidar-colaborador').classList.toggle('hidden', !meuPerfil.ehPrincipal);
+    $('btn-trocar-unidade').classList.toggle('hidden', vinculosGlobais.length <= 1);
   }
 
   function abrirEscolhaAgencia(vinculos){
@@ -576,44 +875,93 @@
     $('modal-agencia').classList.remove('hidden');
   }
 
+  $('btn-trocar-unidade').addEventListener('click', () => abrirEscolhaAgencia(vinculosGlobais));
+
+  // ---------- convidar colaborador ----------
+  $('btn-convidar-colaborador').addEventListener('click', async () => {
+    const btn = $('btn-convidar-colaborador');
+    btn.disabled = true;
+    const { data: codigo, error } = await sb.rpc('fn_gerar_codigo_convite', { p_agencia_id: meuPerfil.agenciaId });
+    btn.disabled = false;
+    if(error){ alert('Erro ao gerar código: ' + error.message); return; }
+    $('codigo-convite-texto').textContent = codigo;
+    $('modal-convite').classList.remove('hidden');
+  });
+  $('btn-copiar-codigo-convite').addEventListener('click', async () => {
+    const codigo = $('codigo-convite-texto').textContent;
+    try{ await navigator.clipboard.writeText(codigo); alert('Código copiado!'); }
+    catch(e){ prompt('Copie o código manualmente:', codigo); }
+  });
+  $('btn-fechar-modal-convite').addEventListener('click', () => $('modal-convite').classList.add('hidden'));
+
   async function carregarMeuPerfil(){
     const { data: sessao } = await sb.auth.getUser();
     const userId = sessao?.user?.id;
     if(!userId) return;
 
     const { data: vinculos, error } = await sb
-      .from('receptivo_agencia_usuarios')
-      .select('agencia_id, eh_principal')
+      .from('servir_unidade_usuarios')
+      .select('unidade_negocio_id, eh_principal')
       .eq('user_id', userId)
       .order('eh_principal', { ascending: false });
 
     if(error){ console.error(error); return; }
 
+    // primeiro acesso após confirmar e-mail: ainda não existe vínculo.
+    // Metadados pendentes guardados no signUp resolvem isso sozinhos.
     if(!vinculos || vinculos.length === 0){
-      $('agencia-logada').textContent = '⚠️ sem agência vinculada';
+      const nomePendente = sessao.user.user_metadata?.unidade_nome_pendente;
+      const whatsappPendente = sessao.user.user_metadata?.unidade_whatsapp_pendente;
+      const codigoPendente = sessao.user.user_metadata?.convite_codigo_pendente;
+
+      if(nomePendente){
+        const { data: novaUnidade, error: erroNova } = await sb
+          .from('servir_unidades_negocio')
+          .insert({ nome: nomePendente, whatsapp_contato: (whatsappPendente || '').replace(/\D/g, ''), ativo: true })
+          .select().single();
+        if(erroNova){ $('agencia-logada').textContent = '⚠️ erro ao criar unidade'; console.error(erroNova); return; }
+
+        await sb.from('servir_unidade_usuarios').insert({ unidade_negocio_id: novaUnidade.id, user_id: userId, eh_principal: true });
+        vinculosGlobais = [{ agencia_id: novaUnidade.id, eh_principal: true, nome: novaUnidade.nome }];
+        definirAgenciaAtiva(vinculosGlobais[0]);
+        return;
+      }
+
+      if(codigoPendente){
+        const { data: unidadeIdRetornada, error: erroConvite } = await sb.rpc('fn_entrar_com_convite', { p_codigo: codigoPendente });
+        if(erroConvite){ $('agencia-logada').textContent = '⚠️ ' + erroConvite.message; console.error(erroConvite); return; }
+
+        const { data: unidadeInfo } = await sb.from('servir_unidades_negocio').select('nome').eq('id', unidadeIdRetornada).single();
+        vinculosGlobais = [{ agencia_id: unidadeIdRetornada, eh_principal: false, nome: unidadeInfo?.nome || '' }];
+        definirAgenciaAtiva(vinculosGlobais[0]);
+        return;
+      }
+
+      $('agencia-logada').textContent = '⚠️ sem unidade vinculada';
       return;
     }
 
-    const ids = [...new Set(vinculos.map(v => v.agencia_id))];
+    const ids = [...new Set(vinculos.map(v => v.unidade_negocio_id))];
     const { data: agenciasData, error: errAgencias } = await sb
-      .from('receptivo_agencias_receptivo')
+      .from('servir_unidades_negocio')
       .select('id,nome')
       .in('id', ids);
     if(errAgencias) console.error(errAgencias);
 
     const nomePorId = new Map((agenciasData || []).map(a => [a.id, a.nome]));
     const vinculosComNome = vinculos.map(v => ({
-      agencia_id: v.agencia_id,
+      agencia_id: v.unidade_negocio_id,
       eh_principal: v.eh_principal,
-      nome: nomePorId.get(v.agencia_id) || '(agência sem nome)',
+      nome: nomePorId.get(v.unidade_negocio_id) || '(unidade sem nome)',
     }));
+    vinculosGlobais = vinculosComNome;
 
     if(vinculosComNome.length === 1){
       definirAgenciaAtiva(vinculosComNome[0]);
       return;
     }
 
-    // mais de uma agência vinculada: usa a principal por enquanto e
+    // mais de uma unidade vinculada: usa a principal por enquanto e
     // deixa o popup abrir a seguir, pra pessoa confirmar/trocar
     definirAgenciaAtiva(vinculosComNome[0]);
     abrirEscolhaAgencia(vinculosComNome);
@@ -627,6 +975,7 @@
     definirDataHoje();
     await atualizarSaldoELista();
   }
+
 
   function definirDataHoje(){
     $('in-data').value = new Date().toISOString().slice(0,10);
@@ -764,17 +1113,6 @@
     e.preventDefault();
     $('login-senha').focus();
   });
-  $('login-senha').addEventListener('keydown', (e) => {
-    if(e.key !== 'Enter') return;
-    e.preventDefault();
-    if(modoCadastro){ $('login-senha-confirmar').focus(); }
-    else{ $('btn-login').click(); }
-  });
-  $('login-senha-confirmar').addEventListener('keydown', (e) => {
-    if(e.key !== 'Enter') return;
-    e.preventDefault();
-    $('btn-cadastrar').click();
-  });
   ligarEnterAvancaCampos(['cfg-url','cfg-key'], $('btn-salvar-config'));
   ligarEnterAvancaCampos(
     ['sel-subconta','in-data','val-entrada','val-saida','in-historico','in-centrocusto'],
@@ -808,7 +1146,7 @@
   // ---------- listas ----------
   async function carregarListas(){
     let querySubcontas = sb.from('financeiro_sub_contas').select('id,nome').eq('ativo', true);
-    if(meuPerfil.agenciaId) querySubcontas = querySubcontas.eq('agencia_id', meuPerfil.agenciaId);
+    if(meuPerfil.agenciaId) querySubcontas = querySubcontas.eq('unidade_negocio_id', meuPerfil.agenciaId);
     querySubcontas = querySubcontas.order('criado_em', { ascending:false }).order('id', { ascending:false });
 
     const [subcontas, contas, centrocusto, empresas, pessoas, eventos, setores, veiculos] = await Promise.all([
@@ -883,7 +1221,7 @@
   $('btn-add-subconta').addEventListener('click', async () => {
     const nome = prompt('Nome da nova sub-conta:');
     if(!nome || !nome.trim()) return;
-    const { data, error } = await sb.from('financeiro_sub_contas').insert({ nome: nome.trim(), agencia_id: meuPerfil.agenciaId }).select('id,nome').single();
+    const { data, error } = await sb.from('financeiro_sub_contas').insert({ nome: nome.trim(), unidade_negocio_id: meuPerfil.agenciaId }).select('id,nome').single();
     if(error){ alert('Erro ao criar sub-conta: ' + error.message); return; }
     await carregarListas();
     $('sel-subconta').value = textoParaItem(data);
@@ -1016,7 +1354,7 @@
       sub_conta_id: subContaId,
       centro_custo_id: centroCustoId,
       tipo_movimento: 'MOVIMENTO',
-      agencia_id: meuPerfil.agenciaId,
+      unidade_negocio_id: meuPerfil.agenciaId,
     };
 
     $('btn-gravar').disabled = true;
