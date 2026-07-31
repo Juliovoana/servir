@@ -173,16 +173,224 @@
         width: 40px; height: 40px; font-size: 1.15em; cursor: pointer; flex-shrink: 0;
     }
     .botao-engrenagem:hover { background: #444; }
+
+    /* ===== Login (reaproveita o padrão visual do módulo Verba) ===== */
+    :root {
+        --verde-escuro: #3C6B55;
+        --verde-escuro-2: #325B48;
+        --linha: #E1E5E2;
+        --texto-fraco: #6B7570;
+    }
+    .hidden { display: none !important; }
+    #login-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; background: #F7F8F7; }
+    .login-card { width: 100%; max-width: 360px; background: #fff; border: 1px solid var(--linha); border-radius: 10px; padding: 28px 22px; box-shadow: 0 2px 10px rgba(30,40,35,.06); font-family: Arial, sans-serif; }
+    .login-card .wordmark { font-size: 1.4em; font-weight: 700; margin: 0 0 2px; color: var(--verde-escuro); }
+    .login-card .tag { color: var(--texto-fraco); font-size: 0.85em; margin: 0 0 22px; }
+    .field { margin-bottom: 12px; }
+    .field label { display: block; font-size: 0.75em; color: var(--texto-fraco); margin-bottom: 5px; }
+    .login-card input { width: 100%; background: #fff; border: 1px solid var(--linha); color: #222; padding: 9px 10px; border-radius: 8px; font-size: 0.95em; font-family: inherit; }
+    .login-card input:focus { outline: 2px solid var(--verde-escuro); outline-offset: 0; border-color: var(--verde-escuro); }
+    .btn-primary { background: var(--verde-escuro); color: #fff; width: 100%; border: none; border-radius: 8px; padding: 10px 16px; font-size: 0.9em; font-weight: 600; cursor: pointer; font-family: inherit; }
+    .btn-primary:hover { background: var(--verde-escuro-2); }
+    .msg-erro { color: #B5453B; font-size: 0.82em; margin-top: 10px; min-height: 1.1em; }
+    .msg-ok { color: #1E7A46; font-size: 0.82em; margin-top: 10px; min-height: 1.1em; }
+    .campo-senha-wrap { position: relative; }
+    .campo-senha-wrap input { padding-right: 38px; }
+    .btn-olho-senha { position: absolute; top: 50%; right: 5px; transform: translateY(-50%); background: none; border: none; padding: 6px; cursor: pointer; color: var(--texto-fraco); display: flex; align-items: center; justify-content: center; border-radius: 6px; }
+    .btn-olho-senha:hover { color: var(--verde-escuro); }
+    .btn-olho-senha svg { width: 17px; height: 17px; }
+    .link-discreto { background: none; border: none; color: var(--texto-fraco); font-size: 0.8em; cursor: pointer; text-decoration: underline; }
+    .btn-unidade { width: 100%; text-align: left; padding: 12px 14px; border: 1px solid var(--linha); border-radius: 8px; background: #fff; cursor: pointer; font-size: 0.95em; }
+    .btn-unidade:hover { background: #f5f9ff; border-color: #1565c0; }
 </style>
 </head>
 <body>
 
-<div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px;">
+<!-- ============================================================
+     TELA DE LOGIN (reaproveita servir_unidades_negocio / servir_unidade_usuarios)
+     ============================================================ -->
+<div id="login-screen">
+  <div class="login-card">
+    <div id="bloco-entrar">
+      <p class="wordmark">SICON</p>
+      <p class="tag">Controle de Estoque &amp; Projetos — entre com seu usuário</p>
+      <div class="field">
+        <label for="login-email">E-mail</label>
+        <input type="email" id="login-email" autocomplete="username" placeholder="seu@email.com">
+      </div>
+      <div class="field">
+        <label for="login-senha">Senha</label>
+        <div class="campo-senha-wrap">
+          <input type="password" id="login-senha" autocomplete="current-password" placeholder="••••••••">
+          <button type="button" class="btn-olho-senha" data-alvo="login-senha" aria-label="Mostrar senha"></button>
+        </div>
+      </div>
+      <p style="text-align:right;margin:-6px 0 12px;">
+        <button id="btn-ir-esqueci-senha" class="link-discreto">Esqueci minha senha</button>
+      </p>
+
+      <button class="btn btn-primary" id="btn-login">Entrar</button>
+      <p class="msg-erro" id="login-erro"></p>
+
+      <p style="text-align:center;margin-top:10px;">
+        <button id="btn-ir-cadastro" class="link-discreto">Ainda não tem conta? Criar unidade</button>
+        ·
+        <button id="btn-ir-convite" class="link-discreto">Tenho um convite</button>
+      </p>
+
+      <p style="text-align:center;margin-top:6px;">
+        <button id="btn-abrir-config" class="link-discreto">⚙️ Configurações do banco de dados</button>
+      </p>
+
+      <div id="painel-config" class="hidden" style="margin-top:14px;border-top:1px solid var(--linha);padding-top:14px;">
+        <div class="field">
+          <label for="cfg-url">Supabase URL</label>
+          <input type="text" id="cfg-url" placeholder="https://xxxxx.supabase.co">
+        </div>
+        <div class="field">
+          <label for="cfg-key">Supabase anon key</label>
+          <input type="text" id="cfg-key" placeholder="eyJhbGci... ou sb_publishable_...">
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn" id="btn-salvar-config" style="background:var(--verde-escuro);color:#fff;flex:1;">Salvar e recarregar</button>
+          <button class="btn" id="btn-restaurar-config" style="background:var(--fundo);border:1px solid var(--linha);color:var(--texto-fraco);flex:1;">Restaurar padrão</button>
+        </div>
+        <p style="font-size:.72rem;color:var(--texto-fraco);margin-top:8px;">
+          Fica salvo só neste navegador/aparelho.
+        </p>
+        <p class="msg-ok" id="config-status"></p>
+      </div>
+    </div>
+
+    <div id="bloco-criar-unidade" class="hidden">
+      <p class="wordmark">SICON</p>
+      <p class="tag">Criar sua unidade de negócio</p>
+      <div class="field">
+        <label for="cu-nome">Nome da unidade</label>
+        <input type="text" id="cu-nome" placeholder="Ex: Fábrica Contêiner">
+      </div>
+      <div class="field">
+        <label for="cu-whatsapp">WhatsApp de contato</label>
+        <input type="tel" id="cu-whatsapp" placeholder="(00) 00000-0000" maxlength="15">
+      </div>
+      <div class="field">
+        <label for="cu-email">E-mail</label>
+        <input type="email" id="cu-email" placeholder="seu@email.com">
+      </div>
+      <div class="field">
+        <label for="cu-senha">Senha</label>
+        <div class="campo-senha-wrap">
+          <input type="password" id="cu-senha" placeholder="Mínimo 6 caracteres">
+          <button type="button" class="btn-olho-senha" data-alvo="cu-senha" aria-label="Mostrar senha"></button>
+        </div>
+      </div>
+      <div class="field">
+        <label for="cu-senha-confirma">Confirmar senha</label>
+        <div class="campo-senha-wrap">
+          <input type="password" id="cu-senha-confirma">
+          <button type="button" class="btn-olho-senha" data-alvo="cu-senha-confirma" aria-label="Mostrar senha"></button>
+        </div>
+      </div>
+      <button class="btn btn-primary" id="btn-criar-unidade">Criar unidade</button>
+      <p class="msg-erro" id="cu-erro"></p>
+      <p style="text-align:center;margin-top:10px;">
+        <button id="btn-cu-para-entrar" class="link-discreto">Já tem conta? Entrar</button>
+      </p>
+    </div>
+
+    <div id="bloco-convite" class="hidden">
+      <p class="wordmark">SICON</p>
+      <p class="tag">Entrar com convite</p>
+      <div class="field">
+        <label for="cv-codigo">Código de convite</label>
+        <input type="text" id="cv-codigo" placeholder="Ex: A1B2C3D4" style="text-transform:uppercase;">
+      </div>
+      <div class="field">
+        <label for="cv-email">E-mail</label>
+        <input type="email" id="cv-email" placeholder="seu@email.com">
+      </div>
+      <div class="field">
+        <label for="cv-senha" id="cv-senha-label">Senha</label>
+        <div class="campo-senha-wrap">
+          <input type="password" id="cv-senha" placeholder="Mínimo 6 caracteres">
+          <button type="button" class="btn-olho-senha" data-alvo="cv-senha" aria-label="Mostrar senha"></button>
+        </div>
+      </div>
+      <div class="field" id="cv-campo-confirma">
+        <label for="cv-senha-confirma">Confirmar senha</label>
+        <div class="campo-senha-wrap">
+          <input type="password" id="cv-senha-confirma">
+          <button type="button" class="btn-olho-senha" data-alvo="cv-senha-confirma" aria-label="Mostrar senha"></button>
+        </div>
+      </div>
+      <button class="btn btn-primary" id="btn-entrar-convite">Entrar com convite</button>
+      <p class="msg-erro" id="cv-erro"></p>
+      <p style="text-align:center;margin-top:10px;">
+        <button id="btn-cv-para-entrar" class="link-discreto">Já tem conta? Entrar</button>
+      </p>
+    </div>
+
+    <div id="bloco-esqueci-senha" class="hidden">
+      <p class="wordmark">SICON</p>
+      <p class="tag">Recuperar senha</p>
+      <div class="field">
+        <label for="es-email">E-mail</label>
+        <input type="email" id="es-email" placeholder="seu@email.com">
+      </div>
+      <button class="btn btn-primary" id="btn-enviar-recuperacao">Enviar link de recuperação</button>
+      <p class="msg-erro" id="es-erro"></p>
+      <p style="text-align:center;margin-top:10px;">
+        <button id="btn-es-para-entrar" class="link-discreto">Lembrou a senha? Entrar</button>
+      </p>
+    </div>
+
+    <div id="bloco-recuperacao-enviada" class="hidden">
+      <p class="wordmark">SICON</p>
+      <p class="tag">Confira seu e-mail — enviamos um link de recuperação. Clique nele pra definir uma nova senha.</p>
+      <p style="text-align:center;margin-top:10px;">
+        <button id="btn-rec-para-entrar" class="link-discreto">Voltar para o login</button>
+      </p>
+    </div>
+
+    <div id="bloco-nova-senha" class="hidden">
+      <p class="wordmark">SICON</p>
+      <p class="tag">Defina sua nova senha</p>
+      <div class="field">
+        <label for="ns-senha">Nova senha</label>
+        <div class="campo-senha-wrap">
+          <input type="password" id="ns-senha" placeholder="Mínimo 6 caracteres">
+          <button type="button" class="btn-olho-senha" data-alvo="ns-senha" aria-label="Mostrar senha"></button>
+        </div>
+      </div>
+      <div class="field">
+        <label for="ns-senha-confirma">Confirmar nova senha</label>
+        <div class="campo-senha-wrap">
+          <input type="password" id="ns-senha-confirma">
+          <button type="button" class="btn-olho-senha" data-alvo="ns-senha-confirma" aria-label="Mostrar senha"></button>
+        </div>
+      </div>
+      <button class="btn btn-primary" id="btn-salvar-nova-senha">Salvar nova senha</button>
+      <p class="msg-erro" id="ns-erro"></p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     APP (só aparece depois de logado)
+     ============================================================ -->
+<div id="app-fabrica" class="hidden">
+
+<div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; flex-wrap:wrap;">
     <div>
         <h2 style="margin-bottom:4px;">Controle de Estoque &amp; Projetos</h2>
         <p class="subtitulo">Contêiner &amp; Esquadria — controle de produção, estoque e movimentações</p>
     </div>
-    <button id="btnConfiguracoes" title="Configurações" class="botao-engrenagem">⚙️</button>
+    <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+        <span id="unidade-logada" style="font-size:0.85em; color:#555;"></span>
+        <button class="btn btn-cinza" id="btn-trocar-unidade" style="display:none;" title="Trocar unidade">⇄ Trocar unidade</button>
+        <button class="btn btn-cinza" id="btn-convidar-colaborador" style="display:none;" title="Convidar colaborador">👤+ Convidar</button>
+        <button class="btn btn-vermelho" id="btn-sair">Sair</button>
+    </div>
 </div>
 <span class="tag-status" id="tagContagem">carregando...</span>
 
@@ -190,8 +398,10 @@
     <button class="aba-btn ativa" data-aba="estoque">📦 Estoque</button>
     <button class="aba-btn" data-aba="movimentacao">🧾 Requisição de Saída</button>
     <button class="aba-btn" data-aba="projetos">🏗️ Projetos</button>
+    <button class="aba-btn" data-aba="movpainel">📋 Movimentações</button>
     <button class="aba-btn" data-aba="relatorios">📊 Relatórios</button>
 </div>
+
 
 <!-- ===================== ABA ESTOQUE ===================== -->
 <div class="conteudo-aba ativa" id="aba-estoque">
@@ -225,7 +435,7 @@
 
     <table class="tabela" id="tabelaEstoque">
         <thead>
-            <tr><th>Código</th><th>Cód. Externo</th><th>Produto</th><th>Un</th><th class="num">Valor (R$)</th><th class="num">Estoque Inicial</th><th class="num">Estoque Atual</th><th class="center">Ações</th></tr>
+            <tr><th>Código</th><th>Cód. Externo</th><th>Produto</th><th>Un</th><th class="num">Valor (R$)</th><th class="num">Últ. Compra</th><th class="num">Preço Médio</th><th class="num">Estoque Inicial</th><th class="num">Estoque Atual</th><th class="center">Ações</th></tr>
         </thead>
         <tbody id="corpoTabelaEstoque"></tbody>
     </table>
@@ -318,6 +528,49 @@
     </div>
     <div class="lista-projetos" id="listaProjetos"></div>
     <div class="vazio" id="vazioProjetos" style="display:none;">Nenhum projeto cadastrado ainda.</div>
+</div>
+
+<!-- ===================== ABA MOVIMENTAÇÕES (painel geral) ===================== -->
+<div class="conteudo-aba" id="aba-movpainel">
+    <div class="caixa">
+        <div class="grade col4">
+            <div class="campo">
+                <label>Produto</label>
+                <input type="text" id="movFiltroProdutoBusca" placeholder="Buscar produto...">
+                <div id="movFiltroProdutoResultados"></div>
+                <div id="movFiltroProdutoSelecionado" style="margin-top:4px; font-size:0.82em;"></div>
+            </div>
+            <div class="campo">
+                <label>Fornecedor</label>
+                <input type="text" id="movFiltroFornecedor" placeholder="Nome ou CNPJ...">
+            </div>
+            <div class="campo">
+                <label>Tag</label>
+                <input type="text" id="movFiltroTag" list="movListaTagsFiltro" placeholder="Tag...">
+                <datalist id="movListaTagsFiltro"></datalist>
+            </div>
+            <div class="campo">
+                <label>Evento</label>
+                <input type="text" id="movFiltroEventoBusca" placeholder="Buscar evento...">
+                <div id="movFiltroEventoResultados"></div>
+                <div id="movFiltroEventoSelecionado" style="margin-top:4px; font-size:0.82em;"></div>
+            </div>
+        </div>
+        <div style="margin-top:10px; display:flex; gap:8px;">
+            <button class="btn btn-azul" id="btnAplicarFiltrosMov">🔍 Buscar</button>
+            <button class="btn btn-cinza" id="btnLimparFiltrosMov">Limpar filtros</button>
+        </div>
+    </div>
+
+    <div style="max-height:65vh; overflow:auto;">
+        <table class="tabela" id="tabelaPainelMov">
+            <thead>
+                <tr><th>Data</th><th>Tipo</th><th>Produto</th><th class="num">Qtd</th><th class="num">Vlr Unit.</th><th>Tag</th><th>Evento</th><th>Projeto</th><th>Fornecedor / NF</th><th>Responsável</th><th>Obs.</th></tr>
+            </thead>
+            <tbody id="corpoTabelaPainelMov"></tbody>
+        </table>
+    </div>
+    <div class="vazio" id="vazioPainelMov" style="display:none;">Nenhuma movimentação encontrada com esses filtros.</div>
 </div>
 
 <!-- ===================== ABA RELATÓRIOS ===================== -->
@@ -469,6 +722,31 @@
     </div>
 </div>
 
+<!-- ===================== MODAL / POPUP: Editar produto ===================== -->
+<div class="modal-overlay" id="modalEditarProduto">
+    <div class="modal-caixa">
+        <h4 style="margin-top:0;">Editar produto</h4>
+        <p class="subtitulo" id="editProdutoNome" style="margin-bottom:14px;"></p>
+
+        <div class="grade col2">
+            <div class="campo"><label>Valor unitário (R$)</label><input type="number" step="0.01" id="editProdutoValor"></div>
+            <div class="campo"><label>Estoque atual</label><input type="number" step="0.01" id="editProdutoEstoque"></div>
+        </div>
+
+        <div class="campo" id="campoResponsavelAjuste" style="margin-top:10px; display:none;">
+            <label>Responsável pelo ajuste de estoque</label>
+            <input type="text" id="editProdutoResponsavelAjuste">
+        </div>
+        <p class="subtitulo" id="avisoAjusteEstoque" style="margin-top:6px; display:none;"></p>
+
+        <div style="margin-top:16px; text-align:right;">
+            <button class="btn btn-cinza" id="btnCancelarEditarProduto">Sair</button>
+            <button class="btn btn-verde" id="btnSalvarEditarProduto">Salvar</button>
+        </div>
+        <span class="status-msg" id="statusEditarProduto"></span>
+    </div>
+</div>
+
 <div class="modal-overlay" id="modalInfoProduto">
     <div class="modal-caixa larga">
         <div id="modalInfoProdutoConteudo"></div>
@@ -583,31 +861,49 @@
     </div>
 </div>
 
-<div class="modal-overlay" id="modalConfig">
+<!-- ===================== MODAL: escolher unidade (quando o login tem mais de uma) ===================== -->
+<div class="modal-overlay" id="modal-unidade">
     <div class="modal-caixa">
-        <h4 style="margin-top:0;">Configurações</h4>
-        <div class="campo">
-            <label>Project URL (Supabase)</label>
-            <input type="text" id="configSupabaseUrl" placeholder="https://xxxxxxxxxxxx.supabase.co">
-        </div>
-        <div class="campo" style="margin-top:10px;">
-            <label>Chave anon public (Supabase)</label>
-            <input type="text" id="configSupabaseKey" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...">
-        </div>
-        <p class="subtitulo" style="margin-top:8px;">Esses dados ficam salvos neste navegador — não precisa editar o arquivo. Encontre em Project Settings → API no painel do Supabase.</p>
-        <div style="margin-top:16px; text-align:right;">
-            <button class="btn btn-cinza" id="btnCancelarConfig">Sair</button>
-            <button class="btn btn-verde" id="btnSalvarConfig">Salvar</button>
-        </div>
-        <span class="status-msg" id="statusConfig"></span>
+        <h4 style="margin-top:0;">Escolha a unidade</h4>
+        <p class="subtitulo" style="margin-bottom:14px;">Sua conta está vinculada a mais de uma unidade de negócio. Selecione com qual vai trabalhar agora.</p>
+        <div id="lista-unidades-escolha" style="display:flex; flex-direction:column; gap:8px;"></div>
     </div>
 </div>
 
+<!-- ===================== MODAL: convidar colaborador ===================== -->
+<div class="modal-overlay" id="modal-convite-colaborador">
+    <div class="modal-caixa" style="text-align:center;">
+        <h4 style="margin-top:0;">Convidar colaborador</h4>
+        <p class="subtitulo" style="margin-bottom:14px;">Compartilhe este código com quem você quer convidar. A pessoa deve usar "Tenho um convite" na tela de login.</p>
+        <p class="mono" id="codigo-convite-texto" style="font-size:1.4em; font-weight:bold; letter-spacing:0.15em; color:#1565c0; background:#eef2ff; border:1.5px dashed #1565c0; border-radius:8px; padding:14px;">— — — —</p>
+        <div style="margin-top:16px; display:flex; gap:8px; justify-content:center;">
+            <button class="btn btn-cinza" id="btn-fechar-modal-convite">Fechar</button>
+            <button class="btn btn-verde" id="btn-copiar-codigo-convite">Copiar código</button>
+        </div>
+    </div>
+</div>
+
+</div> <!-- fim de #app-fabrica -->
+
 <script>
-/* ===================== Conexão com o Supabase ===================== */
-/* Fica salva no navegador (localStorage) — configurável pelo ícone de engrenagem no topo. */
-let SUPABASE_URL = localStorage.getItem('estoqueapp_supabase_url') || "COLE_AQUI_A_URL_DO_SEU_PROJETO_SUPABASE";
-let SUPABASE_ANON_KEY = localStorage.getItem('estoqueapp_supabase_key') || "COLE_AQUI_A_CHAVE_ANON_PUBLIC";
+/* ===================== Conexão com o Supabase (mesmo projeto usado nos outros módulos) ===================== */
+const SUPABASE_URL_PADRAO = 'https://frzvcrcshkpvjdbbqkhz.supabase.co';
+const SUPABASE_ANON_KEY_PADRAO = 'sb_publishable_h-JuDyjYgb5YKGYFRKtLEg_8gnJor9w';
+
+function configSalvaParecValida(url, key) {
+    return !!url && !!key
+        && /^https:\/\/.+\.supabase\.co/i.test(url)
+        && key.length > 20
+        && !url.includes('COLE_AQUI')
+        && !key.includes('COLE_AQUI');
+}
+
+const urlSalva = localStorage.getItem('sicon_supabase_url');
+const keySalva = localStorage.getItem('sicon_supabase_key');
+const usarConfigSalva = configSalvaParecValida(urlSalva, keySalva);
+
+let SUPABASE_URL = usarConfigSalva ? urlSalva : SUPABASE_URL_PADRAO;
+let SUPABASE_ANON_KEY = usarConfigSalva ? keySalva : SUPABASE_ANON_KEY_PADRAO;
 </script>
 <script>
 /* ============================================================
@@ -645,24 +941,35 @@ function proximoIdProduto() {
 }
 
 /* ---------- comunicação com o backend (Supabase) ---------- */
-async function chamarGet(acao) {
+async function chamarGet(acao, filtros) {
     if (acao === 'listarProdutos') {
-        const { data, error } = await sb.from('fabrica_produtos').select('*').range(0, 9999);
+        const { data, error } = await sb.from('fabrica_produtos').select('*').eq('unidade_negocio_id', meuPerfil.unidadeId).range(0, 9999);
         if (error) throw error;
         return data;
     }
     if (acao === 'listarMovimentacoes') {
-        const { data, error } = await sb.from('fabrica_movimentacoes').select('*').order('data', { ascending: false }).limit(300);
+        const { data, error } = await sb.from('fabrica_movimentacoes').select('*').eq('unidade_negocio_id', meuPerfil.unidadeId).order('data', { ascending: false }).limit(300);
+        if (error) throw error;
+        return data;
+    }
+    if (acao === 'listarMovimentacoesFiltradas') {
+        filtros = filtros || {};
+        let query = sb.from('fabrica_movimentacoes').select('*').eq('unidade_negocio_id', meuPerfil.unidadeId).order('data', { ascending: false }).limit(500);
+        if (filtros.produtoId) query = query.eq('produto_id', filtros.produtoId);
+        if (filtros.tag) query = query.ilike('tag', `%${filtros.tag}%`);
+        if (filtros.evento) query = query.eq('evento', filtros.evento);
+        if (filtros.fornecedor) query = query.or(`fornecedor_nome.ilike.%${filtros.fornecedor}%,fornecedor_cnpj.ilike.%${filtros.fornecedor}%`);
+        const { data, error } = await query;
         if (error) throw error;
         return data;
     }
     if (acao === 'listarProjetos') {
-        const { data, error } = await sb.from('fabrica_projetos').select('*, fabrica_itens_projeto(*)').range(0, 9999);
+        const { data, error } = await sb.from('fabrica_projetos').select('*, fabrica_itens_projeto(*)').eq('unidade_negocio_id', meuPerfil.unidadeId).range(0, 9999);
         if (error) throw error;
         return (data || []).map(p => ({ ...p, itens: p.fabrica_itens_projeto || [] }));
     }
     if (acao === 'listarEventos') {
-        const { data, error } = await sb.from('fabrica_eventos').select('*').range(0, 9999);
+        const { data, error } = await sb.from('fabrica_eventos').select('*').eq('unidade_negocio_id', meuPerfil.unidadeId).range(0, 9999);
         if (error) throw error;
         return data;
     }
@@ -675,7 +982,8 @@ async function chamarPost(acao, d) {
         const registro = {
             nome: p.nome, un: p.un, valor: p.valor, grupo: p.grupo,
             estoque_inicial: p.estoqueInicial, estoque: p.estoque, almox: p.almox || 1,
-            codigo_externo: p.codigoExterno || null
+            codigo_externo: p.codigoExterno || null,
+            unidade_negocio_id: meuPerfil.unidadeId
         };
         if (p.id) registro.id = p.id; // se não informado, o banco gera automaticamente
         const { data, error } = await sb.from('fabrica_produtos').upsert(registro).select().single();
@@ -687,18 +995,28 @@ async function chamarPost(acao, d) {
         const { error: e1 } = await sb.from('fabrica_movimentacoes').insert({
             data: m.data, produto_id: m.produtoId, tipo: m.tipo, qtd: m.qtd, valor_unit: m.valorUnit,
             tag: m.tag || '', evento: m.evento || '', observacao: m.observacao || '', responsavel: m.responsavel || '',
-            projeto_id: m.projetoId || null, item_projeto_id: m.itemProjetoId || null
+            projeto_id: m.projetoId || null, item_projeto_id: m.itemProjetoId || null,
+            nf_numero: m.nfNumero || null, fornecedor_cnpj: m.fornecedorCnpj || null, fornecedor_nome: m.fornecedorNome || null,
+            unidade_negocio_id: meuPerfil.unidadeId
         });
         if (e1) throw e1;
-        const { error: e2 } = await sb.rpc('fabrica_ajustar_estoque', {
-            p_produto_id: m.produtoId, p_delta: m.tipo === 'entrada' ? Number(m.qtd) : -Number(m.qtd)
-        });
-        if (e2) throw e2;
+        if (m.tipo === 'entrada') {
+            // entrada: além de somar no estoque, recalcula preço da última compra e preço médio
+            const { error: e2 } = await sb.rpc('fabrica_registrar_entrada_precos', {
+                p_produto_id: m.produtoId, p_qtd: Number(m.qtd), p_valor_unit: Number(m.valorUnit)
+            });
+            if (e2) throw e2;
+        } else {
+            const { error: e2 } = await sb.rpc('fabrica_ajustar_estoque', {
+                p_produto_id: m.produtoId, p_delta: -Number(m.qtd)
+            });
+            if (e2) throw e2;
+        }
         return;
     }
     if (acao === 'salvarProjeto') {
         const p = d.projeto;
-        const { error } = await sb.from('fabrica_projetos').insert({ descricao: p.descricao, tipo: p.tipo, data: p.data });
+        const { error } = await sb.from('fabrica_projetos').insert({ descricao: p.descricao, tipo: p.tipo, data: p.data, unidade_negocio_id: meuPerfil.unidadeId });
         if (error) throw error;
         return;
     }
@@ -706,7 +1024,8 @@ async function chamarPost(acao, d) {
         const it = d.item;
         const { data, error } = await sb.from('fabrica_itens_projeto').insert({
             projeto_id: it.projetoId, produto_id: it.produtoId, qtd_requisitada: it.qtdRequisitada,
-            responsavel: it.responsavel || '', observacao: it.observacao || '', tag: it.tag || '', evento: it.evento || ''
+            responsavel: it.responsavel || '', observacao: it.observacao || '', tag: it.tag || '', evento: it.evento || '',
+            unidade_negocio_id: meuPerfil.unidadeId
         }).select().single();
         if (error) throw error;
         return data;
@@ -747,7 +1066,8 @@ async function chamarPost(acao, d) {
     }
     if (acao === 'salvarEvento') {
         const ev = d.evento;
-        const { error } = await sb.from('fabrica_eventos').upsert({ codigo: ev.codigo, descricao: ev.descricao || '' });
+        const { error } = await sb.from('fabrica_eventos')
+            .upsert({ codigo: ev.codigo, descricao: ev.descricao || '', unidade_negocio_id: meuPerfil.unidadeId }, { onConflict: 'unidade_negocio_id,codigo' });
         if (error) throw error;
         return;
     }
@@ -771,7 +1091,9 @@ async function carregarProdutos() {
         grupo: Number(p.grupo) || 1,
         estoqueInicial: Number(p.estoque_inicial) || 0,
         estoque: Number(p.estoque) || 0,
-        almox: Number(p.almox) || 1
+        almox: Number(p.almox) || 1,
+        precoUltimaCompra: p.preco_ultima_compra != null ? Number(p.preco_ultima_compra) : null,
+        precoMedio: p.preco_medio != null ? Number(p.preco_medio) : null
     }));
 }
 
@@ -789,7 +1111,10 @@ async function carregarMovimentacoes() {
         observacao: m.observacao || '',
         responsavel: m.responsavel || '',
         projetoId: m.projeto_id || null,
-        itemProjetoId: m.item_projeto_id || null
+        itemProjetoId: m.item_projeto_id || null,
+        nfNumero: m.nf_numero || '',
+        fornecedorCnpj: m.fornecedor_cnpj || '',
+        fornecedorNome: m.fornecedor_nome || ''
     }));
 }
 
@@ -846,6 +1171,7 @@ document.querySelectorAll('.aba-btn').forEach(btn => {
         btn.classList.add('ativa');
         document.getElementById('aba-' + btn.dataset.aba).classList.add('ativa');
         if (btn.dataset.aba === 'relatorios') popularRelatoriosSelects();
+        if (btn.dataset.aba === 'movpainel') abrirPainelMovimentacoes();
     });
 });
 
@@ -882,6 +1208,8 @@ function renderizarTabelaEstoque(lista) {
             <td>${escapeHtml(p.nome)}</td>
             <td>${escapeHtml(p.un)}</td>
             <td class="num">${formatarMoeda(p.valor)}</td>
+            <td class="num">${p.precoUltimaCompra != null ? formatarMoeda(p.precoUltimaCompra) : '-'}</td>
+            <td class="num">${p.precoMedio != null ? formatarMoeda(p.precoMedio) : '-'}</td>
             <td class="num">${Number(p.estoqueInicial).toLocaleString('pt-BR')}</td>
             <td class="num">${Number(p.estoque).toLocaleString('pt-BR')}</td>
             <td class="center">
@@ -899,20 +1227,114 @@ function renderizarTabelaEstoque(lista) {
     });
 }
 
-async function editarProdutoPrompt(id) {
+let produtoIdEmEdicao = null;
+
+function editarProdutoPrompt(id) {
     const p = produtos.find(x => x.id === id);
     if (!p) return;
-    const novoValor = prompt(`Novo valor unitário para "${p.nome}":`, p.valor);
-    if (novoValor === null) return;
-    const novoEstoque = prompt(`Novo estoque ATUAL para "${p.nome}" (o estoque inicial não muda):`, p.estoque);
-    if (novoEstoque === null) return;
-    p.valor = parseFloat(String(novoValor).replace(',', '.')) || p.valor;
-    p.estoque = parseFloat(String(novoEstoque).replace(',', '.'));
-    await chamarPost('salvarProduto', { produto: p });
-    await carregarProdutos();
-    renderizarTabelaEstoque(buscarProdutos(document.getElementById('buscaEstoque').value));
-    atualizarTagContagem();
+    produtoIdEmEdicao = id;
+    document.getElementById('editProdutoNome').textContent = `#${p.id} — ${p.nome}`;
+    document.getElementById('editProdutoValor').value = p.valor;
+    document.getElementById('editProdutoEstoque').value = p.estoque;
+    document.getElementById('editProdutoResponsavelAjuste').value = '';
+    document.getElementById('campoResponsavelAjuste').style.display = 'none';
+    document.getElementById('avisoAjusteEstoque').style.display = 'none';
+    document.getElementById('statusEditarProduto').textContent = '';
+    document.getElementById('modalEditarProduto').classList.add('aberto');
 }
+
+document.getElementById('btnCancelarEditarProduto').addEventListener('click', () => {
+    document.getElementById('modalEditarProduto').classList.remove('aberto');
+    produtoIdEmEdicao = null;
+});
+
+// mostra/atualiza o aviso de ajuste conforme o usuário digita o novo estoque
+document.getElementById('editProdutoEstoque').addEventListener('input', () => {
+    const p = produtos.find(x => x.id === produtoIdEmEdicao);
+    if (!p) return;
+    const novoEstoque = parseFloat(document.getElementById('editProdutoEstoque').value);
+    const delta = (isNaN(novoEstoque) ? p.estoque : novoEstoque) - p.estoque;
+    const campoResp = document.getElementById('campoResponsavelAjuste');
+    const aviso = document.getElementById('avisoAjusteEstoque');
+    if (delta !== 0) {
+        campoResp.style.display = 'block';
+        aviso.style.display = 'block';
+        aviso.textContent = delta > 0
+            ? `Isso vai registrar uma ENTRADA de ${delta} na movimentação.`
+            : `Isso vai registrar uma SAÍDA de ${Math.abs(delta)} na movimentação.`;
+    } else {
+        campoResp.style.display = 'none';
+        aviso.style.display = 'none';
+    }
+});
+
+document.getElementById('btnSalvarEditarProduto').addEventListener('click', async () => {
+    const statusEl = document.getElementById('statusEditarProduto');
+    const p = produtos.find(x => x.id === produtoIdEmEdicao);
+    if (!p) return;
+
+    const novoValor = parseFloat(document.getElementById('editProdutoValor').value);
+    const novoEstoque = parseFloat(document.getElementById('editProdutoEstoque').value);
+    if (isNaN(novoValor) || isNaN(novoEstoque)) {
+        statusEl.className = 'status-msg erro';
+        statusEl.textContent = 'Preencha valor e estoque corretamente.';
+        return;
+    }
+
+    const estoqueAntigo = p.estoque;
+    const delta = novoEstoque - estoqueAntigo;
+    let responsavel = '';
+    if (delta !== 0) {
+        responsavel = document.getElementById('editProdutoResponsavelAjuste').value.trim().toUpperCase();
+        if (!responsavel) {
+            statusEl.className = 'status-msg erro';
+            statusEl.textContent = 'Informe o responsável pelo ajuste de estoque.';
+            return;
+        }
+    }
+
+    statusEl.className = '';
+    statusEl.textContent = 'Salvando...';
+
+    try {
+        // valor sempre pode ser atualizado direto; o estoque só é tocado aqui se NÃO houve ajuste
+        // (se houve ajuste, quem corrige o estoque é a movimentação registrada abaixo)
+        await chamarPost('salvarProduto', {
+            produto: { ...p, valor: novoValor, estoque: delta !== 0 ? estoqueAntigo : novoEstoque }
+        });
+
+        if (delta !== 0) {
+            await chamarPost('registrarMovimentacao', {
+                movimentacao: {
+                    data: hojeISO(),
+                    produtoId: p.id,
+                    qtd: Math.abs(delta),
+                    valorUnit: novoValor,
+                    tipo: delta > 0 ? 'entrada' : 'saida',
+                    tag: '', evento: '',
+                    observacao: 'Ajuste de estoque',
+                    responsavel,
+                    projetoId: null, itemProjetoId: null
+                }
+            });
+            await carregarMovimentacoes();
+        }
+
+        await carregarProdutos();
+        renderizarTabelaEstoque(buscarProdutos(document.getElementById('buscaEstoque').value));
+        atualizarTagContagem();
+        statusEl.className = 'status-msg sucesso';
+        statusEl.textContent = '✅ Produto atualizado.';
+        setTimeout(() => {
+            document.getElementById('modalEditarProduto').classList.remove('aberto');
+            produtoIdEmEdicao = null;
+        }, 900);
+    } catch (err) {
+        console.error(err);
+        statusEl.className = 'status-msg erro';
+        statusEl.textContent = '⚠️ ' + err.message;
+    }
+});
 
 /* ---------- popup: histórico de movimentos de um produto ---------- */
 function abrirInfoProduto(produtoId) {
@@ -925,8 +1347,11 @@ function abrirInfoProduto(produtoId) {
 
     let html = `
         <h4 style="margin-top:0;">${escapeHtml(p.nome)}</h4>
-        <p class="subtitulo" style="margin-bottom:14px;">
+        <p class="subtitulo" style="margin-bottom:6px;">
             #${p.id}${p.codigoExterno ? ' · Código externo: ' + escapeHtml(p.codigoExterno) : ''} · Estoque inicial: ${Number(p.estoqueInicial).toLocaleString('pt-BR')} · Estoque atual: ${Number(p.estoque).toLocaleString('pt-BR')} ${escapeHtml(p.un)}
+        </p>
+        <p class="subtitulo" style="margin-bottom:14px;">
+            Valor cadastrado: ${formatarMoeda(p.valor)} · Última compra: ${p.precoUltimaCompra != null ? formatarMoeda(p.precoUltimaCompra) : '-'} · Preço médio de estoque: ${p.precoMedio != null ? formatarMoeda(p.precoMedio) : '-'}
         </p>
     `;
 
@@ -937,12 +1362,15 @@ function abrirInfoProduto(produtoId) {
             <div style="max-height:55vh; overflow:auto;">
             <table class="tabela">
                 <thead>
-                    <tr><th>Data</th><th>Tipo</th><th class="num">Qtd</th><th class="num">Vlr Unit.</th><th>Tag</th><th>Evento</th><th>Projeto</th><th>Responsável</th><th>Obs.</th></tr>
+                    <tr><th>Data</th><th>Tipo</th><th class="num">Qtd</th><th class="num">Vlr Unit.</th><th>Tag</th><th>Evento</th><th>Projeto</th><th>Fornecedor / NF</th><th>Responsável</th><th>Obs.</th></tr>
                 </thead>
                 <tbody>
         `;
         movs.forEach(m => {
             const proj = m.projetoId ? projetos.find(pr => String(pr.id) === String(m.projetoId)) : null;
+            const fornecedorInfo = m.fornecedorNome
+                ? `${escapeHtml(m.fornecedorNome)}${m.nfNumero ? ' · NF ' + escapeHtml(m.nfNumero) : ''}`
+                : '-';
             html += `
                 <tr>
                     <td>${m.data}</td>
@@ -952,6 +1380,7 @@ function abrirInfoProduto(produtoId) {
                     <td>${escapeHtml(m.tag) || '-'}</td>
                     <td>${escapeHtml(m.evento) || '-'}</td>
                     <td>${proj ? escapeHtml(proj.descricao) : '-'}</td>
+                    <td>${fornecedorInfo}</td>
                     <td>${escapeHtml(m.responsavel) || '-'}</td>
                     <td>${escapeHtml(m.observacao) || '-'}</td>
                 </tr>
@@ -1074,6 +1503,7 @@ document.getElementById('btnConfirmarBaixaDireta').addEventListener('click', asy
    ============================================================ */
 let nfeItensParseados = [];
 let nfeIndiceVinculoAtual = null;
+let nfeDadosNota = null;
 
 function parsearXmlNFe(xmlText) {
     const parser = new DOMParser();
@@ -1108,6 +1538,7 @@ function parsearXmlNFe(xmlText) {
         nNF: get(ide, 'nNF'),
         dhEmi: get(ide, 'dhEmi') || get(ide, 'dEmi'),
         emitNome: get(emit, 'xNome'),
+        emitCnpj: get(emit, 'CNPJ') || get(emit, 'CPF'),
         destNome: get(dest, 'xNome'),
         itens
     };
@@ -1154,10 +1585,11 @@ document.getElementById('nfeArquivo').addEventListener('change', async (e) => {
     try {
         const texto = await arquivo.text();
         const nfe = parsearXmlNFe(texto);
+        nfeDadosNota = { nNF: nfe.nNF, emitNome: nfe.emitNome, emitCnpj: nfe.emitCnpj };
 
         document.getElementById('nfeInfo').innerHTML = `
             <strong>NF nº ${escapeHtml(nfe.nNF) || '-'}</strong> · Emitida em ${escapeHtml(formatarData(nfe.dhEmi))}<br>
-            Emitente: ${escapeHtml(nfe.emitNome) || '-'}<br>
+            Emitente: ${escapeHtml(nfe.emitNome) || '-'} ${nfe.emitCnpj ? '(CNPJ: ' + escapeHtml(nfe.emitCnpj) + ')' : ''}<br>
             Destinatário: ${escapeHtml(nfe.destNome) || '-'}<br>
             ${nfe.itens.length} item(ns) encontrado(s).
         `;
@@ -1300,7 +1732,10 @@ async function processarImportacaoNFe(tipo) {
                     data, produtoId, qtd: item.qtd, valorUnit: item.valorUnit, tipo,
                     tag, evento,
                     observacao: observacaoBase || `Importado da NF-e`,
-                    responsavel, projetoId: null, itemProjetoId: null
+                    responsavel, projetoId: null, itemProjetoId: null,
+                    nfNumero: nfeDadosNota ? nfeDadosNota.nNF : '',
+                    fornecedorCnpj: nfeDadosNota ? nfeDadosNota.emitCnpj : '',
+                    fornecedorNome: nfeDadosNota ? nfeDadosNota.emitNome : ''
                 }
             });
         }
@@ -2127,41 +2562,385 @@ document.getElementById('btnConfirmarAtender').addEventListener('click', async (
 });
 
 /* ============================================================
-   CONFIGURAÇÕES (URL + chave do Supabase salvas no navegador)
+   LOGIN / AUTENTICAÇÃO (reaproveita servir_unidades_negocio e
+   servir_unidade_usuarios, do mesmo padrão usado no módulo Verba)
    ============================================================ */
-function configValida() {
-    return SUPABASE_URL && SUPABASE_URL.indexOf('COLE_AQUI') === -1 &&
-           SUPABASE_ANON_KEY && SUPABASE_ANON_KEY.indexOf('COLE_AQUI') === -1;
+
+// ---------- painel de config do Supabase (dentro da tela de login) ----------
+if (!SUPABASE_URL || SUPABASE_URL.includes('COLE_AQUI') || !SUPABASE_ANON_KEY || SUPABASE_ANON_KEY.includes('COLE_AQUI')) {
+    document.getElementById('login-erro').textContent =
+        'Configuração ausente: clique em "⚙️ Configurações do banco de dados" abaixo e informe a URL e a chave do seu projeto Supabase.';
+    document.getElementById('btn-login').disabled = true;
 }
 
-function abrirConfiguracoes() {
-    document.getElementById('configSupabaseUrl').value = (SUPABASE_URL && SUPABASE_URL.indexOf('COLE_AQUI') === -1) ? SUPABASE_URL : '';
-    document.getElementById('configSupabaseKey').value = (SUPABASE_ANON_KEY && SUPABASE_ANON_KEY.indexOf('COLE_AQUI') === -1) ? SUPABASE_ANON_KEY : '';
-    document.getElementById('statusConfig').textContent = '';
-    document.getElementById('modalConfig').classList.add('aberto');
-}
-
-document.getElementById('btnConfiguracoes').addEventListener('click', abrirConfiguracoes);
-
-document.getElementById('btnCancelarConfig').addEventListener('click', () => {
-    document.getElementById('modalConfig').classList.remove('aberto');
+document.getElementById('btn-abrir-config').addEventListener('click', () => {
+    document.getElementById('cfg-url').value = SUPABASE_URL.includes('COLE_AQUI') ? '' : SUPABASE_URL;
+    document.getElementById('cfg-key').value = SUPABASE_ANON_KEY.includes('COLE_AQUI') ? '' : SUPABASE_ANON_KEY;
+    document.getElementById('painel-config').classList.toggle('hidden');
 });
-
-document.getElementById('btnSalvarConfig').addEventListener('click', () => {
-    const statusEl = document.getElementById('statusConfig');
-    const novaUrl = document.getElementById('configSupabaseUrl').value.trim();
-    const novaKey = document.getElementById('configSupabaseKey').value.trim();
-    if (!novaUrl || !novaKey) {
-        statusEl.className = 'status-msg erro';
-        statusEl.textContent = 'Preencha a Project URL e a chave anon public do Supabase.';
-        return;
-    }
-    localStorage.setItem('estoqueapp_supabase_url', novaUrl);
-    localStorage.setItem('estoqueapp_supabase_key', novaKey);
-    statusEl.className = 'status-msg sucesso';
-    statusEl.textContent = '✅ Salvo! Recarregando...';
+document.getElementById('btn-salvar-config').addEventListener('click', () => {
+    const url = document.getElementById('cfg-url').value.trim();
+    const key = document.getElementById('cfg-key').value.trim();
+    const statusEl = document.getElementById('config-status');
+    if (!url || !key) { statusEl.className = 'msg-erro'; statusEl.textContent = 'Preencha os dois campos.'; return; }
+    localStorage.setItem('sicon_supabase_url', url);
+    localStorage.setItem('sicon_supabase_key', key);
+    statusEl.className = 'msg-ok';
+    statusEl.textContent = 'Salvo! Recarregando...';
     setTimeout(() => location.reload(), 600);
 });
+document.getElementById('btn-restaurar-config').addEventListener('click', () => {
+    localStorage.removeItem('sicon_supabase_url');
+    localStorage.removeItem('sicon_supabase_key');
+    document.getElementById('config-status').className = 'msg-ok';
+    document.getElementById('config-status').textContent = 'Restaurado ao padrão. Recarregando...';
+    setTimeout(() => location.reload(), 600);
+});
+
+try {
+    sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+} catch (e) {
+    console.error('Falha ao criar client Supabase:', e);
+}
+
+// ---------- olho de mostrar/ocultar senha ----------
+const svgOlhoAberto = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+const svgOlhoFechado = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A10.94 10.94 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
+document.querySelectorAll('.btn-olho-senha').forEach(btn => {
+    btn.innerHTML = svgOlhoFechado;
+    btn.addEventListener('click', () => {
+        const input = document.getElementById(btn.dataset.alvo);
+        if (!input) return;
+        const mostrando = input.type === 'text';
+        input.type = mostrando ? 'password' : 'text';
+        btn.innerHTML = mostrando ? svgOlhoFechado : svgOlhoAberto;
+    });
+});
+
+// ---------- alternar entre os blocos da tela de login ----------
+const blocosLogin = ['bloco-entrar', 'bloco-criar-unidade', 'bloco-convite', 'bloco-esqueci-senha', 'bloco-recuperacao-enviada', 'bloco-nova-senha'];
+function mostrarBlocoLogin(idAlvo) {
+    blocosLogin.forEach(id => document.getElementById(id).classList.toggle('hidden', id !== idAlvo));
+}
+document.getElementById('btn-ir-cadastro').addEventListener('click', () => mostrarBlocoLogin('bloco-criar-unidade'));
+document.getElementById('btn-cu-para-entrar').addEventListener('click', () => mostrarBlocoLogin('bloco-entrar'));
+document.getElementById('btn-ir-convite').addEventListener('click', () => { resetarModoConviteExistente(); mostrarBlocoLogin('bloco-convite'); });
+document.getElementById('btn-cv-para-entrar').addEventListener('click', () => { resetarModoConviteExistente(); mostrarBlocoLogin('bloco-entrar'); });
+document.getElementById('btn-ir-esqueci-senha').addEventListener('click', () => {
+    document.getElementById('es-email').value = document.getElementById('login-email').value.trim();
+    mostrarBlocoLogin('bloco-esqueci-senha');
+});
+document.getElementById('btn-es-para-entrar').addEventListener('click', () => mostrarBlocoLogin('bloco-entrar'));
+document.getElementById('btn-rec-para-entrar').addEventListener('click', () => mostrarBlocoLogin('bloco-entrar'));
+
+// ---------- login ----------
+document.getElementById('btn-login').addEventListener('click', async () => {
+    const statusEl = document.getElementById('login-erro');
+    if (!sb) { statusEl.textContent = 'Configure a URL e a chave do Supabase antes de entrar.'; return; }
+    const email = document.getElementById('login-email').value.trim();
+    const senha = document.getElementById('login-senha').value;
+    statusEl.textContent = '';
+    if (!email || !senha) { statusEl.textContent = 'Preencha e-mail e senha.'; return; }
+    try {
+        const { error } = await sb.auth.signInWithPassword({ email, password: senha });
+        if (error) { statusEl.textContent = 'Não foi possível entrar: ' + error.message; return; }
+        await onLogin();
+    } catch (e) {
+        statusEl.textContent = 'Erro de conexão. Confira a URL e a chave do Supabase. (' + (e?.message || e) + ')';
+        console.error(e);
+    }
+});
+document.getElementById('login-senha').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('btn-login').click(); });
+
+document.getElementById('btn-sair').addEventListener('click', async () => { await sb.auth.signOut(); location.reload(); });
+
+// ---------- criar unidade ----------
+document.getElementById('btn-criar-unidade').addEventListener('click', async () => {
+    const nome = document.getElementById('cu-nome').value.trim();
+    const whatsapp = document.getElementById('cu-whatsapp').value.trim();
+    const email = document.getElementById('cu-email').value.trim();
+    const senha = document.getElementById('cu-senha').value;
+    const confirma = document.getElementById('cu-senha-confirma').value;
+    const erroEl = document.getElementById('cu-erro');
+    erroEl.className = 'msg-erro';
+    erroEl.textContent = '';
+
+    if (!nome) { erroEl.textContent = 'Informe o nome da unidade.'; return; }
+    if (!email) { erroEl.textContent = 'Informe seu e-mail.'; return; }
+    if (senha.length < 6) { erroEl.textContent = 'A senha precisa ter pelo menos 6 caracteres.'; return; }
+    if (senha !== confirma) { erroEl.textContent = 'As senhas não coincidem.'; return; }
+
+    const btn = document.getElementById('btn-criar-unidade');
+    btn.disabled = true;
+    try {
+        const { data, error } = await sb.auth.signUp({
+            email, password: senha,
+            options: { data: { unidade_nome_pendente: nome, unidade_whatsapp_pendente: whatsapp } }
+        });
+        if (error) { erroEl.textContent = 'Não foi possível criar a conta: ' + error.message; return; }
+        if (data.session) {
+            await onLogin();
+        } else {
+            erroEl.className = 'msg-ok';
+            erroEl.textContent = 'Conta criada! Verifique seu e-mail para confirmar antes de entrar.';
+        }
+    } catch (e) {
+        erroEl.textContent = 'Erro de conexão. (' + (e?.message || e) + ')';
+        console.error(e);
+    } finally {
+        btn.disabled = false;
+    }
+});
+
+// ---------- entrar com convite ----------
+let modoConviteExistente = false;
+function resetarModoConviteExistente() {
+    modoConviteExistente = false;
+    document.getElementById('cv-campo-confirma').classList.remove('hidden');
+    document.getElementById('cv-senha-label').textContent = 'Senha';
+    document.getElementById('cv-senha').placeholder = 'Mínimo 6 caracteres';
+    document.getElementById('btn-entrar-convite').textContent = 'Entrar com convite';
+    document.getElementById('cv-senha').value = '';
+    document.getElementById('cv-senha-confirma').value = '';
+}
+
+document.getElementById('btn-entrar-convite').addEventListener('click', async () => {
+    const codigo = document.getElementById('cv-codigo').value.trim().toUpperCase();
+    const email = document.getElementById('cv-email').value.trim();
+    const senha = document.getElementById('cv-senha').value;
+    const confirma = document.getElementById('cv-senha-confirma').value;
+    const erroEl = document.getElementById('cv-erro');
+    erroEl.className = 'msg-erro';
+    erroEl.textContent = '';
+
+    if (!codigo) { erroEl.textContent = 'Informe o código de convite.'; return; }
+    if (!email) { erroEl.textContent = 'Informe seu e-mail.'; return; }
+    if (senha.length < 6) { erroEl.textContent = 'A senha precisa ter pelo menos 6 caracteres.'; return; }
+
+    const btn = document.getElementById('btn-entrar-convite');
+    btn.disabled = true;
+    try {
+        if (modoConviteExistente) {
+            const { error: erroLogin } = await sb.auth.signInWithPassword({ email, password: senha });
+            if (erroLogin) { erroEl.textContent = 'E-mail ou senha inválidos.'; return; }
+            const { error: erroConvite } = await sb.rpc('fn_entrar_com_convite', { p_codigo: codigo });
+            if (erroConvite) { erroEl.textContent = erroConvite.message; return; }
+            await onLogin();
+            return;
+        }
+
+        if (senha !== confirma) { erroEl.textContent = 'As senhas não coincidem.'; return; }
+
+        const { data, error } = await sb.auth.signUp({
+            email, password: senha,
+            options: { data: { convite_codigo_pendente: codigo } }
+        });
+        if (error) { erroEl.textContent = 'Não foi possível criar a conta: ' + error.message; return; }
+
+        const jaExistia = data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0;
+        if (jaExistia) {
+            modoConviteExistente = true;
+            document.getElementById('cv-campo-confirma').classList.add('hidden');
+            document.getElementById('cv-senha-label').textContent = 'Sua senha atual';
+            document.getElementById('cv-senha').placeholder = 'Digite sua senha existente';
+            document.getElementById('btn-entrar-convite').textContent = 'Entrar e aplicar convite';
+            erroEl.textContent = 'Esse e-mail já tem conta. Confirme sua senha atual pra aplicar o convite.';
+            return;
+        }
+
+        if (data.session) {
+            await onLogin();
+        } else {
+            erroEl.className = 'msg-ok';
+            erroEl.textContent = 'Conta criada! Verifique seu e-mail para confirmar antes de entrar.';
+        }
+    } catch (e) {
+        erroEl.textContent = 'Erro de conexão. (' + (e?.message || e) + ')';
+        console.error(e);
+    } finally {
+        btn.disabled = false;
+        btn.textContent = modoConviteExistente ? 'Entrar e aplicar convite' : 'Entrar com convite';
+    }
+});
+
+// ---------- esqueci minha senha ----------
+document.getElementById('btn-enviar-recuperacao').addEventListener('click', async () => {
+    const email = document.getElementById('es-email').value.trim();
+    const erroEl = document.getElementById('es-erro');
+    erroEl.className = 'msg-erro';
+    erroEl.textContent = '';
+    if (!email) { erroEl.textContent = 'Informe seu e-mail.'; return; }
+
+    const btn = document.getElementById('btn-enviar-recuperacao');
+    btn.disabled = true;
+    try {
+        const { error } = await sb.auth.resetPasswordForEmail(email, {
+            redirectTo: window.location.href.split('?')[0].split('#')[0]
+        });
+        if (error) { erroEl.textContent = error.message; return; }
+        mostrarBlocoLogin('bloco-recuperacao-enviada');
+    } catch (e) {
+        erroEl.textContent = 'Erro de conexão. (' + (e?.message || e) + ')';
+    } finally {
+        btn.disabled = false;
+    }
+});
+
+document.getElementById('btn-salvar-nova-senha').addEventListener('click', async () => {
+    const novaSenha = document.getElementById('ns-senha').value;
+    const confirma = document.getElementById('ns-senha-confirma').value;
+    const erroEl = document.getElementById('ns-erro');
+    erroEl.className = 'msg-erro';
+    erroEl.textContent = '';
+    if (novaSenha.length < 6) { erroEl.textContent = 'A senha precisa ter pelo menos 6 caracteres.'; return; }
+    if (novaSenha !== confirma) { erroEl.textContent = 'As senhas não coincidem.'; return; }
+
+    const btn = document.getElementById('btn-salvar-nova-senha');
+    btn.disabled = true;
+    try {
+        const { error } = await sb.auth.updateUser({ password: novaSenha });
+        if (error) { erroEl.textContent = error.message; return; }
+        await onLogin();
+    } catch (e) {
+        erroEl.textContent = 'Erro de conexão. (' + (e?.message || e) + ')';
+    } finally {
+        btn.disabled = false;
+    }
+});
+
+// link de recuperação de senha abre a página com esse evento
+if (sb) {
+    sb.auth.onAuthStateChange((event) => {
+        if (event === 'PASSWORD_RECOVERY') {
+            document.getElementById('app-fabrica').classList.add('hidden');
+            document.getElementById('login-screen').classList.remove('hidden');
+            mostrarBlocoLogin('bloco-nova-senha');
+        }
+    });
+}
+
+async function checkSession() {
+    const { data: { session } } = await sb.auth.getSession();
+    if (session) { await onLogin(); }
+}
+
+// ---------- unidade de negócio ativa ----------
+let meuPerfil = { unidadeId: null, unidadeNome: '', ehPrincipal: false };
+let vinculosGlobais = [];
+
+function definirUnidadeAtiva(vinculo) {
+    meuPerfil.unidadeId = vinculo.unidade_id;
+    meuPerfil.unidadeNome = vinculo.nome || '';
+    meuPerfil.ehPrincipal = !!vinculo.eh_principal;
+    document.getElementById('unidade-logada').textContent = meuPerfil.unidadeNome ? ('· ' + meuPerfil.unidadeNome) : '';
+    document.getElementById('btn-convidar-colaborador').style.display = meuPerfil.ehPrincipal ? '' : 'none';
+    document.getElementById('btn-trocar-unidade').style.display = vinculosGlobais.length > 1 ? '' : 'none';
+}
+
+function abrirEscolhaUnidade(vinculos) {
+    const wrap = document.getElementById('lista-unidades-escolha');
+    wrap.innerHTML = '';
+    vinculos.forEach(v => {
+        const btn = document.createElement('button');
+        btn.className = 'btn-unidade';
+        btn.textContent = v.nome;
+        btn.addEventListener('click', async () => {
+            definirUnidadeAtiva(v);
+            document.getElementById('modal-unidade').classList.remove('aberto');
+            await iniciarAppFabrica();
+        });
+        wrap.appendChild(btn);
+    });
+    document.getElementById('modal-unidade').classList.add('aberto');
+}
+document.getElementById('btn-trocar-unidade').addEventListener('click', () => abrirEscolhaUnidade(vinculosGlobais));
+
+// ---------- convidar colaborador ----------
+document.getElementById('btn-convidar-colaborador').addEventListener('click', async () => {
+    const btn = document.getElementById('btn-convidar-colaborador');
+    btn.disabled = true;
+    const { data: codigo, error } = await sb.rpc('fn_gerar_codigo_convite', { p_agencia_id: meuPerfil.unidadeId });
+    btn.disabled = false;
+    if (error) { alert('Erro ao gerar código: ' + error.message); return; }
+    document.getElementById('codigo-convite-texto').textContent = codigo;
+    document.getElementById('modal-convite-colaborador').classList.add('aberto');
+});
+document.getElementById('btn-copiar-codigo-convite').addEventListener('click', async () => {
+    const codigo = document.getElementById('codigo-convite-texto').textContent;
+    try { await navigator.clipboard.writeText(codigo); alert('Código copiado!'); }
+    catch (e) { prompt('Copie o código manualmente:', codigo); }
+});
+document.getElementById('btn-fechar-modal-convite').addEventListener('click', () => {
+    document.getElementById('modal-convite-colaborador').classList.remove('aberto');
+});
+
+async function carregarMeuPerfil() {
+    const { data: sessao } = await sb.auth.getUser();
+    const userId = sessao?.user?.id;
+    if (!userId) return;
+
+    const { data: vinculos, error } = await sb
+        .from('servir_unidade_usuarios')
+        .select('unidade_negocio_id, eh_principal')
+        .eq('user_id', userId)
+        .order('eh_principal', { ascending: false });
+    if (error) { console.error(error); return; }
+
+    if (!vinculos || vinculos.length === 0) {
+        const nomePendente = sessao.user.user_metadata?.unidade_nome_pendente;
+        const whatsappPendente = sessao.user.user_metadata?.unidade_whatsapp_pendente;
+        const codigoPendente = sessao.user.user_metadata?.convite_codigo_pendente;
+
+        if (nomePendente) {
+            const { data: novaUnidade, error: erroNova } = await sb
+                .from('servir_unidades_negocio')
+                .insert({ nome: nomePendente, whatsapp_contato: (whatsappPendente || '').replace(/\D/g, ''), ativo: true })
+                .select().single();
+            if (erroNova) { document.getElementById('unidade-logada').textContent = '⚠️ erro ao criar unidade'; console.error(erroNova); return; }
+            await sb.from('servir_unidade_usuarios').insert({ unidade_negocio_id: novaUnidade.id, user_id: userId, eh_principal: true });
+            vinculosGlobais = [{ unidade_id: novaUnidade.id, eh_principal: true, nome: novaUnidade.nome }];
+            definirUnidadeAtiva(vinculosGlobais[0]);
+            return;
+        }
+
+        if (codigoPendente) {
+            const { data: unidadeIdRetornada, error: erroConvite } = await sb.rpc('fn_entrar_com_convite', { p_codigo: codigoPendente });
+            if (erroConvite) { document.getElementById('unidade-logada').textContent = '⚠️ ' + erroConvite.message; console.error(erroConvite); return; }
+            const { data: unidadeInfo } = await sb.from('servir_unidades_negocio').select('nome').eq('id', unidadeIdRetornada).single();
+            vinculosGlobais = [{ unidade_id: unidadeIdRetornada, eh_principal: false, nome: unidadeInfo?.nome || '' }];
+            definirUnidadeAtiva(vinculosGlobais[0]);
+            return;
+        }
+
+        document.getElementById('unidade-logada').textContent = '⚠️ sem unidade vinculada';
+        return;
+    }
+
+    const ids = [...new Set(vinculos.map(v => v.unidade_negocio_id))];
+    const { data: unidadesData, error: errUnidades } = await sb
+        .from('servir_unidades_negocio')
+        .select('id,nome')
+        .in('id', ids);
+    if (errUnidades) console.error(errUnidades);
+
+    const nomePorId = new Map((unidadesData || []).map(a => [a.id, a.nome]));
+    const vinculosComNome = vinculos.map(v => ({
+        unidade_id: v.unidade_negocio_id,
+        eh_principal: v.eh_principal,
+        nome: nomePorId.get(v.unidade_negocio_id) || '(unidade sem nome)'
+    }));
+    vinculosGlobais = vinculosComNome;
+
+    definirUnidadeAtiva(vinculosComNome[0]);
+    if (vinculosComNome.length > 1) abrirEscolhaUnidade(vinculosComNome);
+}
+
+async function onLogin() {
+    document.getElementById('login-screen').classList.add('hidden');
+    document.getElementById('app-fabrica').classList.remove('hidden');
+    await carregarMeuPerfil();
+    await iniciarAppFabrica();
+}
 
 /* ============================================================
    RELATÓRIOS (PDF e Excel) da requisição do projeto atual
@@ -2624,20 +3403,144 @@ document.getElementById('relProjetoCompartilhar').addEventListener('click', () =
 document.getElementById('relProjetoSalvar').addEventListener('click', () => executarRelatorioProjeto('salvar'));
 
 
-/* ---------- inicialização ---------- */
-(async function iniciar() {
-    if (!configValida()) {
-        document.getElementById('tagContagem').textContent = '⚠️ Configure a conexão com o Supabase clicando na engrenagem ⚙️ no topo.';
-        abrirConfiguracoes();
+/* ============================================================
+   ABA MOVIMENTAÇÕES (painel geral com filtros)
+   ============================================================ */
+let movFiltroProdutoId = null;
+let movFiltroEventoCodigo = null;
+
+function abrirPainelMovimentacoes() {
+    const tags = [...new Set(movimentacoes.map(m => m.tag).filter(Boolean))].sort();
+    document.getElementById('movListaTagsFiltro').innerHTML = tags.map(t => `<option value="${escapeHtml(t)}"></option>`).join('');
+    buscarPainelMovimentacoes();
+}
+
+document.getElementById('movFiltroProdutoBusca').addEventListener('input', () => {
+    const termo = document.getElementById('movFiltroProdutoBusca').value;
+    if (termo.trim()) {
+        renderizarResultadosBusca('movFiltroProdutoResultados', termo, (p) => {
+            movFiltroProdutoId = p.id;
+            document.getElementById('movFiltroProdutoSelecionado').innerHTML = `Filtrando: <strong>#${p.id} — ${escapeHtml(p.nome)}</strong> <a href="#" data-limpar-produto style="color:#b00020;">(remover)</a>`;
+            document.getElementById('movFiltroProdutoResultados').classList.remove('aberto');
+            document.getElementById('movFiltroProdutoBusca').value = '';
+            document.querySelector('[data-limpar-produto]').addEventListener('click', (e) => {
+                e.preventDefault();
+                movFiltroProdutoId = null;
+                document.getElementById('movFiltroProdutoSelecionado').innerHTML = '';
+            });
+        });
+    } else {
+        document.getElementById('movFiltroProdutoResultados').classList.remove('aberto');
+    }
+});
+
+document.getElementById('movFiltroEventoBusca').addEventListener('input', () => {
+    const termo = document.getElementById('movFiltroEventoBusca').value;
+    const el = document.getElementById('movFiltroEventoResultados');
+    if (!termo.trim()) { el.classList.remove('aberto'); return; }
+    const lista = buscarEventos(termo);
+    if (!lista.length) {
+        el.innerHTML = '<div class="item-resultado">Nenhum evento encontrado.</div>';
+        el.classList.add('aberto');
         return;
     }
-    sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    el.innerHTML = '';
+    lista.forEach(ev => {
+        const div = document.createElement('div');
+        div.className = 'item-resultado';
+        div.innerHTML = `<div class="info-resultado"><span class="cod">${escapeHtml(ev.codigo)}</span> — ${escapeHtml(ev.descricao)}</div><button class="btn btn-verde btn-pequeno">Selecionar</button>`;
+        div.querySelector('button').addEventListener('click', () => {
+            movFiltroEventoCodigo = ev.codigo;
+            document.getElementById('movFiltroEventoSelecionado').innerHTML = `Filtrando: <strong>${escapeHtml(ev.codigo)} — ${escapeHtml(ev.descricao)}</strong> <a href="#" data-limpar-evento style="color:#b00020;">(remover)</a>`;
+            el.classList.remove('aberto');
+            document.getElementById('movFiltroEventoBusca').value = '';
+            document.querySelector('[data-limpar-evento]').addEventListener('click', (e) => {
+                e.preventDefault();
+                movFiltroEventoCodigo = null;
+                document.getElementById('movFiltroEventoSelecionado').innerHTML = '';
+            });
+        });
+        el.appendChild(div);
+    });
+    el.classList.add('aberto');
+});
+
+document.getElementById('btnLimparFiltrosMov').addEventListener('click', () => {
+    movFiltroProdutoId = null;
+    movFiltroEventoCodigo = null;
+    document.getElementById('movFiltroProdutoSelecionado').innerHTML = '';
+    document.getElementById('movFiltroEventoSelecionado').innerHTML = '';
+    document.getElementById('movFiltroProdutoBusca').value = '';
+    document.getElementById('movFiltroEventoBusca').value = '';
+    document.getElementById('movFiltroFornecedor').value = '';
+    document.getElementById('movFiltroTag').value = '';
+    buscarPainelMovimentacoes();
+});
+
+document.getElementById('btnAplicarFiltrosMov').addEventListener('click', buscarPainelMovimentacoes);
+
+async function buscarPainelMovimentacoes() {
+    const corpo = document.getElementById('corpoTabelaPainelMov');
+    const vazio = document.getElementById('vazioPainelMov');
+    corpo.innerHTML = '<tr><td colspan="11" class="vazio">Carregando...</td></tr>';
+    vazio.style.display = 'none';
+
+    const filtros = {
+        produtoId: movFiltroProdutoId,
+        tag: document.getElementById('movFiltroTag').value.trim(),
+        evento: movFiltroEventoCodigo,
+        fornecedor: document.getElementById('movFiltroFornecedor').value.trim()
+    };
+
+    try {
+        const dados = await chamarGet('listarMovimentacoesFiltradas', filtros);
+        const lista = (dados || []).map(m => ({
+            id: Number(m.id), data: formatarData(m.data), produtoId: Number(m.produto_id), tipo: m.tipo,
+            qtd: Number(m.qtd) || 0, valorUnit: Number(m.valor_unit) || 0, tag: m.tag || '', evento: m.evento || '',
+            observacao: m.observacao || '', responsavel: m.responsavel || '', projetoId: m.projeto_id || null,
+            nfNumero: m.nf_numero || '', fornecedorCnpj: m.fornecedor_cnpj || '', fornecedorNome: m.fornecedor_nome || ''
+        }));
+
+        corpo.innerHTML = '';
+        if (!lista.length) { vazio.style.display = 'block'; return; }
+        lista.forEach(m => {
+            const prod = produtos.find(p => p.id === m.produtoId);
+            const proj = m.projetoId ? projetos.find(pr => String(pr.id) === String(m.projetoId)) : null;
+            const fornecedorInfo = m.fornecedorNome ? `${escapeHtml(m.fornecedorNome)}${m.nfNumero ? ' · NF ' + escapeHtml(m.nfNumero) : ''}` : '-';
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${m.data}</td>
+                <td><span class="pill ${m.tipo === 'entrada' ? 'pill-entrada' : 'pill-saida'}">${m.tipo === 'entrada' ? 'Entrada' : 'Saída'}</span></td>
+                <td>${prod ? escapeHtml(prod.nome) : ('#' + m.produtoId)}</td>
+                <td class="num">${Number(m.qtd).toLocaleString('pt-BR')}</td>
+                <td class="num">${formatarMoeda(m.valorUnit)}</td>
+                <td>${escapeHtml(m.tag) || '-'}</td>
+                <td>${escapeHtml(m.evento) || '-'}</td>
+                <td>${proj ? escapeHtml(proj.descricao) : '-'}</td>
+                <td>${fornecedorInfo}</td>
+                <td>${escapeHtml(m.responsavel) || '-'}</td>
+                <td>${escapeHtml(m.observacao) || '-'}</td>
+            `;
+            corpo.appendChild(tr);
+        });
+    } catch (err) {
+        console.error(err);
+        corpo.innerHTML = '';
+        vazio.style.display = 'block';
+        vazio.textContent = '⚠️ ' + err.message;
+    }
+}
+
+/* ---------- inicialização (chamada de dentro de onLogin) ---------- */
+async function iniciarAppFabrica() {
     await carregarTudo();
     renderizarTabelaEstoque(buscarProdutos(''));
     renderizarListaProjetos();
     popularSelectProjetos(document.getElementById('reqProjetoSelect'));
     renderizarRequisicao(null);
-})();
+}
+
+if (sb) checkSession();
 
 </script>
 </body>
