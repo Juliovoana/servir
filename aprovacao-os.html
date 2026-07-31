@@ -201,7 +201,7 @@ hr.div{border:none;border-top:1px solid var(--linha);margin:14px 0}
 
 <script>
 const WORKER_URL = 'https://young-morning-67aa.julinhobps.workers.dev';
-const SESS_KEY   = 'apr_sessao';
+const SESS_KEY   = 'checklist_apr_sessao_v1';
 const TOKEN_URL  = new URLSearchParams(window.location.search).get('token') || '';
 
 let usuarioLogado = null;
@@ -209,8 +209,21 @@ let abaAtual = 'pendente';
 let todasOS = [];
 
 // ── Sessão persistente ───────────────────────────────────────
-function salvarSessao(u){ localStorage.setItem(SESS_KEY, JSON.stringify(u)); }
-function carregarSessao(){ try{ return JSON.parse(localStorage.getItem(SESS_KEY)||'null'); }catch(e){ return null; } }
+function salvarSessao(u){
+  try {
+    localStorage.setItem(SESS_KEY, JSON.stringify(u));
+    console.log('[Aprovação] Sessão salva:', u.nome, '| Key:', SESS_KEY);
+  } catch(e) {
+    console.warn('[Aprovação] Erro ao salvar sessão:', e.message);
+  }
+}
+function carregarSessao(){
+  try{
+    const val = localStorage.getItem(SESS_KEY);
+    console.log('[Aprovação] Carregando sessão | Key:', SESS_KEY, '| Existe:', !!val);
+    return val ? JSON.parse(val) : null;
+  }catch(e){ return null; }
+}
 function limparSessao(){ localStorage.removeItem(SESS_KEY); }
 
 function toggleSenha(){
@@ -444,9 +457,12 @@ async function responder(token, status){
 // ── Init — verifica sessão salva ─────────────────────────────
 window.addEventListener('load', ()=>{
   const sessao = carregarSessao();
-  if(sessao){
+  // Sessão válida precisa ter pelo menos id e nome
+  if(sessao && sessao.id && sessao.nome){
     iniciarSessao(sessao);
   } else {
+    // Remove sessão inválida se existir
+    if(sessao) limparSessao();
     // Pré-preenche email salvo e foca na senha
     const emailSalvo = localStorage.getItem('apr_email') || '';
     if(emailSalvo){
