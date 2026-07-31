@@ -209,9 +209,9 @@ let abaAtual = 'pendente';
 let todasOS = [];
 
 // ── Sessão persistente ───────────────────────────────────────
-function salvarSessao(u){ sessionStorage.setItem(SESS_KEY, JSON.stringify(u)); }
-function carregarSessao(){ try{ return JSON.parse(sessionStorage.getItem(SESS_KEY)||'null'); }catch(e){ return null; } }
-function limparSessao(){ sessionStorage.removeItem(SESS_KEY); }
+function salvarSessao(u){ localStorage.setItem(SESS_KEY, JSON.stringify(u)); }
+function carregarSessao(){ try{ return JSON.parse(localStorage.getItem(SESS_KEY)||'null'); }catch(e){ return null; } }
+function limparSessao(){ localStorage.removeItem(SESS_KEY); }
 
 function toggleSenha(){
   const i = document.getElementById('login-senha');
@@ -232,6 +232,8 @@ async function fazerLogin(){
       body: JSON.stringify({action:'loginAprovador', email, senha})});
     const d = await r.json();
     if(d.ok){
+      // Salva o email para pré-preencher no próximo acesso
+      localStorage.setItem('apr_email', email);
       iniciarSessao(d.aprovador);
     } else {
       erroEl.textContent = d.erro || 'Credenciais inválidas.';
@@ -253,6 +255,7 @@ function iniciarSessao(aprovador){
 
 function sair(){
   limparSessao();
+  // Mantém o email salvo para facilitar próximo login
   usuarioLogado = null;
   todasOS = [];
   document.getElementById('tela-login').style.display='flex';
@@ -444,7 +447,14 @@ window.addEventListener('load', ()=>{
   if(sessao){
     iniciarSessao(sessao);
   } else {
-    document.getElementById('login-email').focus();
+    // Pré-preenche email salvo e foca na senha
+    const emailSalvo = localStorage.getItem('apr_email') || '';
+    if(emailSalvo){
+      document.getElementById('login-email').value = emailSalvo;
+      document.getElementById('login-senha').focus();
+    } else {
+      document.getElementById('login-email').focus();
+    }
   }
 });
 </script>
