@@ -320,7 +320,7 @@ async function recuperarSenha(){
   btn.innerHTML = '<span class="spin"></span>'; btn.disabled = true;
 
   const { error } = await sb.auth.resetPasswordForEmail(email, {
-    redirectTo: window.location.origin + window.location.pathname
+    redirectTo: 'https://www.servir.site/redefinir-senha.html'
   });
 
   btn.innerHTML = 'Enviar link de recuperação'; btn.disabled = false;
@@ -558,8 +558,13 @@ async function responder(token, status){
 }
 
 // ── Init — Supabase Auth cuida da sessão automaticamente ─────
+
+// Verifica se é um fluxo de recuperação de senha pela hash da URL
+const hashParams = new URLSearchParams(window.location.hash.replace('#',''));
+const isRecuperacao = hashParams.get('type') === 'recovery';
+
 sb.auth.onAuthStateChange((event, session) => {
-  if(event === 'PASSWORD_RECOVERY'){
+  if(event === 'PASSWORD_RECOVERY' || isRecuperacao){
     // Usuário clicou no link de redefinição — mostra campo para nova senha
     document.getElementById('tela-loading').style.display = 'none';
     document.getElementById('tela-login').style.display   = 'flex';
@@ -604,15 +609,29 @@ function toggleSenhaNova(){
 async function salvarNovaSenha(){
   const senha = document.getElementById('nova-senha').value;
   const msgEl = document.getElementById('nova-senha-msg');
-  if(!senha || senha.length < 6){ msgEl.textContent = 'A senha deve ter pelo menos 6 caracteres.'; msgEl.style.color='var(--vermelho)'; return; }
+  msgEl.textContent = '';
+  if(!senha || senha.length < 6){
+    msgEl.textContent = 'A senha deve ter pelo menos 6 caracteres.';
+    msgEl.style.color = 'var(--vermelho)';
+    return;
+  }
+  const btnSalvar = document.querySelector('#painel-recuperar .btn-primary');
+  if(btnSalvar){ btnSalvar.innerHTML='<span class="spin"></span>'; btnSalvar.disabled=true; }
+
   const { error } = await sb.auth.updateUser({ password: senha });
+
+  if(btnSalvar){ btnSalvar.innerHTML='Salvar nova senha'; btnSalvar.disabled=false; }
+
   if(error){
     msgEl.textContent = 'Erro: ' + error.message;
     msgEl.style.color = 'var(--vermelho)';
   } else {
-    msgEl.textContent = '✓ Senha atualizada com sucesso!';
+    msgEl.textContent = '✓ Senha atualizada com sucesso! Redirecionando...';
     msgEl.style.color = 'var(--verde)';
-    setTimeout(()=>{ document.getElementById('painel-recuperar').style.display='none'; }, 2000);
+    // Limpa o hash da URL e redireciona para o login após 2s
+    setTimeout(()=>{
+      window.location.href = window.location.pathname;
+    }, 2000);
   }
 }
 </script>
