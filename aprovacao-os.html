@@ -112,6 +112,9 @@ hr.div{border:none;border-top:1px solid var(--linha);margin:14px 0}
 .motivo-wrap{display:none;margin-top:10px}
 .motivo-wrap textarea{width:100%;border:1.5px solid var(--linha);border-radius:8px;padding:10px;font-family:inherit;font-size:.88rem;resize:vertical;min-height:72px}
 .motivo-wrap textarea:focus{outline:none;border-color:var(--vermelho)}
+.obs-wrap{display:none;margin-top:10px}
+.obs-wrap textarea{width:100%;border:1.5px solid var(--linha);border-radius:8px;padding:10px;font-family:inherit;font-size:.88rem;resize:vertical;min-height:60px}
+.obs-wrap textarea:focus{outline:none;border-color:var(--verde)}
 .btn-conf-rep{width:100%;background:var(--vermelho);color:#fff;border:none;border-radius:8px;padding:11px;font-size:.88rem;font-weight:600;cursor:pointer;font-family:inherit;margin-top:8px}
 .resultado-card{border-radius:10px;padding:18px;text-align:center;margin-top:8px}
 .res-apr{background:var(--verdeb);border:1px solid #bbf7d0}
@@ -477,10 +480,17 @@ function renderDetalhe(os, aprovacao, token){
       <div class="res-sub">Respondido por ${aprovacao.aprovador||''}
         ${aprovacao.respondido_em?' em '+new Date(aprovacao.respondido_em).toLocaleString('pt-BR'):''}</div>
       ${aprovacao.motivo?`<div style="margin-top:8px;font-size:.82rem;font-style:italic;color:var(--texto2)">"${aprovacao.motivo}"</div>`:''}
-    </div>`;
+    </div>
+    <button onclick="retornarPendente('${token}')"
+      style="width:100%;margin-top:10px;background:none;border:1px solid var(--amarelo);border-radius:8px;padding:10px;font-size:.85rem;font-weight:600;color:var(--amarelo);cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.5"/>
+      </svg>
+      Retornar para Pendente
+    </button>`;
   } else {
     acaoHTML = `<div class="acoes">
-      <button class="btn-apr" id="btn-apr" onclick="responder('${token}','aprovado')">
+      <button class="btn-apr" id="btn-apr" onclick="mostrarObs()">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
         Aprovar
       </button>
@@ -489,8 +499,20 @@ function renderDetalhe(os, aprovacao, token){
         Reprovar
       </button>
     </div>
+    <div class="obs-wrap" id="obs-wrap">
+      <div style="font-size:.75rem;color:var(--verdesc);font-weight:600;margin-bottom:5px">Observação (opcional)</div>
+      <textarea id="obs-txt" placeholder="Deixe uma observação sobre a aprovação..."></textarea>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button class="btn-apr" style="flex:1;padding:10px" onclick="responder('${token}','aprovado')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          Confirmar aprovação
+        </button>
+        <button onclick="esconderObs()" style="background:none;border:1px solid var(--linha);border-radius:8px;padding:0 14px;cursor:pointer;font-family:inherit;color:var(--texto2);font-size:.85rem">Cancelar</button>
+      </div>
+    </div>
     <div class="motivo-wrap" id="motivo-wrap">
-      <textarea id="motivo-txt" placeholder="Motivo da reprovação (opcional)..."></textarea>
+      <div style="font-size:.75rem;color:var(--vermelho);font-weight:600;margin-bottom:5px">Motivo da reprovação (opcional)</div>
+      <textarea id="motivo-txt" placeholder="Descreva o motivo da reprovação..."></textarea>
       <button class="btn-conf-rep" onclick="responder('${token}','reprovado')">Confirmar reprovação</button>
     </div>`;
   }
@@ -514,35 +536,116 @@ function renderDetalhe(os, aprovacao, token){
       ${prodHTML}
       <div class="total-row"><span class="total-label">Total da OS</span><span class="total-valor">${valorFmt(os.valor)}</span></div>
       ${acaoHTML}
+      <!-- Histórico de aprovações -->
+      <div id="historico-wrap" style="margin-top:14px">
+        <div style="font-size:.72rem;font-weight:700;color:var(--texto2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">
+          <i>📋</i> Histórico de ações
+        </div>
+        <div id="historico-conteudo" style="font-size:.8rem;color:var(--texto3);text-align:center">Carregando...</div>
+      </div>
     </div>
   </div>`;
+
+  // Carrega o histórico após renderizar
+  carregarLog(token);
+}
+
+function mostrarObs(){
+  // Esconde motivo se estiver aberto
+  document.getElementById('motivo-wrap').style.display = 'none';
+  document.getElementById('obs-wrap').style.display = 'block';
+  document.getElementById('obs-txt').focus();
+}
+
+function esconderObs(){
+  document.getElementById('obs-wrap').style.display = 'none';
 }
 
 function mostrarMotivo(){
+  // Esconde obs se estiver aberta
+  document.getElementById('obs-wrap').style.display = 'none';
   document.getElementById('motivo-wrap').style.display = 'block';
   document.getElementById('motivo-txt').focus();
 }
 
+async function retornarPendente(token){
+  if(!confirm('Retornar esta OS para "Pendente"?')) return;
+  const { data:{ user } } = await sb.auth.getUser();
+  const nome  = user?.user_metadata?.nome || user?.user_metadata?.full_name || user?.email || '';
+  const email = user?.email || '';
+  try{
+    const r = await fetch(WORKER_URL, {method:'POST', headers:{'Content-Type':'text/plain'},
+      body: JSON.stringify({action:'responderAprovacaoOS', token, status:'pendente',
+        aprovadorNome:nome, aprovadorEmail:email})});
+    const d = await r.json();
+    if(d.ok){ await abrirDetalhe(token); }
+    else alert(d.erro||'Erro ao retornar para pendente.');
+  }catch(e){ alert('Erro de conexão.'); }
+}
+
+async function carregarLog(token){
+  const el = document.getElementById('historico-conteudo');
+  if(!el) return;
+  try{
+    const r = await fetch(WORKER_URL, {method:'POST', headers:{'Content-Type':'text/plain'},
+      body: JSON.stringify({action:'getLogAprovacao', token})});
+    const d = await r.json();
+    if(!d.ok || !d.logs || !d.logs.length){
+      el.innerHTML = '<span style="color:var(--texto3);font-size:.78rem">Nenhuma ação registrada ainda.</span>';
+      return;
+    }
+    const acaoLabel = {
+      aprovado:          {txt:'✅ Aprovado',         cor:'var(--verdesc)'},
+      reprovado:         {txt:'❌ Reprovado',         cor:'var(--vermelho)'},
+      retornado_pendente:{txt:'⏳ Retornado a Pendente', cor:'var(--amarelo)'}
+    };
+    el.innerHTML = `<table style="width:100%;border-collapse:collapse;font-size:.78rem">
+      <thead>
+        <tr style="background:var(--fundo)">
+          <th style="padding:6px 8px;text-align:left;color:var(--texto2);font-weight:700;border-bottom:1px solid var(--linha)">Ação</th>
+          <th style="padding:6px 8px;text-align:left;color:var(--texto2);font-weight:700;border-bottom:1px solid var(--linha)">Operador</th>
+          <th style="padding:6px 8px;text-align:left;color:var(--texto2);font-weight:700;border-bottom:1px solid var(--linha)">Data/Hora</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${d.logs.map(l=>{
+          const al = acaoLabel[l.acao] || {txt:l.acao, cor:'var(--texto2)'};
+          return `<tr>
+            <td style="padding:6px 8px;border-bottom:1px solid var(--linha)">
+              <span style="font-weight:600;color:${al.cor}">${al.txt}</span>
+              ${l.motivo?`<div style="font-size:.72rem;color:var(--texto3);font-style:italic">"${l.motivo}"</div>`:''}
+            </td>
+            <td style="padding:6px 8px;border-bottom:1px solid var(--linha);color:var(--texto2)">${l.operador}</td>
+            <td style="padding:6px 8px;border-bottom:1px solid var(--linha);color:var(--texto3);white-space:nowrap">
+              ${new Date(l.criado_em).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'})}
+            </td>
+          </tr>`;
+        }).join('')}
+      </tbody>
+    </table>`;
+  }catch(e){
+    el.innerHTML = '<span style="color:var(--texto3)">Erro ao carregar histórico.</span>';
+  }
+}
+
 async function responder(token, status){
-  const motivo = document.getElementById('motivo-txt')?.value.trim() || '';
+  // Pega obs de aprovação ou motivo de reprovação conforme o status
+  const motivo = status === 'aprovado'
+    ? (document.getElementById('obs-txt')?.value.trim() || '')
+    : (document.getElementById('motivo-txt')?.value.trim() || '');
   const btnA = document.getElementById('btn-apr');
   const btnR = document.getElementById('btn-rep');
   if(btnA) btnA.disabled = true;
   if(btnR) btnR.disabled = true;
 
-  // Pega dados do usuário logado para registrar quem aprovou
-  const { data: { user } } = await sb.auth.getUser();
+  const { data:{ user } } = await sb.auth.getUser();
+  const aprovadorNome  = user?.user_metadata?.nome || user?.user_metadata?.full_name || user?.email || '';
   const aprovadorEmail = user?.email || '';
-  const aprovadorNome  = user?.user_metadata?.nome || user?.user_metadata?.full_name || aprovadorEmail;
 
   try{
     const r = await fetch(WORKER_URL, {method:'POST', headers:{'Content-Type':'text/plain'},
-      body: JSON.stringify({
-        action: 'responderAprovacaoOS',
-        token, status, motivo,
-        aprovadorNome,
-        aprovadorEmail
-      })});
+      body: JSON.stringify({action:'responderAprovacaoOS', token, status, motivo,
+        aprovadorNome, aprovadorEmail})});
     const d = await r.json();
     if(d.ok){ await abrirDetalhe(token); }
     else{
