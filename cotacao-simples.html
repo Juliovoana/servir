@@ -1,0 +1,1432 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cotação Simples</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23e65100'/%3E%3Cstop offset='1' stop-color='%231565c0'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect x='4' y='4' width='56' height='56' rx='14' fill='url(%23g)'/%3E%3Cpath d='M20 34 L32 20 L48 20 L48 36 L34 50 Z' fill='%23ffffff' fill-opacity='0.95'/%3E%3Ccircle cx='41' cy='27' r='4' fill='url(%23g)'/%3E%3C/svg%3E">
+<style>
+    * { box-sizing: border-box; }
+    body { font-family: Arial, sans-serif; margin: 20px; color: #222; }
+    h2 { margin-bottom: 4px; }
+    .subtitulo { color: #666; font-size: 0.9em; margin-top: 0; margin-bottom: 20px; }
+    .numero-cotacao {
+        display: inline-block;
+        background: #eef2ff;
+        color: #1565c0;
+        font-weight: bold;
+        font-size: 0.9em;
+        padding: 5px 12px;
+        border-radius: 20px;
+        margin-bottom: 16px;
+    }
+
+    /* ===== Cabeçalho da empresa (logo + dados) ===== */
+    .cabecalho-empresa {
+        display: none;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 16px;
+        padding-bottom: 14px;
+        border-bottom: 2px solid #eee;
+    }
+    .cabecalho-empresa.visivel { display: flex; }
+    .cabecalho-empresa img {
+        max-height: 64px;
+        max-width: 140px;
+        object-fit: contain;
+    }
+    .cabecalho-empresa .dados-empresa { font-size: 0.85em; color: #444; line-height: 1.4; }
+    .cabecalho-empresa .dados-empresa strong { font-size: 1.05em; color: #222; }
+
+    .btn-config-empresa {
+        background-color: #555;
+        color: #fff;
+        border: none;
+        border-radius: 50%;
+        width: 34px;
+        height: 34px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        float: right;
+    }
+    .btn-config-empresa:hover { background-color: #333; }
+    .btn-config-empresa svg { width: 17px; height: 17px; }
+
+    #painelConfigEmpresa {
+        display: none;
+        background: #f7f7f7;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        padding: 16px;
+        margin-bottom: 20px;
+        clear: both;
+    }
+    #painelConfigEmpresa.aberto { display: block; }
+    #painelConfigEmpresa h4 { margin-top: 0; }
+    .grade-config-empresa {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-bottom: 12px;
+    }
+    .grade-config-empresa label {
+        font-size: 0.8em;
+        font-weight: bold;
+        color: #555;
+        display: block;
+        margin-bottom: 4px;
+    }
+    .grade-config-empresa input[type="text"] {
+        max-width: none;
+        margin-bottom: 0;
+    }
+    .linha-logo-upload {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 14px;
+    }
+    #previewLogo {
+        max-height: 60px;
+        max-width: 120px;
+        object-fit: contain;
+        border: 1px dashed #ccc;
+        border-radius: 4px;
+        padding: 4px;
+        display: none;
+    }
+    #previewLogo.visivel { display: block; }
+    #statusConfigEmpresa {
+        display: block;
+        font-size: 0.85em;
+        margin-top: 8px;
+    }
+    #statusConfigEmpresa.erro { color: #b00020; }
+    #statusConfigEmpresa.sucesso { color: #2e7d32; }
+
+    .cabecalho-cotacao {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 12px;
+        background: #f7f7f7;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        padding: 14px;
+        margin-bottom: 20px;
+    }
+    .cabecalho-cotacao div { display: flex; flex-direction: column; }
+    .cabecalho-cotacao label { font-size: 0.8em; font-weight: bold; color: #555; margin-bottom: 4px; }
+    .cabecalho-cotacao input {
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 0.95em;
+    }
+
+    .linha-busca-produto {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 4px;
+        max-width: 560px;
+    }
+    .linha-busca-produto input {
+        flex: 1;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 1em;
+    }
+    .btn-buscar-produto {
+        background-color: #1565c0;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        padding: 0 18px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .btn-buscar-produto:hover { background-color: #0d4d99; }
+    .btn-buscar-produto svg { width: 18px; height: 18px; }
+
+    #resultadosBusca {
+        max-width: 560px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        margin-bottom: 20px;
+        max-height: 260px;
+        overflow-y: auto;
+        display: none;
+    }
+    #resultadosBusca.aberto { display: block; }
+    .item-resultado {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 12px;
+        border-bottom: 1px solid #eee;
+        gap: 10px;
+    }
+    .item-resultado:last-child { border-bottom: none; }
+    .item-resultado:hover { background: #f5f9ff; }
+    .info-resultado { font-size: 0.9em; }
+    .info-resultado .cod { font-weight: bold; color: #1565c0; }
+    .info-resultado .preco { color: #2e7d32; font-weight: bold; }
+    .btn-adicionar {
+        background-color: #2e7d32;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        padding: 6px 14px;
+        cursor: pointer;
+        font-size: 0.85em;
+        white-space: nowrap;
+    }
+    .btn-adicionar:hover { background-color: #256428; }
+
+    table.tabela-carrinho { border-collapse: collapse; width: 100%; margin-bottom: 6px; }
+    table.tabela-carrinho th, table.tabela-carrinho td {
+        border: 1px solid #ddd;
+        padding: 9px;
+        text-align: left;
+        font-size: 0.92em;
+    }
+    table.tabela-carrinho th { background-color: #f0f0f0; }
+    table.tabela-carrinho input[type="number"] {
+        width: 70px;
+        padding: 5px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        text-align: center;
+    }
+    .btn-remover {
+        background: none;
+        border: none;
+        color: #b00020;
+        font-size: 1.2em;
+        cursor: pointer;
+        line-height: 1;
+    }
+    .btn-remover:hover { color: #7a0016; }
+
+    #vazioCarrinho {
+        color: #888;
+        font-style: italic;
+        padding: 20px;
+        text-align: center;
+        border: 1px dashed #ccc;
+        border-radius: 6px;
+        margin-bottom: 20px;
+    }
+
+    .linha-desconto {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-bottom: 14px;
+    }
+    .linha-desconto label { font-weight: bold; color: #444; font-size: 0.9em; }
+    .linha-desconto select, .linha-desconto input[type="number"] {
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 0.95em;
+    }
+    .linha-desconto input[type="number"] { width: 120px; }
+
+    .resumo-totais {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 4px;
+        margin: 14px 0 24px;
+        padding-right: 4px;
+    }
+    .linha-resumo {
+        display: flex;
+        gap: 14px;
+        align-items: baseline;
+    }
+    .linha-resumo .rotulo { font-size: 0.95em; color: #555; }
+    .linha-resumo .valor { font-size: 1em; font-weight: bold; color: #444; min-width: 120px; text-align: right; }
+    .linha-resumo.total-final .rotulo { font-size: 1.05em; color: #444; }
+    .linha-resumo.total-final .valor { font-size: 1.5em; color: #2e7d32; }
+    .linha-resumo.desconto .valor { color: #b00020; }
+
+    .barra-acoes {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 24px;
+    }
+    .btn-acao {
+        padding: 11px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.95em;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+    }
+    .btn-acao svg { width: 17px; height: 17px; flex-shrink: 0; display: none; }
+    .btn-gerar-pdf { background-color: #e65100; }
+    .btn-gerar-pdf:hover { background-color: #b93e00; }
+    .btn-limpar { background-color: #555; }
+    .btn-limpar:hover { background-color: #333; }
+    .btn-salvar-cotacao { background-color: #2e7d32; }
+    .btn-salvar-cotacao:hover { background-color: #256428; }
+    .btn-buscar-salva { background-color: #6a1b9a; }
+    .btn-buscar-salva:hover { background-color: #4e1373; }
+
+    #statusCotacaoSalva {
+        display: block;
+        font-size: 0.85em;
+        color: #555;
+        margin-top: -10px;
+        margin-bottom: 16px;
+    }
+    #statusCotacaoSalva.erro { color: #b00020; }
+    #statusCotacaoSalva.sucesso { color: #2e7d32; }
+    #statusCotacaoSalva.editando { color: #6a1b9a; font-weight: bold; }
+
+    #painelBuscaSalva {
+        display: none;
+        margin-bottom: 20px;
+        max-width: 560px;
+    }
+    #painelBuscaSalva.aberto { display: block; }
+    #resultadosBuscaSalva {
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        max-height: 280px;
+        overflow-y: auto;
+        margin-top: 4px;
+    }
+    .titulo-resultados-salva {
+        display: block;
+        font-size: 0.8em;
+        font-weight: bold;
+        color: #6a1b9a;
+        margin-top: 8px;
+    }
+    .item-cotacao-salva {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 12px;
+        border-bottom: 1px solid #eee;
+        gap: 10px;
+    }
+    .item-cotacao-salva:last-child { border-bottom: none; }
+    .item-cotacao-salva:hover { background: #f9f5fd; }
+    .info-cotacao-salva { font-size: 0.88em; }
+    .info-cotacao-salva .cliente-salvo { font-weight: bold; color: #6a1b9a; }
+    .info-cotacao-salva .numero-salvo { font-weight: bold; color: #1565c0; }
+    .btn-carregar-cotacao {
+        background-color: #6a1b9a;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        padding: 6px 14px;
+        cursor: pointer;
+        font-size: 0.85em;
+        white-space: nowrap;
+    }
+    .btn-carregar-cotacao:hover { background-color: #4e1373; }
+
+    #statusCatalogo {
+        font-size: 0.85em;
+        color: #777;
+        margin-bottom: 4px;
+        display: block;
+    }
+    #statusCatalogo.erro { color: #b00020; }
+    #dataGeracaoCatalogo {
+        font-size: 0.82em;
+        color: #888;
+        font-style: italic;
+        display: block;
+        margin-bottom: 16px;
+    }
+    .linha-status-catalogo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 4px;
+    }
+    .btn-atualizar-catalogo {
+        background-color: #e65100;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        padding: 5px 12px;
+        cursor: pointer;
+        font-size: 0.8em;
+        white-space: nowrap;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    .btn-atualizar-catalogo:hover { background-color: #b93e00; }
+    .btn-atualizar-catalogo svg { width: 13px; height: 13px; }
+    .btn-atualizar-catalogo svg.girando { animation: girarCatalogo 0.8s linear infinite; }
+    @keyframes girarCatalogo {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+
+    /* ===== Layout compacto para celular ===== */
+    @media (max-width: 600px) {
+        body { margin: 12px; }
+        h2 { font-size: 1.25em; margin-bottom: 2px; }
+        .subtitulo { font-size: 0.8em; margin-bottom: 12px; }
+
+        .cabecalho-cotacao {
+            grid-template-columns: 1fr;
+            gap: 8px;
+            padding: 10px;
+            margin-bottom: 12px;
+        }
+        .cabecalho-cotacao > div { min-width: 0; }
+
+        .linha-status-catalogo { margin-bottom: 2px; }
+        #dataGeracaoCatalogo { margin-bottom: 12px; }
+
+        .linha-busca-produto { margin-bottom: 10px; }
+
+        .resumo-totais { margin: 10px 0 16px; }
+
+        .barra-acoes { gap: 8px; margin-bottom: 16px; }
+        .btn-acao {
+            padding: 10px;
+            flex: 1 1 auto;
+            min-width: 44px;
+        }
+        .btn-acao svg { display: inline-block; }
+        .btn-acao .btn-texto { display: none; }
+
+        .btn-atualizar-catalogo .btn-texto { display: none; }
+        .btn-atualizar-catalogo { padding: 6px 9px; }
+    }
+
+    /* ===== Estilo específico para impressão / PDF ===== */
+    @media print {
+        body { margin: 0; }
+        .linha-busca-produto, #resultadosBusca,
+        .barra-acoes, #statusCatalogo, .btn-remover, .col-remover {
+            display: none !important;
+        }
+        .cabecalho-cotacao {
+            background: none;
+            border: none;
+            padding: 0;
+            margin-bottom: 16px;
+        }
+        .cabecalho-cotacao input,
+        table.tabela-carrinho input[type="number"],
+        .linha-desconto select,
+        .linha-desconto input[type="number"] {
+            border: none;
+            background: none;
+            text-align: left;
+            padding: 0;
+            width: auto;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        h2 { margin-top: 0; }
+    }
+</style>
+</head>
+<body>
+
+<button id="btnConfigEmpresa" class="btn-config-empresa" title="Configurar logo e dados da empresa">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+    </svg>
+</button>
+<div id="cabecalhoEmpresa" class="cabecalho-empresa">
+    <img id="logoEmpresaExibicao" src="" alt="Logo da empresa">
+    <div class="dados-empresa" id="dadosEmpresaExibicao"></div>
+</div>
+
+<div id="painelConfigEmpresa">
+    <h4>🏢 Dados da empresa (aparecem na cotação e no PDF)</h4>
+    <div class="linha-logo-upload">
+        <input type="file" id="inputLogoEmpresa" accept="image/*">
+        <img id="previewLogo" src="" alt="Pré-visualização do logo">
+    </div>
+    <div class="grade-config-empresa">
+        <div>
+            <label for="empresaNome">Nome da empresa</label>
+            <input type="text" id="empresaNome" placeholder="Nome da sua empresa">
+        </div>
+        <div>
+            <label for="empresaCnpj">CNPJ</label>
+            <input type="text" id="empresaCnpj" placeholder="00.000.000/0000-00">
+        </div>
+        <div>
+            <label for="empresaEndereco">Endereço</label>
+            <input type="text" id="empresaEndereco" placeholder="Rua, número, cidade - UF">
+        </div>
+        <div>
+            <label for="empresaTelefone">Telefone</label>
+            <input type="text" id="empresaTelefone" placeholder="(00) 00000-0000">
+        </div>
+        <div>
+            <label for="empresaEmail">E-mail</label>
+            <input type="text" id="empresaEmail" placeholder="contato@empresa.com">
+        </div>
+    </div>
+    <button class="btn-acao btn-salvar-cotacao" id="btnSalvarConfigEmpresa">Salvar dados da empresa</button>
+    <span id="statusConfigEmpresa"></span>
+</div>
+
+<h2>Cotação de Produtos</h2>
+<p class="subtitulo">Monte um orçamento avulso, some os valores e gere o PDF — nada fica salvo em banco de dados.</p>
+<span id="numeroCotacaoAtual" class="numero-cotacao">Nova cotação (ainda sem número)</span>
+
+<div class="cabecalho-cotacao">
+    <div>
+        <label for="campoCliente">Cliente</label>
+        <input type="text" id="campoCliente" placeholder="Nome do cliente">
+    </div>
+    <div>
+        <label for="campoVendedor">Vendedor</label>
+        <input type="text" id="campoVendedor" placeholder="Seu nome">
+    </div>
+    <div>
+        <label for="campoData">Data</label>
+        <input type="date" id="campoData">
+    </div>
+</div>
+
+<div class="linha-status-catalogo">
+    <span id="statusCatalogo">Carregando catálogo de produtos...</span>
+    <button id="btnAtualizarCatalogo" class="btn-atualizar-catalogo" title="Buscar produtos, estoque e valores atualizados">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M23 4v6h-6"/>
+            <path d="M1 20v-6h6"/>
+            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10"/>
+            <path d="M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+        </svg>
+        <span class="btn-texto">Atualizar agora</span>
+    </button>
+</div>
+<span id="dataGeracaoCatalogo"></span>
+
+<div class="linha-busca-produto">
+    <input type="text" id="buscaProduto" placeholder="Digite código ou descrição do produto...">
+    <button id="btnBuscarProduto" class="btn-buscar-produto" title="Buscar produto">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+    </button>
+</div>
+<div id="resultadosBusca"></div>
+
+<table class="tabela-carrinho" id="tabelaCarrinho">
+    <thead>
+        <tr>
+            <th>Código</th>
+            <th>Descrição</th>
+            <th>Valor Unit.</th>
+            <th>Qtd.</th>
+            <th>Subtotal</th>
+            <th class="col-remover"></th>
+        </tr>
+    </thead>
+    <tbody id="corpoCarrinho"></tbody>
+</table>
+<div id="vazioCarrinho">Nenhum produto adicionado ainda. Busque um produto acima e clique em "Adicionar".</div>
+
+<div class="linha-desconto">
+    <label for="tipoDesconto">Desconto:</label>
+    <select id="tipoDesconto">
+        <option value="none" selected>Sem desconto</option>
+        <option value="percentual">Percentual (%)</option>
+        <option value="valor">Valor fixo (R$)</option>
+    </select>
+    <input type="number" id="valorDesconto" min="0" step="0.01" placeholder="0" style="display:none;">
+</div>
+
+<div class="resumo-totais">
+    <div class="linha-resumo" id="linhaSubtotal" style="display:none;">
+        <span class="rotulo">Subtotal:</span>
+        <span class="valor" id="valorSubtotal">R$ 0,00</span>
+    </div>
+    <div class="linha-resumo desconto" id="linhaDesconto" style="display:none;">
+        <span class="rotulo">Desconto:</span>
+        <span class="valor" id="valorDescontoResumo">- R$ 0,00</span>
+    </div>
+    <div class="linha-resumo total-final">
+        <span class="rotulo">Total da cotação:</span>
+        <span class="valor" id="valorTotalGeral">R$ 0,00</span>
+    </div>
+</div>
+
+<div class="barra-acoes">
+    <button class="btn-acao btn-salvar-cotacao" id="btnSalvarCotacao">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+            <polyline points="17 21 17 13 7 13 7 21"/>
+            <polyline points="7 3 7 8 15 8"/>
+        </svg>
+        <span class="btn-texto">Salvar cotação</span>
+    </button>
+    <button class="btn-acao btn-buscar-salva" id="btnBuscarSalva">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <span class="btn-texto">Buscar cotação salva</span>
+    </button>
+    <button class="btn-acao btn-gerar-pdf" id="btnGerarPdf">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="18" cy="5" r="3"/>
+            <circle cx="6" cy="12" r="3"/>
+            <circle cx="18" cy="19" r="3"/>
+            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
+            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+        </svg>
+        <span class="btn-texto">Gerar PDF</span>
+    </button>
+    <button class="btn-acao btn-limpar" id="btnLimparCotacao">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3 6 5 6 21 6"/>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+            <line x1="10" y1="11" x2="10" y2="17"/>
+            <line x1="14" y1="11" x2="14" y2="17"/>
+        </svg>
+        <span class="btn-texto">Limpar cotação</span>
+    </button>
+</div>
+<span id="statusCotacaoSalva"></span>
+
+<div id="painelBuscaSalva">
+    <div class="linha-busca-produto">
+        <input type="text" id="buscaCotacaoSalva" placeholder="Buscar por nome do cliente...">
+        <button id="btnExecutarBuscaSalva" class="btn-buscar-produto" title="Buscar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"/>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+        </button>
+    </div>
+    <span id="tituloResultadosBuscaSalva" class="titulo-resultados-salva"></span>
+    <div id="resultadosBuscaSalva"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<script>
+// ===== Link padrão do catálogo (mesmo Apps Script já usado nos outros arquivos) =====
+const URL_CATALOGO = "https://script.google.com/macros/s/AKfycbz6wdYirt-5LqIzhNeT4UTSsjdpiicPDx0N9w9-a2-_bhS8XVojMp2kuRYRZpCdABFY/exec";
+
+let catalogo = [];
+let carrinho = [];
+let idCotacaoAtual = null; // null = nova cotação; string = editando uma cotação já salva
+
+function atualizarIndicadorNumero() {
+    const el = document.getElementById("numeroCotacaoAtual");
+    if (idCotacaoAtual) {
+        el.textContent = `Cotação Nº ${formatarNumeroCotacao(idCotacaoAtual)}`;
+    } else {
+        el.textContent = "Nova cotação (ainda sem número)";
+    }
+}
+
+// Formata o número da cotação com zeros à esquerda (ex: 1 -> 001)
+function formatarNumeroCotacao(numero) {
+    return String(numero).padStart(3, "0");
+}
+
+document.getElementById("campoData").value = new Date().toISOString().slice(0, 10);
+
+// Força maiúsculas nos campos Cliente e Vendedor, mesmo com Caps Lock desligado
+function forcarMaiusculas(input) {
+    input.addEventListener("input", function() {
+        const posicaoCursor = this.selectionStart;
+        this.value = this.value.toUpperCase();
+        this.setSelectionRange(posicaoCursor, posicaoCursor);
+    });
+}
+forcarMaiusculas(document.getElementById("campoCliente"));
+forcarMaiusculas(document.getElementById("campoVendedor"));
+
+// ===== Utilidades de número/moeda (mesmas dos outros arquivos) =====
+function paraNumero(texto) {
+    if (texto === undefined || texto === null) return 0;
+    let limpo = String(texto).replace(/R\$\s?/gi, "").trim();
+    if (limpo.includes(",")) {
+        limpo = limpo.replace(/\./g, "").replace(",", ".");
+    }
+    const num = parseFloat(limpo);
+    return isNaN(num) ? 0 : num;
+}
+
+function formatarMoeda(valor) {
+    const num = Number(valor) || 0;
+    return num.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+}
+
+function buscarCampo(linha, possiveisNomes) {
+    const chaves = Object.keys(linha);
+    for (const nome of possiveisNomes) {
+        const chave = chaves.find(k => k.trim().toLowerCase() === nome);
+        if (chave !== undefined) return linha[chave];
+    }
+    return undefined;
+}
+
+// ===== Busca via JSONP (mesma técnica usada nos outros arquivos, contorna CORS) =====
+function buscarViaJSONP(url) {
+    return new Promise((resolve, reject) => {
+        const nomeCallback = "cbCatalogo_" + Date.now() + "_" + Math.floor(Math.random() * 10000);
+        const scriptEl = document.createElement("script");
+        let finalizado = false;
+
+        const limpar = () => {
+            delete window[nomeCallback];
+            if (scriptEl.parentNode) scriptEl.parentNode.removeChild(scriptEl);
+            clearTimeout(timeoutId);
+        };
+
+        const timeoutId = setTimeout(() => {
+            if (!finalizado) {
+                finalizado = true;
+                limpar();
+                reject(new Error("Tempo esgotado ao buscar o catálogo."));
+            }
+        }, 30000);
+
+        window[nomeCallback] = function(dados) {
+            if (finalizado) return;
+            finalizado = true;
+            limpar();
+            resolve(dados);
+        };
+
+        scriptEl.onerror = () => {
+            if (finalizado) return;
+            finalizado = true;
+            limpar();
+            reject(new Error("Falha ao carregar o script do catálogo."));
+        };
+
+        const separador = url.includes("?") ? "&" : "?";
+        scriptEl.src = url + separador + "callback=" + nomeCallback + "&_=" + Date.now();
+        document.body.appendChild(scriptEl);
+    });
+}
+
+async function carregarCatalogo() {
+    const statusEl = document.getElementById("statusCatalogo");
+    statusEl.className = "";
+    statusEl.textContent = "Carregando catálogo de produtos...";
+    try {
+        const texto = await buscarViaJSONP(URL_CATALOGO);
+        const resultado = Papa.parse(texto, { header: true, skipEmptyLines: true, delimiter: "" });
+        catalogo = resultado.data.map(linha => ({
+            codigo: (buscarCampo(linha, ["codigo", "código"]) || "").toString().trim(),
+            descricao: (buscarCampo(linha, ["descricao", "descrição"]) || "").toString().trim(),
+            venda: paraNumero(buscarCampo(linha, ["venda", "valor venda"])),
+            estoque: parseInt(buscarCampo(linha, ["estoque"]), 10) || 0
+        })).filter(p => p.codigo !== "");
+
+        const dataGeracao = resultado.data.length > 0
+            ? buscarCampo(resultado.data[0], ["atualizacao", "atualização"])
+            : "";
+        const dataGeracaoEl = document.getElementById("dataGeracaoCatalogo");
+        dataGeracaoEl.textContent = dataGeracao ? `📅 Dados gerados em: ${dataGeracao}` : "";
+
+        statusEl.className = "";
+        statusEl.textContent = `Catálogo carregado: ${catalogo.length} produtos disponíveis para busca.`;
+    } catch (err) {
+        console.error(err);
+        statusEl.className = "erro";
+        statusEl.textContent = "Não foi possível carregar o catálogo. Verifique sua conexão e tente novamente.";
+    }
+}
+
+document.getElementById("btnAtualizarCatalogo").addEventListener("click", async function() {
+    const svgEl = this.querySelector("svg");
+    svgEl.classList.add("girando");
+    this.disabled = true;
+    await carregarCatalogo();
+    svgEl.classList.remove("girando");
+    this.disabled = false;
+});
+
+// ===== Busca de produtos no catálogo =====
+function buscarProdutos() {
+    const termo = document.getElementById("buscaProduto").value.trim().toLowerCase();
+    const resultadosEl = document.getElementById("resultadosBusca");
+
+    if (!termo) {
+        resultadosEl.classList.remove("aberto");
+        resultadosEl.innerHTML = "";
+        return;
+    }
+
+    const palavras = termo.split(/\s+/).filter(p => p.length > 0);
+
+    const encontrados = catalogo.filter(p => {
+        const textoCompleto = (p.codigo + " " + p.descricao).toLowerCase();
+        return palavras.every(palavra => textoCompleto.includes(palavra));
+    }).slice(0, 30);
+
+    if (encontrados.length === 0) {
+        resultadosEl.innerHTML = '<div class="item-resultado">Nenhum produto encontrado.</div>';
+        resultadosEl.classList.add("aberto");
+        return;
+    }
+
+    resultadosEl.innerHTML = "";
+    encontrados.forEach(p => {
+        const div = document.createElement("div");
+        div.className = "item-resultado";
+        div.innerHTML = `
+            <div class="info-resultado">
+                <span class="cod">${p.codigo}</span> — ${p.descricao}<br>
+                <span class="preco">${formatarMoeda(p.venda)}</span> · Estoque: ${p.estoque}
+            </div>
+            <button class="btn-adicionar">Adicionar</button>
+        `;
+        div.querySelector(".btn-adicionar").addEventListener("click", () => {
+            adicionarAoCarrinho(p);
+            resultadosEl.innerHTML = "";
+            resultadosEl.classList.remove("aberto");
+            document.getElementById("buscaProduto").value = "";
+            document.getElementById("buscaProduto").focus();
+        });
+        resultadosEl.appendChild(div);
+    });
+    resultadosEl.classList.add("aberto");
+}
+
+document.getElementById("btnBuscarProduto").addEventListener("click", buscarProdutos);
+document.getElementById("buscaProduto").addEventListener("keydown", function(e) {
+    if (e.key === "Enter") buscarProdutos();
+});
+
+// ===== Carrinho da cotação =====
+function adicionarAoCarrinho(produto) {
+    const existente = carrinho.find(item => item.codigo === produto.codigo);
+    if (existente) {
+        existente.quantidade += 1;
+    } else {
+        carrinho.push({ codigo: produto.codigo, descricao: produto.descricao, venda: produto.venda, quantidade: 1 });
+    }
+    renderizarCarrinho();
+}
+
+function removerDoCarrinho(codigo) {
+    carrinho = carrinho.filter(item => item.codigo !== codigo);
+    renderizarCarrinho();
+}
+
+function atualizarQuantidade(codigo, novaQtd) {
+    const item = carrinho.find(i => i.codigo === codigo);
+    if (item) {
+        item.quantidade = Math.max(1, parseInt(novaQtd, 10) || 1);
+        renderizarCarrinho();
+    }
+}
+
+function calcularESetarTotais(subtotal) {
+    const tipo = document.getElementById("tipoDesconto").value;
+    const valorInformado = parseFloat(document.getElementById("valorDesconto").value) || 0;
+
+    let desconto = 0;
+    if (tipo === "percentual") {
+        const percentual = Math.min(100, Math.max(0, valorInformado));
+        desconto = subtotal * (percentual / 100);
+    } else if (tipo === "valor") {
+        desconto = Math.min(subtotal, Math.max(0, valorInformado));
+    }
+
+    const totalFinal = subtotal - desconto;
+
+    const linhaSubtotal = document.getElementById("linhaSubtotal");
+    const linhaDesconto = document.getElementById("linhaDesconto");
+
+    if (tipo === "none" || desconto === 0) {
+        linhaSubtotal.style.display = "none";
+        linhaDesconto.style.display = "none";
+    } else {
+        linhaSubtotal.style.display = "flex";
+        linhaDesconto.style.display = "flex";
+        document.getElementById("valorSubtotal").textContent = formatarMoeda(subtotal);
+        document.getElementById("valorDescontoResumo").textContent = "- " + formatarMoeda(desconto);
+    }
+
+    document.getElementById("valorTotalGeral").textContent = formatarMoeda(totalFinal);
+}
+
+document.getElementById("tipoDesconto").addEventListener("change", function() {
+    document.getElementById("valorDesconto").style.display = this.value === "none" ? "none" : "inline-block";
+    if (this.value === "none") document.getElementById("valorDesconto").value = "";
+    recalcularTotais();
+});
+document.getElementById("valorDesconto").addEventListener("input", recalcularTotais);
+
+function recalcularTotais() {
+    const subtotal = carrinho.reduce((soma, item) => soma + item.venda * item.quantidade, 0);
+    calcularESetarTotais(subtotal);
+}
+
+function renderizarCarrinho() {
+    const corpo = document.getElementById("corpoCarrinho");
+    const vazio = document.getElementById("vazioCarrinho");
+    const tabela = document.getElementById("tabelaCarrinho");
+    corpo.innerHTML = "";
+
+    if (carrinho.length === 0) {
+        tabela.style.display = "none";
+        vazio.style.display = "block";
+        calcularESetarTotais(0);
+        return;
+    }
+
+    tabela.style.display = "table";
+    vazio.style.display = "none";
+
+    let subtotal = 0;
+    carrinho.forEach(item => {
+        const linhaSubtotal = item.venda * item.quantidade;
+        subtotal += linhaSubtotal;
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+            <td>${item.codigo}</td>
+            <td>${item.descricao}</td>
+            <td>${formatarMoeda(item.venda)}</td>
+            <td><input type="number" min="1" value="${item.quantidade}" data-codigo="${item.codigo}"></td>
+            <td>${formatarMoeda(linhaSubtotal)}</td>
+            <td class="col-remover"><button class="btn-remover" data-codigo="${item.codigo}" title="Remover">✕</button></td>
+        `;
+        corpo.appendChild(tr);
+    });
+
+    corpo.querySelectorAll('input[type="number"]').forEach(input => {
+        input.addEventListener("change", function() {
+            atualizarQuantidade(this.dataset.codigo, this.value);
+        });
+    });
+    corpo.querySelectorAll(".btn-remover").forEach(btn => {
+        btn.addEventListener("click", function() {
+            removerDoCarrinho(this.dataset.codigo);
+        });
+    });
+
+    calcularESetarTotais(subtotal);
+}
+
+document.getElementById("btnLimparCotacao").addEventListener("click", function() {
+    if (carrinho.length === 0 && !idCotacaoAtual) return;
+    if (confirm("Tem certeza que deseja limpar todos os itens da cotação?")) {
+        carrinho = [];
+        idCotacaoAtual = null;
+        atualizarIndicadorNumero();
+        document.getElementById("campoCliente").value = "";
+        document.getElementById("campoVendedor").value = "";
+        document.getElementById("campoData").value = new Date().toISOString().slice(0, 10);
+        document.getElementById("tipoDesconto").value = "none";
+        document.getElementById("valorDesconto").value = "";
+        document.getElementById("valorDesconto").style.display = "none";
+        document.getElementById("statusCotacaoSalva").className = "";
+        document.getElementById("statusCotacaoSalva").textContent = "";
+        renderizarCarrinho();
+    }
+});
+
+// Converte data yyyy-mm-dd para dd/mm/yyyy
+function formatarDataBR(dataISO) {
+    if (!dataISO) return "-";
+    const [ano, mes, dia] = dataISO.split("-");
+    return `${dia}/${mes}/${ano}`;
+}
+
+// Monta o documento PDF da cotação usando jsPDF + AutoTable
+function gerarDocumentoPdf() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    const cliente = document.getElementById("campoCliente").value.trim() || "-";
+    const vendedor = document.getElementById("campoVendedor").value.trim() || "-";
+    const dataForm = document.getElementById("campoData").value;
+
+    let y0 = 18; // posição vertical inicial do título "Cotação de Produtos"
+
+    if (configEmpresa && configEmpresa.existe) {
+        const temLogo = !!configEmpresa.logoBase64;
+        const xTexto = temLogo ? 48 : 14;
+
+        if (temLogo) {
+            try {
+                doc.addImage(`data:${configEmpresa.logoMimeType};base64,${configEmpresa.logoBase64}`, undefined, 14, 8, 28, 18);
+            } catch (e) {
+                console.error("Erro ao inserir logo no PDF:", e);
+            }
+        }
+
+        doc.setFontSize(11);
+        doc.setFont(undefined, "bold");
+        if (configEmpresa.nomeEmpresa) doc.text(configEmpresa.nomeEmpresa, xTexto, 13);
+        doc.setFont(undefined, "normal");
+        doc.setFontSize(8.5);
+        doc.setTextColor(80, 80, 80);
+
+        let yEmpresa = 18;
+        if (configEmpresa.cnpj) { doc.text(`CNPJ: ${configEmpresa.cnpj}`, xTexto, yEmpresa); yEmpresa += 4.5; }
+        if (configEmpresa.endereco) { doc.text(configEmpresa.endereco, xTexto, yEmpresa); yEmpresa += 4.5; }
+        const contato = [configEmpresa.telefone, configEmpresa.email].filter(Boolean).join("  ·  ");
+        if (contato) { doc.text(contato, xTexto, yEmpresa); }
+
+        doc.setTextColor(0, 0, 0);
+        doc.setDrawColor(220, 220, 220);
+        doc.line(14, 30, 196, 30);
+
+        y0 = 40; // empurra o restante do documento pra baixo, abrindo espaço pro cabeçalho
+    }
+
+    doc.setFontSize(16);
+    doc.text("Cotação de Produtos", 14, y0);
+    doc.setFontSize(11);
+    doc.setTextColor(21, 101, 192);
+    doc.text(idCotacaoAtual ? `Nº ${formatarNumeroCotacao(idCotacaoAtual)}` : "(rascunho, não salvo)", 14, y0 + 7);
+    doc.setTextColor(0, 0, 0);
+    doc.setFontSize(10);
+    doc.text(`Cliente: ${cliente}`, 14, y0 + 15);
+    doc.text(`Vendedor: ${vendedor}`, 14, y0 + 21);
+    doc.text(`Data: ${formatarDataBR(dataForm)}`, 14, y0 + 27);
+
+    const linhas = carrinho.map(item => [
+        item.codigo,
+        item.descricao,
+        formatarMoeda(item.venda),
+        String(item.quantidade),
+        formatarMoeda(item.venda * item.quantidade)
+    ]);
+
+    doc.autoTable({
+        startY: y0 + 34,
+        head: [["Código", "Descrição", "Valor Unit.", "Qtd.", "Subtotal"]],
+        body: linhas,
+        styles: { fontSize: 9 },
+        headStyles: { fillColor: [230, 81, 0] }
+    });
+
+    const subtotal = carrinho.reduce((soma, item) => soma + item.venda * item.quantidade, 0);
+    const tipo = document.getElementById("tipoDesconto").value;
+    const valorInformado = parseFloat(document.getElementById("valorDesconto").value) || 0;
+    let desconto = 0;
+    if (tipo === "percentual") {
+        desconto = subtotal * (Math.min(100, Math.max(0, valorInformado)) / 100);
+    } else if (tipo === "valor") {
+        desconto = Math.min(subtotal, Math.max(0, valorInformado));
+    }
+    const totalFinal = subtotal - desconto;
+
+    let y = doc.lastAutoTable.finalY + 10;
+    doc.setFontSize(11);
+    if (desconto > 0) {
+        doc.text(`Subtotal: ${formatarMoeda(subtotal)}`, 196, y, { align: "right" });
+        y += 6;
+        doc.text(`Desconto: - ${formatarMoeda(desconto)}`, 196, y, { align: "right" });
+        y += 8;
+    }
+    doc.setFontSize(13);
+    doc.text(`Total: ${formatarMoeda(totalFinal)}`, 196, y, { align: "right" });
+
+    return doc;
+}
+
+function gerarEVisualizarPdf() {
+    if (carrinho.length === 0) {
+        alert("Adicione ao menos um produto antes de gerar o PDF.");
+        return;
+    }
+
+    if (!window.jspdf) {
+        alert("Não foi possível carregar a biblioteca de PDF (verifique sua conexão). Tentando via impressão do navegador...");
+        window.print();
+        return;
+    }
+
+    const doc = gerarDocumentoPdf();
+    const blobUrl = doc.output("bloburl");
+    window.open(blobUrl, "_blank");
+}
+
+async function gerarEBaixarOuCompartilharPdf() {
+    if (carrinho.length === 0) {
+        alert("Adicione ao menos um produto antes de gerar o PDF.");
+        return;
+    }
+
+    if (!window.jspdf) {
+        alert("Não foi possível carregar a biblioteca de PDF (verifique sua conexão). Tentando via impressão do navegador...");
+        window.print();
+        return;
+    }
+
+    const doc = gerarDocumentoPdf();
+    const clienteArquivo = (document.getElementById("campoCliente").value.trim() || "cliente").replace(/[^\w\-]+/g, "_");
+    const dataArquivo = document.getElementById("campoData").value || new Date().toISOString().slice(0, 10);
+    const nomeArquivo = `cotacao-${clienteArquivo}-${dataArquivo}.pdf`;
+    const blob = doc.output("blob");
+
+    const arquivoPdf = new File([blob], nomeArquivo, { type: "application/pdf" });
+
+    if (navigator.canShare && navigator.canShare({ files: [arquivoPdf] })) {
+        try {
+            await navigator.share({
+                files: [arquivoPdf],
+                title: "Cotação de Produtos",
+                text: `Cotação para ${document.getElementById("campoCliente").value.trim() || "cliente"}`
+            });
+            return;
+        } catch (err) {
+            if (err.name === "AbortError") return;
+            console.error(err);
+        }
+    }
+
+    doc.save(nomeArquivo);
+}
+
+document.getElementById("btnGerarPdf").addEventListener("click", gerarEBaixarOuCompartilharPdf);
+
+// ===== Salvar / buscar / carregar cotações no Sheets (via Apps Script) =====
+const statusSalvaEl = document.getElementById("statusCotacaoSalva");
+
+function montarPayloadCotacao() {
+    const subtotal = carrinho.reduce((soma, item) => soma + item.venda * item.quantidade, 0);
+    const tipoDesconto = document.getElementById("tipoDesconto").value;
+    const valorDesconto = parseFloat(document.getElementById("valorDesconto").value) || 0;
+
+    let desconto = 0;
+    if (tipoDesconto === "percentual") {
+        desconto = subtotal * (Math.min(100, Math.max(0, valorDesconto)) / 100);
+    } else if (tipoDesconto === "valor") {
+        desconto = Math.min(subtotal, Math.max(0, valorDesconto));
+    }
+    const total = subtotal - desconto;
+
+    return {
+        id: idCotacaoAtual || "",
+        cliente: document.getElementById("campoCliente").value.trim(),
+        vendedor: document.getElementById("campoVendedor").value.trim(),
+        data: document.getElementById("campoData").value,
+        tipoDesconto: tipoDesconto,
+        valorDesconto: valorDesconto,
+        total: total,
+        itens: carrinho.map(item => ({
+            codigo: item.codigo,
+            descricao: item.descricao,
+            valorUnitario: item.venda,
+            quantidade: item.quantidade,
+            subtotal: item.venda * item.quantidade
+        }))
+    };
+}
+
+document.getElementById("btnSalvarCotacao").addEventListener("click", async function() {
+    if (carrinho.length === 0) {
+        statusSalvaEl.className = "erro";
+        statusSalvaEl.textContent = "Adicione ao menos um produto antes de salvar.";
+        return;
+    }
+    if (!document.getElementById("campoCliente").value.trim()) {
+        statusSalvaEl.className = "erro";
+        statusSalvaEl.textContent = "Preencha o nome do cliente antes de salvar.";
+        return;
+    }
+
+    statusSalvaEl.className = "";
+    statusSalvaEl.textContent = "Salvando cotação...";
+
+    try {
+        const payload = montarPayloadCotacao();
+        const dadosCodificados = encodeURIComponent(JSON.stringify(payload));
+        const url = `${URL_CATALOGO}?acao=salvarCotacao&dados=${dadosCodificados}`;
+        const respostaTexto = await buscarViaJSONP(url);
+        const resposta = typeof respostaTexto === "string" ? JSON.parse(respostaTexto) : respostaTexto;
+
+        if (resposta.sucesso) {
+            idCotacaoAtual = resposta.id;
+            atualizarIndicadorNumero();
+            statusSalvaEl.className = "editando";
+            statusSalvaEl.textContent = `✅ Cotação Nº ${formatarNumeroCotacao(resposta.id)} salva com sucesso. Gerando PDF...`;
+            await gerarEVisualizarPdf();
+            statusSalvaEl.textContent = `✅ Cotação Nº ${formatarNumeroCotacao(resposta.id)} salva com sucesso.`;
+        } else {
+            statusSalvaEl.className = "erro";
+            statusSalvaEl.textContent = "Erro ao salvar: " + (resposta.erro || "motivo desconhecido.");
+        }
+    } catch (err) {
+        console.error(err);
+        statusSalvaEl.className = "erro";
+        statusSalvaEl.textContent = "Não foi possível salvar a cotação. Verifique sua conexão.";
+    }
+});
+
+document.getElementById("btnBuscarSalva").addEventListener("click", function() {
+    const painel = document.getElementById("painelBuscaSalva");
+    const estavaFechado = !painel.classList.contains("aberto");
+    painel.classList.toggle("aberto");
+    if (estavaFechado) {
+        buscarCotacoesSalvas();
+    }
+});
+
+async function buscarCotacoesSalvas() {
+    const termo = document.getElementById("buscaCotacaoSalva").value.trim();
+    const resultadosEl = document.getElementById("resultadosBuscaSalva");
+    const tituloLista = document.getElementById("tituloResultadosBuscaSalva");
+    resultadosEl.innerHTML = '<div class="item-cotacao-salva">Buscando...</div>';
+    tituloLista.textContent = "";
+
+    try {
+        const url = `${URL_CATALOGO}?acao=listarCotacoes&termo=${encodeURIComponent(termo)}`;
+        const respostaTexto = await buscarViaJSONP(url);
+        let lista = typeof respostaTexto === "string" ? JSON.parse(respostaTexto) : respostaTexto;
+
+        if (!lista || lista.length === 0) {
+            resultadosEl.innerHTML = '<div class="item-cotacao-salva">Nenhuma cotação encontrada.</div>';
+            return;
+        }
+
+        // Sem termo de busca: mostra só as 10 mais recentes (a lista já vem ordenada da mais nova pra mais antiga)
+        if (!termo) {
+            lista = lista.slice(0, 10);
+            tituloLista.textContent = "Últimas 10 cotações salvas:";
+        } else {
+            tituloLista.textContent = `${lista.length} resultado(s) para "${termo}":`;
+        }
+
+        resultadosEl.innerHTML = "";
+        lista.forEach(c => {
+            const dataRegistro = c.dataRegistro ? new Date(c.dataRegistro).toLocaleString('pt-BR') : "-";
+            const div = document.createElement("div");
+            div.className = "item-cotacao-salva";
+            div.innerHTML = `
+                <div class="info-cotacao-salva">
+                    <span class="numero-salvo">Nº ${formatarNumeroCotacao(c.id)}</span> · <span class="cliente-salvo">${c.cliente || "(sem nome)"}</span> — ${formatarMoeda(c.total)}<br>
+                    ${c.qtdItens} ${c.qtdItens === 1 ? "item" : "itens"} · Salvo em ${dataRegistro}
+                </div>
+                <button class="btn-carregar-cotacao">Carregar</button>
+            `;
+            div.querySelector(".btn-carregar-cotacao").addEventListener("click", () => carregarCotacaoSalva(c.id));
+            resultadosEl.appendChild(div);
+        });
+    } catch (err) {
+        console.error(err);
+        resultadosEl.innerHTML = '<div class="item-cotacao-salva">Erro ao buscar cotações salvas.</div>';
+        tituloLista.textContent = "";
+    }
+}
+
+document.getElementById("btnExecutarBuscaSalva").addEventListener("click", buscarCotacoesSalvas);
+document.getElementById("buscaCotacaoSalva").addEventListener("keydown", function(e) {
+    if (e.key === "Enter") buscarCotacoesSalvas();
+});
+
+async function carregarCotacaoSalva(id) {
+    statusSalvaEl.className = "";
+    statusSalvaEl.textContent = "Carregando cotação...";
+
+    try {
+        const url = `${URL_CATALOGO}?acao=buscarCotacao&id=${encodeURIComponent(id)}`;
+        const respostaTexto = await buscarViaJSONP(url);
+        const resposta = typeof respostaTexto === "string" ? JSON.parse(respostaTexto) : respostaTexto;
+
+        if (!resposta.sucesso) {
+            statusSalvaEl.className = "erro";
+            statusSalvaEl.textContent = "Erro ao carregar: " + (resposta.erro || "cotação não encontrada.");
+            return;
+        }
+
+        document.getElementById("campoCliente").value = (resposta.cliente || "").toUpperCase();
+        document.getElementById("campoVendedor").value = (resposta.vendedor || "").toUpperCase();
+        document.getElementById("campoData").value = resposta.data || new Date().toISOString().slice(0, 10);
+        document.getElementById("tipoDesconto").value = resposta.tipoDesconto || "none";
+        document.getElementById("valorDesconto").value = resposta.valorDesconto || "";
+        document.getElementById("valorDesconto").style.display = (resposta.tipoDesconto && resposta.tipoDesconto !== "none") ? "inline-block" : "none";
+
+        carrinho = resposta.itens.map(item => ({
+            codigo: item.codigo,
+            descricao: item.descricao,
+            venda: Number(item.valorUnitario),
+            quantidade: Number(item.quantidade)
+        }));
+
+        idCotacaoAtual = id;
+        atualizarIndicadorNumero();
+        renderizarCarrinho();
+
+        document.getElementById("painelBuscaSalva").classList.remove("aberto");
+        statusSalvaEl.className = "editando";
+        statusSalvaEl.textContent = `📂 Editando cotação Nº ${formatarNumeroCotacao(id)} de ${resposta.cliente} — qualquer alteração e novo "Salvar" atualiza este mesmo registro.`;
+    } catch (err) {
+        console.error(err);
+        statusSalvaEl.className = "erro";
+        statusSalvaEl.textContent = "Não foi possível carregar a cotação selecionada.";
+    }
+}
+
+// ===== Configuração da empresa (logo + dados) =====
+let configEmpresa = null;
+let logoBase64Selecionado = "";
+let logoMimeTypeSelecionado = "";
+const TAMANHO_MAX_LOGO_BYTES = 250 * 1024; // 250 KB
+
+function renderizarCabecalhoEmpresa() {
+    const cabecalho = document.getElementById("cabecalhoEmpresa");
+    if (!configEmpresa || !configEmpresa.existe) {
+        cabecalho.classList.remove("visivel");
+        return;
+    }
+
+    const imgEl = document.getElementById("logoEmpresaExibicao");
+    if (configEmpresa.logoBase64) {
+        imgEl.src = `data:${configEmpresa.logoMimeType};base64,${configEmpresa.logoBase64}`;
+        imgEl.style.display = "block";
+    } else {
+        imgEl.style.display = "none";
+    }
+
+    const linhas = [];
+    if (configEmpresa.nomeEmpresa) linhas.push(`<strong>${configEmpresa.nomeEmpresa}</strong>`);
+    if (configEmpresa.cnpj) linhas.push(`CNPJ: ${configEmpresa.cnpj}`);
+    if (configEmpresa.endereco) linhas.push(configEmpresa.endereco);
+    const contato = [configEmpresa.telefone, configEmpresa.email].filter(Boolean).join(" · ");
+    if (contato) linhas.push(contato);
+
+    document.getElementById("dadosEmpresaExibicao").innerHTML = linhas.join("<br>");
+    cabecalho.classList.add("visivel");
+}
+
+async function carregarConfigEmpresa() {
+    try {
+        const url = `${URL_CATALOGO}?acao=buscarConfigEmpresa`;
+        const respostaTexto = await buscarViaJSONP(url);
+        configEmpresa = typeof respostaTexto === "string" ? JSON.parse(respostaTexto) : respostaTexto;
+        renderizarCabecalhoEmpresa();
+
+        if (configEmpresa && configEmpresa.existe) {
+            document.getElementById("empresaNome").value = configEmpresa.nomeEmpresa || "";
+            document.getElementById("empresaCnpj").value = configEmpresa.cnpj || "";
+            document.getElementById("empresaEndereco").value = configEmpresa.endereco || "";
+            document.getElementById("empresaTelefone").value = configEmpresa.telefone || "";
+            document.getElementById("empresaEmail").value = configEmpresa.email || "";
+            if (configEmpresa.logoBase64) {
+                const preview = document.getElementById("previewLogo");
+                preview.src = `data:${configEmpresa.logoMimeType};base64,${configEmpresa.logoBase64}`;
+                preview.classList.add("visivel");
+            }
+        }
+    } catch (err) {
+        console.error("Não foi possível carregar a configuração da empresa:", err);
+    }
+}
+
+document.getElementById("btnConfigEmpresa").addEventListener("click", function() {
+    document.getElementById("painelConfigEmpresa").classList.toggle("aberto");
+});
+
+document.getElementById("inputLogoEmpresa").addEventListener("change", function(e) {
+    const arquivo = e.target.files[0];
+    if (!arquivo) return;
+
+    const statusEl2 = document.getElementById("statusConfigEmpresa");
+    if (arquivo.size > TAMANHO_MAX_LOGO_BYTES) {
+        statusEl2.className = "erro";
+        statusEl2.textContent = `Imagem muito grande (${Math.round(arquivo.size / 1024)}KB). Use uma imagem de até 250KB.`;
+        e.target.value = "";
+        return;
+    }
+
+    const leitor = new FileReader();
+    leitor.onload = function(evento) {
+        const resultado = evento.target.result; // data:image/png;base64,AAAA...
+        const partes = resultado.split(",");
+        logoMimeTypeSelecionado = partes[0].match(/data:(.*);base64/)[1];
+        logoBase64Selecionado = partes[1];
+
+        const preview = document.getElementById("previewLogo");
+        preview.src = resultado;
+        preview.classList.add("visivel");
+
+        statusEl2.className = "";
+        statusEl2.textContent = "Imagem carregada. Clique em \"Salvar dados da empresa\" para gravar.";
+    };
+    leitor.readAsDataURL(arquivo);
+});
+
+document.getElementById("btnSalvarConfigEmpresa").addEventListener("click", async function() {
+    const statusEl2 = document.getElementById("statusConfigEmpresa");
+    statusEl2.className = "";
+    statusEl2.textContent = "Salvando...";
+
+    const payload = {
+        nomeEmpresa: document.getElementById("empresaNome").value.trim(),
+        cnpj: document.getElementById("empresaCnpj").value.trim(),
+        endereco: document.getElementById("empresaEndereco").value.trim(),
+        telefone: document.getElementById("empresaTelefone").value.trim(),
+        email: document.getElementById("empresaEmail").value.trim(),
+        logoBase64: logoBase64Selecionado,
+        logoMimeType: logoMimeTypeSelecionado
+    };
+
+    try {
+        await fetch(`${URL_CATALOGO}?acao=salvarConfigEmpresa`, {
+            method: "POST",
+            mode: "no-cors",
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            body: JSON.stringify(payload)
+        });
+
+        // Modo no-cors não deixa ler a resposta; busca de novo para confirmar e atualizar a tela
+        await new Promise(resolve => setTimeout(resolve, 1200));
+        await carregarConfigEmpresa();
+
+        statusEl2.className = "sucesso";
+        statusEl2.textContent = "✅ Dados da empresa salvos com sucesso.";
+        logoBase64Selecionado = "";
+        logoMimeTypeSelecionado = "";
+        setTimeout(() => {
+            document.getElementById("painelConfigEmpresa").classList.remove("aberto");
+        }, 1200);
+    } catch (err) {
+        console.error(err);
+        statusEl2.className = "erro";
+        statusEl2.textContent = "Não foi possível salvar. Verifique sua conexão.";
+    }
+});
+
+renderizarCarrinho();
+atualizarIndicadorNumero();
+
+// Roda uma busca de cada vez (não simultâneas), pra evitar sobrecarregar
+// o Apps Script logo na abertura da página (ex: cold start)
+(async function iniciarCargasIniciais() {
+    await carregarCatalogo();
+    await carregarConfigEmpresa();
+})();
+</script>
+</body>
+</html>
