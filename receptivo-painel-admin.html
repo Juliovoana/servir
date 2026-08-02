@@ -65,6 +65,15 @@
   .link-esqueci-senha{ text-align:right; margin-top:-8px; margin-bottom:16px; }
   .link-esqueci-senha a{ font-size:.8rem; color:var(--brand-2); font-weight:600; text-decoration:none; cursor:pointer; }
   .link-esqueci-senha a:hover{ text-decoration:underline; }
+  .field-senha-wrap{ position:relative; }
+  .field-senha-wrap input{ padding-right:42px; }
+  .btn-toggle-senha{
+    position:absolute; top:50%; right:6px; transform:translateY(-50%);
+    background:none; border:none; padding:6px; cursor:pointer; color:var(--muted-2);
+    display:flex; align-items:center; justify-content:center; border-radius:6px; transition:color .15s, background .15s;
+  }
+  .btn-toggle-senha:hover{ color:var(--brand-2); background:var(--brand-soft); }
+  .btn-toggle-senha svg{ width:18px; height:18px; }
   .field-group{ margin-bottom:16px; }
   .field-group label{ display:block; font-size:.8rem; font-weight:600; color:var(--ink); margin-bottom:6px; }
   .field-group input{
@@ -116,6 +125,28 @@
   .content-header h1{ font-size:1.3rem; font-weight:700; letter-spacing:-.01em; }
   .content-header .agencia-pill{
     font-size:.78rem; color:var(--brand-2); background:var(--brand-soft); padding:6px 12px; border-radius:20px; font-weight:600;
+  }
+
+  /* ---------- RESPONSIVO: colapsa a sidebar pra só ícones em telas pequenas ---------- */
+  @media (max-width: 720px){
+    .sidebar{
+      width:60px; padding:16px 6px; align-items:center;
+    }
+    .sidebar-brand{ display:none; }
+    .nav-item{ justify-content:center; padding:12px 0; gap:0; }
+    .nav-item .nav-label{ display:none; }
+    .btn-sair{ justify-content:center; padding:12px 0; gap:0; }
+    .btn-sair .nav-label{ display:none; }
+    .content-header{ padding:16px 18px; }
+    main.app-main{ padding:20px 14px 48px; }
+
+    /* card de reserva: em vez de espremer tudo numa linha só e
+       truncar o texto, quebra em linhas e cresce verticalmente
+       pra mostrar os dados da reserva por extenso */
+    .reserva-row{ flex-wrap:wrap; row-gap:10px; }
+    .reserva-info{ flex-basis:100%; }
+    .reserva-info .meta{ white-space:normal; overflow:visible; text-overflow:unset; }
+    .reserva-right{ flex-basis:100%; justify-content:space-between; }
   }
 
   main.app-main{ max-width:1100px; margin:0 auto; padding:32px 36px 60px; }
@@ -468,7 +499,10 @@
           </div>
           <div class="field-group">
             <label>Senha</label>
-            <input type="password" id="loginSenha" placeholder="••••••••">
+            <div class="field-senha-wrap">
+              <input type="password" id="loginSenha" placeholder="••••••••">
+              <button type="button" class="btn-toggle-senha" data-target="loginSenha" aria-label="Mostrar senha"></button>
+            </div>
           </div>
           <p class="link-esqueci-senha"><a href="#" id="linkEsqueciSenha">Esqueci minha senha</a></p>
           <button class="btn-primary" id="btnEntrar">Entrar</button>
@@ -556,11 +590,17 @@
           <p class="sub">Escolha uma nova senha pra continuar acessando sua conta.</p>
           <div class="field-group">
             <label>Nova senha</label>
-            <input type="password" id="novaSenha" placeholder="Mínimo 6 caracteres">
+            <div class="field-senha-wrap">
+              <input type="password" id="novaSenha" placeholder="Mínimo 6 caracteres">
+              <button type="button" class="btn-toggle-senha" data-target="novaSenha" aria-label="Mostrar senha"></button>
+            </div>
           </div>
           <div class="field-group">
             <label>Confirmar nova senha</label>
-            <input type="password" id="novaSenhaConfirma">
+            <div class="field-senha-wrap">
+              <input type="password" id="novaSenhaConfirma">
+              <button type="button" class="btn-toggle-senha" data-target="novaSenhaConfirma" aria-label="Mostrar senha"></button>
+            </div>
           </div>
           <button class="btn-primary" id="btnSalvarNovaSenha">Salvar nova senha</button>
           <div class="login-erro" id="redefinirErro"></div>
@@ -578,38 +618,38 @@
     <div class="app-shell">
       <aside class="sidebar">
         <div class="sidebar-brand">Servir<small id="nomeAgencia">Painel</small></div>
-        <button class="nav-item tab-app-btn active" data-app-tab="dashboard">
+        <button class="nav-item tab-app-btn active" data-app-tab="dashboard" title="Dashboard">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
-          Dashboard
+          <span class="nav-label">Dashboard</span>
         </button>
-        <button class="nav-item tab-app-btn" data-app-tab="reservas">
+        <button class="nav-item tab-app-btn" data-app-tab="reservas" title="Reservas">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h18v4H3z"/><path d="M5 7v13a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V7"/><path d="M10 12h4"/></svg>
-          Reservas
+          <span class="nav-label">Reservas</span>
         </button>
-        <button class="nav-item tab-app-btn" data-app-tab="servicos">
+        <button class="nav-item tab-app-btn" data-app-tab="servicos" title="Serviços">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
-          Serviços
+          <span class="nav-label">Serviços</span>
         </button>
-        <button class="nav-item tab-app-btn" data-app-tab="hoteis">
+        <button class="nav-item tab-app-btn" data-app-tab="hoteis" title="Hotéis">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-4"/><line x1="9" y1="9" x2="9" y2="9.01"/><line x1="9" y1="12" x2="9" y2="12.01"/><line x1="9" y1="15" x2="9" y2="15.01"/></svg>
-          Hotéis
+          <span class="nav-label">Hotéis</span>
         </button>
-        <button class="nav-item tab-app-btn" data-app-tab="ocorrencias">
+        <button class="nav-item tab-app-btn" data-app-tab="ocorrencias" title="Ocorrências">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg>
-          Ocorrências
+          <span class="nav-label">Ocorrências</span>
         </button>
         <div class="sidebar-spacer"></div>
-        <button class="btn-sair" id="btnConvidarColaborador" style="display:none; margin-bottom:8px;">
+        <button class="btn-sair" id="btnConvidarColaborador" title="Convidar colaborador" style="display:none; margin-bottom:8px;">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="17" y1="11" x2="23" y2="11"/></svg>
-          Convidar colaborador
+          <span class="nav-label">Convidar colaborador</span>
         </button>
-        <button class="btn-sair" id="btnTrocarAgencia" style="display:none; margin-bottom:8px;">
+        <button class="btn-sair" id="btnTrocarAgencia" title="Trocar unidade" style="display:none; margin-bottom:8px;">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
-          Trocar unidade
+          <span class="nav-label">Trocar unidade</span>
         </button>
-        <button class="btn-sair" id="btnSair">
+        <button class="btn-sair" id="btnSair" title="Sair">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-          Sair
+          <span class="nav-label">Sair</span>
         </button>
       </aside>
 
@@ -984,6 +1024,24 @@
   });
 
   document.getElementById('btnEntrar').addEventListener('click', fazerLogin);
+
+  // -----------------------------------------------------------------
+  // Botão de mostrar/ocultar senha digitada (olho)
+  // -----------------------------------------------------------------
+  const svgOlhoAberto = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+  const svgOlhoFechado = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A10.94 10.94 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
+
+  document.querySelectorAll('.btn-toggle-senha').forEach(btn => {
+    btn.innerHTML = svgOlhoFechado;
+    btn.addEventListener('click', () => {
+      const input = document.getElementById(btn.dataset.target);
+      if(!input) return;
+      const mostrando = input.type === 'text';
+      input.type = mostrando ? 'password' : 'text';
+      btn.innerHTML = mostrando ? svgOlhoFechado : svgOlhoAberto;
+      btn.setAttribute('aria-label', mostrando ? 'Mostrar senha' : 'Ocultar senha');
+    });
+  });
 
   // =================================================================
   // ESQUECI MINHA SENHA
