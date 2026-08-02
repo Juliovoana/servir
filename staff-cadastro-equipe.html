@@ -201,6 +201,7 @@
         </div>
         <div class="field-group"><label>E-mail</label><input type="email" id="f_email" placeholder="seu@email.com"></div>
         <div class="field-group"><label>Cidade / endereço</label><input type="text" id="f_endereco" placeholder="Onde você mora"></div>
+        <label class="check-inline"><input type="checkbox" id="f_pcd"> Sou Pessoa com Deficiência (PCD)</label>
       </div>
 
       <div class="secao">
@@ -302,6 +303,7 @@
     const whatsapp = document.getElementById('f_whatsapp').value.trim();
     const email = document.getElementById('f_email').value.trim();
     const endereco = document.getElementById('f_endereco').value.trim();
+    const pcd = document.getElementById('f_pcd').checked;
     const funcaoPrincipalId = document.getElementById('f_funcao_principal_id').value;
     const observacoes = document.getElementById('f_observacoes').value.trim();
 
@@ -316,13 +318,16 @@
     btn.textContent = 'Enviando...';
 
     try{
+      const novoProfissionalId = crypto.randomUUID();
       const payload = {
+        id: novoProfissionalId,
         unidade_negocio_id: unidadeId,
         nome_completo: nomeCompleto,
         telefone: telefone || null,
         whatsapp: whatsapp || null,
         email: email || null,
         endereco: endereco || null,
+        pcd: pcd,
         foto_url: fotoUrlEnviada || null,
         funcao_principal_id: funcaoPrincipalId,
         observacoes: observacoes || null
@@ -330,17 +335,17 @@
         // (valor padrão da coluna) até o admin revisar e aprovar.
       };
 
-      const { data: profissional, error: erroInsert } = await sb
-        .from('staff_profissionais')
-        .insert(payload)
-        .select()
-        .single();
+      // Sem .select() de propósito: pedir o registro de volta exigiria
+      // permissão de LEITURA pra "anon" nesta tabela, o que exporia CPF/
+      // endereço/telefone de candidatos pra qualquer requisição anônima.
+      // Como o ID já foi gerado aqui, não precisamos ler de volta nada.
+      const { error: erroInsert } = await sb.from('staff_profissionais').insert(payload);
       if(erroInsert) throw new Error(erroInsert.message);
 
       const funcoesSecundarias = [...document.querySelectorAll('.check-funcao-secundaria:checked')].map(el => el.value);
       if(funcoesSecundarias.length > 0){
         await sb.from('staff_profissional_funcoes').insert(
-          funcoesSecundarias.map(funcaoId => ({ unidade_negocio_id: unidadeId, profissional_id: profissional.id, funcao_id: funcaoId }))
+          funcoesSecundarias.map(funcaoId => ({ unidade_negocio_id: unidadeId, profissional_id: novoProfissionalId, funcao_id: funcaoId }))
         );
       }
 
@@ -360,7 +365,11 @@
   sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false }
   });
-  carregarFormulario();
+
+  // Garante que nenhuma sessão de admin guardada no navegador (ex: de
+  // quem também testa o painel logado no mesmo dispositivo) seja usada
+  // aqui por engano — este formulário deve SEMPRE agir como anônimo.
+  sb.auth.signOut().finally(carregarFormulario);
 </script>
 </body>
 </html>

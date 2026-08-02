@@ -192,6 +192,7 @@
   }
   .btn-link-convite:hover{ background:#DCEAE2; }
   .btn-link-convite svg{ width:15px; height:15px; }
+  .tag-pcd{ font-size:.7rem; font-weight:700; color:var(--brand-2); background:var(--brand-soft); padding:4px 9px; border-radius:20px; flex-shrink:0; }
 
   .barra-filtro-profissionais{ display:flex; gap:10px; margin-bottom:14px; flex-wrap:wrap; }
   .barra-filtro-profissionais input, .barra-filtro-profissionais select{
@@ -1112,6 +1113,7 @@
           <span class="meta">${p.staff_funcoes?.nome || 'Sem função principal'}${p.telefone ? ' · ' + p.telefone : ''}</span>
         </div>
         <span class="status-tag ${p.ativo ? 'ativo' : 'inativo'}">${p.ativo ? 'ativo' : 'inativo'}</span>
+        ${p.pcd ? '<span class="tag-pcd">PCD</span>' : ''}
       `;
       row.addEventListener('click', () => abrirDrawerCadastro('profissional', p.id));
       lista.appendChild(row);
@@ -1235,6 +1237,7 @@
             <div class="field-group"><label>E-mail</label><input type="email" id="c_email" value="${p.email || ''}" ${somenteLeitura ? 'disabled' : ''}></div>
           </div>
           <div class="field-group"><label>Endereço</label><input type="text" id="c_endereco" value="${p.endereco || ''}" ${somenteLeitura ? 'disabled' : ''}></div>
+          <label class="check-inline"><input type="checkbox" id="c_pcd" ${p.pcd ? 'checked' : ''} ${somenteLeitura ? 'disabled' : ''}> Pessoa com Deficiência (PCD)</label>
         </div>
 
         <div class="drawer-section">
@@ -1469,6 +1472,7 @@
           whatsapp: document.getElementById('c_whatsapp').value.trim() || null,
           email: document.getElementById('c_email').value.trim() || null,
           endereco: document.getElementById('c_endereco').value.trim() || null,
+          pcd: document.getElementById('c_pcd').checked,
           banco: document.getElementById('c_banco').value.trim() || null,
           agencia: document.getElementById('c_agencia').value.trim() || null,
           conta: document.getElementById('c_conta').value.trim() || null,
