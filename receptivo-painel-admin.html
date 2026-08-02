@@ -62,6 +62,9 @@
   .login-card .sub{ color:var(--muted); font-size:.9rem; margin-bottom:28px; }
   .toggle-auth{ text-align:center; font-size:.85rem; color:var(--muted); margin-top:18px; }
   .toggle-auth a{ color:var(--brand); font-weight:600; text-decoration:underline; cursor:pointer; }
+  .link-esqueci-senha{ text-align:right; margin-top:-8px; margin-bottom:16px; }
+  .link-esqueci-senha a{ font-size:.8rem; color:var(--brand-2); font-weight:600; text-decoration:none; cursor:pointer; }
+  .link-esqueci-senha a:hover{ text-decoration:underline; }
   .field-group{ margin-bottom:16px; }
   .field-group label{ display:block; font-size:.8rem; font-weight:600; color:var(--ink); margin-bottom:6px; }
   .field-group input{
@@ -467,6 +470,7 @@
             <label>Senha</label>
             <input type="password" id="loginSenha" placeholder="••••••••">
           </div>
+          <p class="link-esqueci-senha"><a href="#" id="linkEsqueciSenha">Esqueci minha senha</a></p>
           <button class="btn-primary" id="btnEntrar">Entrar</button>
           <div class="login-erro" id="loginErro"></div>
           <p class="toggle-auth">Ainda não tem conta? <a href="#" id="linkIrParaCadastro">Criar unidade</a> · <a href="#" id="linkIrParaConvite">Tenho um convite</a></p>
@@ -527,6 +531,39 @@
         <div id="blocoCadastroSucesso" style="display:none; text-align:center;">
           <h1>Confira seu e-mail</h1>
           <p class="sub">Enviamos um link de confirmação para <strong id="emailCadastroSucesso"></strong>. Clique nele e depois volte aqui pra entrar normalmente.</p>
+        </div>
+
+        <div id="blocoEsqueciSenha" style="display:none;">
+          <h1>Recuperar senha</h1>
+          <p class="sub">Informe seu e-mail. Enviaremos um link pra você definir uma nova senha.</p>
+          <div class="field-group">
+            <label>E-mail</label>
+            <input type="email" id="recuperarEmail" placeholder="voce@unidade.com.br">
+          </div>
+          <button class="btn-primary" id="btnEnviarRecuperacao">Enviar link de recuperação</button>
+          <div class="login-erro" id="recuperarErro"></div>
+          <p class="toggle-auth">Lembrou a senha? <a href="#" id="linkRecuperarParaLogin">Entrar</a></p>
+        </div>
+
+        <div id="blocoRecuperacaoEnviada" style="display:none; text-align:center;">
+          <h1>Confira seu e-mail</h1>
+          <p class="sub">Enviamos um link de recuperação para <strong id="emailRecuperacaoEnviada"></strong>. Clique nele pra definir uma nova senha.</p>
+          <p class="toggle-auth" style="margin-top:22px;"><a href="#" id="linkRecuperacaoEnviadaParaLogin">Voltar para o login</a></p>
+        </div>
+
+        <div id="blocoRedefinirSenha" style="display:none;">
+          <h1>Defina sua nova senha</h1>
+          <p class="sub">Escolha uma nova senha pra continuar acessando sua conta.</p>
+          <div class="field-group">
+            <label>Nova senha</label>
+            <input type="password" id="novaSenha" placeholder="Mínimo 6 caracteres">
+          </div>
+          <div class="field-group">
+            <label>Confirmar nova senha</label>
+            <input type="password" id="novaSenhaConfirma">
+          </div>
+          <button class="btn-primary" id="btnSalvarNovaSenha">Salvar nova senha</button>
+          <div class="login-erro" id="redefinirErro"></div>
         </div>
       </div>
     </div>
@@ -949,12 +986,118 @@
   document.getElementById('btnEntrar').addEventListener('click', fazerLogin);
 
   // =================================================================
+  // ESQUECI MINHA SENHA
+  // =================================================================
+  function mostrarErroRecuperacao(msg){
+    const el = document.getElementById('recuperarErro');
+    el.textContent = msg;
+    el.classList.add('show');
+  }
+
+  document.getElementById('linkEsqueciSenha').addEventListener('click', (e) => {
+    e.preventDefault();
+    document.getElementById('recuperarEmail').value = document.getElementById('loginEmail').value.trim();
+    blocoLoginForm.style.display = 'none';
+    blocoEsqueciSenha.style.display = 'block';
+  });
+
+  document.getElementById('linkRecuperarParaLogin').addEventListener('click', (e) => {
+    e.preventDefault();
+    blocoEsqueciSenha.style.display = 'none';
+    blocoLoginForm.style.display = 'block';
+  });
+
+  document.getElementById('linkRecuperacaoEnviadaParaLogin').addEventListener('click', (e) => {
+    e.preventDefault();
+    blocoRecuperacaoEnviada.style.display = 'none';
+    blocoLoginForm.style.display = 'block';
+  });
+
+  document.getElementById('btnEnviarRecuperacao').addEventListener('click', async () => {
+    const email = document.getElementById('recuperarEmail').value.trim();
+    document.getElementById('recuperarErro').classList.remove('show');
+    if(!email){ mostrarErroRecuperacao('Informe seu e-mail.'); return; }
+
+    const btn = document.getElementById('btnEnviarRecuperacao');
+    btn.disabled = true;
+    btn.textContent = 'Enviando...';
+
+    try{
+      // ao clicar no link do e-mail, o Supabase abre esta mesma página
+      // com uma sessão de recuperação — o listener de onAuthStateChange
+      // abaixo detecta o evento PASSWORD_RECOVERY e mostra o formulário
+      // de nova senha automaticamente.
+      const { error } = await sb.auth.resetPasswordForEmail(email, {
+        redirectTo: window.location.href.split('?')[0].split('#')[0]
+      });
+      if(error) throw new Error(error.message);
+
+      document.getElementById('emailRecuperacaoEnviada').textContent = email;
+      blocoEsqueciSenha.style.display = 'none';
+      blocoRecuperacaoEnviada.style.display = 'block';
+    } catch(erro){
+      mostrarErroRecuperacao(erro.message);
+    } finally{
+      btn.disabled = false;
+      btn.textContent = 'Enviar link de recuperação';
+    }
+  });
+
+  // -----------------------------------------------------------------
+  // DEFINIR NOVA SENHA (após clicar no link recebido por e-mail)
+  // -----------------------------------------------------------------
+  function mostrarErroRedefinir(msg){
+    const el = document.getElementById('redefinirErro');
+    el.textContent = msg;
+    el.classList.add('show');
+  }
+
+  document.getElementById('btnSalvarNovaSenha').addEventListener('click', async () => {
+    const novaSenha = document.getElementById('novaSenha').value;
+    const confirma = document.getElementById('novaSenhaConfirma').value;
+    document.getElementById('redefinirErro').classList.remove('show');
+
+    if(novaSenha.length < 6){ mostrarErroRedefinir('A senha precisa ter pelo menos 6 caracteres.'); return; }
+    if(novaSenha !== confirma){ mostrarErroRedefinir('As senhas não coincidem.'); return; }
+
+    const btn = document.getElementById('btnSalvarNovaSenha');
+    btn.disabled = true;
+    btn.textContent = 'Salvando...';
+
+    try{
+      const { data, error } = await sb.auth.updateUser({ password: novaSenha });
+      if(error) throw new Error(error.message);
+
+      // já existe sessão válida (veio do link de recuperação) — segue
+      // direto pro painel, sem pedir login de novo
+      blocoRedefinirSenha.style.display = 'none';
+      loadingScreen.style.display = 'flex';
+      telaLogin.style.display = 'none';
+      await carregarAgenciaDoUsuario(data.user);
+      appEl.style.display = 'block';
+      await carregarTudo();
+      loadingScreen.style.display = 'none';
+    } catch(erro){
+      mostrarErroRedefinir(erro.message);
+      btn.disabled = false;
+      btn.textContent = 'Salvar nova senha';
+    }
+  });
+
+  // Supabase dispara o evento PASSWORD_RECOVERY quando a página é
+  // aberta a partir do link de recuperação de senha do e-mail.
+  // (o listener é registrado dentro de iniciar(), depois que `sb` existe)
+
+  // =================================================================
   // TOGGLE: login <-> criar conta
   // =================================================================
   const blocoLoginForm = document.getElementById('blocoLoginForm');
   const blocoCadastroForm = document.getElementById('blocoCadastroForm');
   const blocoConviteForm = document.getElementById('blocoConviteForm');
   const blocoCadastroSucesso = document.getElementById('blocoCadastroSucesso');
+  const blocoEsqueciSenha = document.getElementById('blocoEsqueciSenha');
+  const blocoRecuperacaoEnviada = document.getElementById('blocoRecuperacaoEnviada');
+  const blocoRedefinirSenha = document.getElementById('blocoRedefinirSenha');
 
   document.getElementById('linkIrParaCadastro').addEventListener('click', (e) => {
     e.preventDefault();
@@ -2388,6 +2531,18 @@
   // =================================================================
   async function iniciar(){
     sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // Supabase dispara o evento PASSWORD_RECOVERY quando a página é
+    // aberta a partir do link de recuperação de senha do e-mail.
+    sb.auth.onAuthStateChange((event) => {
+      if(event === 'PASSWORD_RECOVERY'){
+        loadingScreen.style.display = 'none';
+        telaLogin.style.display = 'grid';
+        [blocoLoginForm, blocoCadastroForm, blocoConviteForm, blocoCadastroSucesso, blocoEsqueciSenha, blocoRecuperacaoEnviada]
+          .forEach(b => b.style.display = 'none');
+        blocoRedefinirSenha.style.display = 'block';
+      }
+    });
 
     const { data: { session } } = await sb.auth.getSession();
     if(session){
