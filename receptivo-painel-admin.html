@@ -1750,6 +1750,16 @@
   // =================================================================
   const mapaSituacaoLabel = { aberta: 'Aberta', em_andamento: 'Em andamento', resolvida: 'Resolvida', cancelada: 'Cancelada' };
 
+  // Formata "YYYY-MM-DD" (ou "YYYY-MM-DDTHH:mm:ss...") direto da string,
+  // sem passar por new Date()/toLocaleDateString — isso evita o bug
+  // clássico de fuso horário em que uma data sem hora (interpretada como
+  // meia-noite UTC) "recua" um dia ao exibir no horário do Brasil.
+  function formatarDataOcorrenciaSemFuso(dataStr){
+    if(!dataStr) return '—';
+    const [ano, mes, dia] = dataStr.slice(0, 10).split('-');
+    return `${dia}/${mes}/${ano}`;
+  }
+
   function renderTabelaOcorrencias(){
     const setorFiltro = document.getElementById('filtroOcorrenciaSetor').value;
     const situacaoFiltro = document.getElementById('filtroOcorrenciaSituacao').value;
@@ -1777,7 +1787,7 @@
     vazio.style.display = 'none';
 
     corpo.innerHTML = filtradas.map(o => {
-      const dataFormatada = o.data_ocorrencia ? new Date(o.data_ocorrencia).toLocaleDateString('pt-BR') : '—';
+      const dataFormatada = formatarDataOcorrenciaSemFuso(o.data_ocorrencia);
       return `
         <tr data-ocorrencia-id="${o.id}">
           <td class="celula-reserva">${o.reserva || '—'}</td>
