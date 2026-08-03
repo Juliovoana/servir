@@ -2139,7 +2139,27 @@
           </div>
           <div class="field-group"><label>Taxa de cadeirinha (R$, opcional)</label><input type="number" step="0.01" id="c_taxa_cadeirinha" value="${s.taxa_cadeirinha ?? ''}"></div>
         </div>
+        <div class="drawer-section">
+          <div class="drawer-section-title">Restrição de horário</div>
+          <p style="font-size:.78rem; color:var(--muted); margin-bottom:10px; line-height:1.5;">
+            Use isso pra travar reservas online em horários que o serviço não atende (ex: compartilhado
+            que só roda das 6h às 22h, seguindo o horário dos motoristas). Fica fora do ar só o
+            formulário público — o cliente é direcionado pro WhatsApp nesse caso.
+          </p>
+          <label class="check-valor-manual" style="margin-bottom:12px;">
+            <input type="checkbox" id="c_restricao_horario_ativa" ${s.restricao_horario_ativa ? 'checked' : ''}>
+            Bloquear reservas online num intervalo de horário
+          </label>
+          <div class="field-row" id="camposRestricaoHorario" style="${s.restricao_horario_ativa ? '' : 'display:none;'}">
+            <div class="field-group"><label>Não atende a partir de</label><input type="time" id="c_restricao_horario_inicio" value="${s.restricao_horario_inicio ? s.restricao_horario_inicio.slice(0,5) : '22:00'}"></div>
+            <div class="field-group"><label>Até</label><input type="time" id="c_restricao_horario_fim" value="${s.restricao_horario_fim ? s.restricao_horario_fim.slice(0,5) : '06:00'}"></div>
+          </div>
+        </div>
       `;
+
+      document.getElementById('c_restricao_horario_ativa').addEventListener('change', (e) => {
+        document.getElementById('camposRestricaoHorario').style.display = e.target.checked ? 'flex' : 'none';
+      });
 
       document.getElementById('btnEscolherImagem').addEventListener('click', () => {
         document.getElementById('c_imagem_arquivo').click();
@@ -2388,7 +2408,10 @@
           tarifa_chd: document.getElementById('c_tarifa_chd').value ? Number(document.getElementById('c_tarifa_chd').value) : null,
           idade_isencao: document.getElementById('c_idade_isencao').value ? parseInt(document.getElementById('c_idade_isencao').value, 10) : null,
           idade_tarifa_reduzida: document.getElementById('c_idade_tarifa_reduzida').value ? parseInt(document.getElementById('c_idade_tarifa_reduzida').value, 10) : null,
-          taxa_cadeirinha: document.getElementById('c_taxa_cadeirinha').value ? Number(document.getElementById('c_taxa_cadeirinha').value) : null
+          taxa_cadeirinha: document.getElementById('c_taxa_cadeirinha').value ? Number(document.getElementById('c_taxa_cadeirinha').value) : null,
+          restricao_horario_ativa: document.getElementById('c_restricao_horario_ativa').checked,
+          restricao_horario_inicio: document.getElementById('c_restricao_horario_ativa').checked ? document.getElementById('c_restricao_horario_inicio').value : null,
+          restricao_horario_fim: document.getElementById('c_restricao_horario_ativa').checked ? document.getElementById('c_restricao_horario_fim').value : null
         };
 
         if(!payload.nome){ throw new Error('Nome é obrigatório.'); }

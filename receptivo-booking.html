@@ -371,6 +371,28 @@
     </main>
   </div>
 
+  <div class="step" id="step5">
+    <main class="step2-main" style="padding-top:60px;">
+      <div class="section-head" style="text-align:center;">
+        <span class="eyebrow">Fora do horário aceito online</span>
+        <h1 style="max-width:none;">Esse horário precisa ser combinado direto com a gente</h1>
+        <p class="subhead" id="mensagemBloqueio" style="margin:12px auto 0; max-width:440px;">—</p>
+      </div>
+
+      <div style="max-width:420px; margin:28px auto 0; text-align:center;">
+        <a href="#" id="btnWhatsappBloqueio" target="_blank" rel="noopener"
+           style="display:inline-flex; align-items:center; gap:8px; background:#25D366; color:#fff; text-decoration:none; font-family:'JetBrains Mono', monospace; font-weight:700; font-size:.8rem; letter-spacing:.06em; text-transform:uppercase; padding:12px 20px; border-radius:8px;">
+          Falar no WhatsApp
+        </a>
+        <p style="font-size:.72rem; color:rgba(18,38,30,.5); margin-top:8px;">Se o WhatsApp não abriu automaticamente, use o botão acima.</p>
+      </div>
+
+      <div style="text-align:center; margin-top:20px;">
+        <button type="button" id="btnVoltarDoBloqueio" style="background:none; border:none; color:rgba(18,38,30,.55); font-size:.8rem; text-decoration:underline; cursor:pointer; font-family:'Inter', sans-serif;">← Voltar e escolher outro horário</button>
+      </div>
+    </main>
+  </div>
+
   <!-- Barra de resumo/ação, compartilhada entre etapas 2 e 3 -->
   <div class="summary-bar" id="summaryBar">
     <div class="summary-inner">
@@ -445,6 +467,9 @@
       stampClass: row.sob_consulta ? '' : 'gold',
       stampLine1: row.sob_consulta ? 'Sob' : ('R$' + Number(row.tarifa_adt).toFixed(0)),
       stampLine2: row.sob_consulta ? 'Consulta' : (row.tipo_cobranca === 'por_pessoa' ? '/ pessoa' : '/ reserva'),
+      restricaoHorarioAtiva: !!row.restricao_horario_ativa,
+      restricaoHorarioInicio: row.restricao_horario_inicio ? row.restricao_horario_inicio.slice(0, 5) : null,
+      restricaoHorarioFim: row.restricao_horario_fim ? row.restricao_horario_fim.slice(0, 5) : null,
       note: construirNotaServico(row)
     };
   }
@@ -655,7 +680,7 @@
   // =================================================================
   // TRANSIÇÃO ENTRE ETAPAS
   // =================================================================
-  const steps = { 1: document.getElementById('step1'), 2: document.getElementById('step2'), 3: document.getElementById('step3'), 4: document.getElementById('step4') };
+  const steps = { 1: document.getElementById('step1'), 2: document.getElementById('step2'), 3: document.getElementById('step3'), 4: document.getElementById('step4'), 5: document.getElementById('step5') };
   const summaryBar = document.getElementById('summaryBar');
   const btnBarAction = document.getElementById('btnBarAction');
   const btnBarBack = document.getElementById('btnBarBack');
@@ -897,6 +922,14 @@
         avisoDatas.textContent = '⚠ A partida do voo não pode ser antes da chegada.';
         return;
       }
+
+      const servicoAtual = servicosData.find(s => s.key === servicoSelecionadoKey);
+      const mensagemBloqueio = validarRegrasDeAgendamento(chegadaVoo, servicoAtual);
+      if(mensagemBloqueio){
+        mostrarBloqueioAgendamento(mensagemBloqueio, servicoAtual);
+        return;
+      }
+
       finalizarReserva();
     }
   });
@@ -943,6 +976,57 @@
     const qtd = document.querySelectorAll('#companionsList .companion').length;
     return semAcompanhante || qtd > 0;
   }
+
+  // -----------------------------------------------------------------
+  // Travas de agendamento:
+  // 1) Antecedência mínima de 48h pra qualquer reserva feita por aqui.
+  // 2) Janela de horário bloqueada por serviço (configurável no
+  //    cadastro do serviço — ex: 22h às 6h, seguindo o horário dos
+  //    motoristas do compartilhado; pode mudar conforme a época do ano).
+  // Nos dois casos, direciona pro WhatsApp em vez de deixar reservar.
+  // -----------------------------------------------------------------
+  function horarioDentroDaJanelaBloqueada(horaMinuto, inicio, fim){
+    if(!inicio || !fim || inicio === fim) return false;
+    if(inicio < fim) return horaMinuto >= inicio && horaMinuto < fim;
+    return horaMinuto >= inicio || horaMinuto < fim; // janela cruza a meia-noite
+  }
+
+  function validarRegrasDeAgendamento(dataHrChegadaStr, servico){
+    if(!dataHrChegadaStr) return null;
+    const dataChegada = new Date(dataHrChegadaStr);
+    if(isNaN(dataChegada.getTime())) return null;
+
+    const horasAteChegada = (dataChegada - new Date()) / (1000 * 60 * 60);
+    if(horasAteChegada < 48){
+      return 'Reservas com menos de 48 horas de antecedência não podem ser feitas por aqui. Fale com a gente pelo WhatsApp que a gente vê o que dá pra fazer.';
+    }
+
+    if(servico && servico.restricaoHorarioAtiva){
+      const horaMinuto = dataHrChegadaStr.slice(11, 16);
+      if(horarioDentroDaJanelaBloqueada(horaMinuto, servico.restricaoHorarioInicio, servico.restricaoHorarioFim)){
+        return `Esse serviço não atende entre ${servico.restricaoHorarioInicio} e ${servico.restricaoHorarioFim} (segue o horário dos motoristas do compartilhado). Fale com a gente pelo WhatsApp que a gente vê o que dá pra fazer.`;
+      }
+    }
+
+    return null;
+  }
+
+  function mostrarBloqueioAgendamento(mensagem, servico){
+    document.getElementById('mensagemBloqueio').textContent = mensagem;
+
+    const mensagemWhats = [
+      `Olá! Tenho interesse em um transfer${servico ? ' (' + servico.nome + ')' : ''} pra ${hotelAtual.nome},`,
+      `mas o horário que preciso está fora do prazo/horário aceito pelo formulário online.`,
+      `Podem me ajudar?`
+    ].join(' ');
+    const linkWhats = `https://wa.me/${agenciaAtual.whatsapp_contato}?text=${encodeURIComponent(mensagemWhats)}`;
+    document.getElementById('btnWhatsappBloqueio').href = linkWhats;
+    window.open(linkWhats, '_blank');
+
+    goToStep(5);
+  }
+
+  document.getElementById('btnVoltarDoBloqueio').addEventListener('click', () => goToStep(3));
 
   async function finalizarReserva(){
     const servico = servicosData.find(s => s.key === servicoSelecionadoKey);
