@@ -20,7 +20,7 @@
   body{ font-family:'Inter', -apple-system, sans-serif; background:var(--bg); color:var(--ink); min-height:100vh; -webkit-font-smoothing:antialiased; }
   .mono{ font-family:'JetBrains Mono', monospace; font-variant-numeric:tabular-nums; }
 
-  .topo{ background:linear-gradient(155deg, var(--brand) 0%, #143327 100%); color:#fff; padding:28px 20px 40px; text-align:center; }
+  .topo{ background:linear-gradient(155deg, var(--brand) 0%, var(--brand-escuro, #143327) 100%); color:#fff; padding:28px 20px 40px; text-align:center; background-size:cover; background-position:center; }
   .topo .brand-mark{ display:flex; align-items:center; justify-content:center; gap:9px; font-weight:700; font-size:1.05rem; margin-bottom:14px; }
   .topo h1{ font-size:1.25rem; font-weight:700; letter-spacing:-.01em; }
   .topo .sub{ font-size:.85rem; color:rgba(255,255,255,.7); margin-top:4px; }
@@ -175,6 +175,47 @@
     document.getElementById('estadoErro').style.display = 'block';
   }
 
+  // -----------------------------------------------------------------
+  // Personalização por unidade: se não tiver nada configurado, não faz
+  // nada aqui (mantém o verde padrão do CSS).
+  // -----------------------------------------------------------------
+  function clarearCor(hex, percentual){
+    hex = (hex || '').replace('#', '');
+    if(hex.length !== 6) return hex;
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+    const misturar = (canal) => Math.round(canal + (255 - canal) * percentual);
+    return '#' + [misturar(r), misturar(g), misturar(b)].map(v => v.toString(16).padStart(2, '0')).join('');
+  }
+
+  function escurecerCor(hex, percentual){
+    hex = (hex || '').replace('#', '');
+    if(hex.length !== 6) return hex;
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+    const escurecer = (canal) => Math.round(canal * (1 - percentual));
+    return '#' + [escurecer(r), escurecer(g), escurecer(b)].map(v => v.toString(16).padStart(2, '0')).join('');
+  }
+
+  async function carregarPersonalizacao(){
+    const { data, error } = await sb.from('servir_unidades_negocio').select('cor_principal, imagem_fundo_url').eq('id', unidadeNegocioId).single();
+    if(error || !data) return;
+
+    if(data.cor_principal){
+      const raiz = document.documentElement.style;
+      raiz.setProperty('--brand', data.cor_principal);
+      raiz.setProperty('--brand-2', clarearCor(data.cor_principal, 0.2));
+      raiz.setProperty('--brand-soft', clarearCor(data.cor_principal, 0.92));
+      raiz.setProperty('--brand-escuro', escurecerCor(data.cor_principal, 0.35));
+    }
+    if(data.imagem_fundo_url){
+      const topo = document.querySelector('.topo');
+      topo.style.backgroundImage = `linear-gradient(155deg, rgba(15,43,34,.72) 0%, rgba(15,43,34,.55) 100%), url('${data.imagem_fundo_url}')`;
+    }
+  }
+
   async function carregarCliente(){
     const params = new URLSearchParams(window.location.search);
     clienteId = params.get('cliente');
@@ -196,6 +237,7 @@
     document.getElementById('nomeClientePill').textContent = info.cliente_nome;
     document.title = 'Rol de Roupas — ' + (info.cliente_nome || '');
 
+    carregarPersonalizacao();
     await carregarItensCatalogo();
 
     document.getElementById('estadoCarregando').style.display = 'none';

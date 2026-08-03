@@ -472,6 +472,38 @@
     return { hotelId: params.get('hotel') };
   }
 
+  // -----------------------------------------------------------------
+  // Personalização por unidade: se não tiver nada configurado, não faz
+  // nada aqui (mantém o verde padrão). A cor troca --palm/--palm-2 (usadas
+  // em botões, títulos, o cartão de embarque etc.); a imagem substitui
+  // o fundo verde da faixa "board" do topo.
+  // -----------------------------------------------------------------
+  function clarearCor(hex, percentual){
+    hex = (hex || '').replace('#', '');
+    if(hex.length !== 6) return hex;
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+    const misturar = (canal) => Math.round(canal + (255 - canal) * percentual);
+    return '#' + [misturar(r), misturar(g), misturar(b)].map(v => v.toString(16).padStart(2, '0')).join('');
+  }
+
+  function aplicarPersonalizacao(corPrincipal, imagemFundoUrl){
+    if(corPrincipal){
+      const raiz = document.documentElement.style;
+      raiz.setProperty('--palm', corPrincipal);
+      raiz.setProperty('--palm-2', clarearCor(corPrincipal, 0.2));
+    }
+    if(imagemFundoUrl){
+      const board = document.querySelector('.board');
+      if(board){
+        board.style.backgroundImage = `linear-gradient(rgba(18,38,30,.78), rgba(18,38,30,.68)), url('${imagemFundoUrl}')`;
+        board.style.backgroundSize = 'cover';
+        board.style.backgroundPosition = 'center';
+      }
+    }
+  }
+
   async function carregarDadosIniciais(){
     const { hotelId } = lerParametrosUrl();
 
@@ -497,6 +529,7 @@
 
     hotelAtual = mapearHotel(hotelRes.data);
     agenciaAtual = { id: agenciaRes.data.id, nome: agenciaRes.data.nome, whatsapp_contato: agenciaRes.data.whatsapp_contato };
+    aplicarPersonalizacao(agenciaRes.data.cor_principal, agenciaRes.data.imagem_fundo_url);
     servicosData = servicosRes.data.map(mapearServico);
   }
 
