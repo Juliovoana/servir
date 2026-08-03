@@ -79,6 +79,7 @@
 
   .form-erro{ display:none; margin-top:14px; font-size:.85rem; color:var(--danger); background:var(--danger-soft); border-radius:8px; padding:11px 13px; }
   .form-erro.show{ display:block; }
+  .cpf-aviso{ margin-top:14px; font-size:.85rem; color:var(--brand-2); background:var(--brand-soft); border-radius:8px; padding:11px 13px; }
 
   .central{ text-align:center; padding:30px 10px; }
   .central .icone{ font-size:2.6rem; margin-bottom:14px; }
@@ -132,6 +133,8 @@
 
   let todasFuncoes = [];
   let fotoUrlEnviada = '';
+  let situacaoCpf = null; // 'novo' | 'pendente'
+  let cpfNormalizado = '';
 
   function mostrarErroCarga(msg){
     cardConteudo.innerHTML = `
@@ -171,13 +174,120 @@
     renderFormulario();
   }
 
+  // -----------------------------------------------------------------
+  // CPF: máscara e validação de dígito verificador
+  // -----------------------------------------------------------------
+  function formatarCpfInput(valor){
+    let v = valor.replace(/\D/g, '').slice(0, 11);
+    if(v.length > 9) v = v.replace(/(\d{3})(\d{3})(\d{3})(\d{1,2})/, '$1.$2.$3-$4');
+    else if(v.length > 6) v = v.replace(/(\d{3})(\d{3})(\d{1,3})/, '$1.$2.$3');
+    else if(v.length > 3) v = v.replace(/(\d{3})(\d{1,3})/, '$1.$2');
+    return v;
+  }
+
+  function validarCPF(cpfComMascara){
+    const cpf = cpfComMascara.replace(/\D/g, '');
+    if(cpf.length !== 11) return false;
+    if(/^(\d)\1{10}$/.test(cpf)) return false;
+    let soma = 0;
+    for(let i = 0; i < 9; i++) soma += parseInt(cpf[i], 10) * (10 - i);
+    let resto = (soma * 10) % 11;
+    if(resto === 10 || resto === 11) resto = 0;
+    if(resto !== parseInt(cpf[9], 10)) return false;
+    soma = 0;
+    for(let i = 0; i < 10; i++) soma += parseInt(cpf[i], 10) * (11 - i);
+    resto = (soma * 10) % 11;
+    if(resto === 10 || resto === 11) resto = 0;
+    if(resto !== parseInt(cpf[10], 10)) return false;
+    return true;
+  }
+
+  // -----------------------------------------------------------------
+  // Etapa 1: CPF primeiro — antes de mostrar o resto do formulário,
+  // confere se esse CPF já tem candidatura/cadastro nesta empresa.
+  // -----------------------------------------------------------------
   function renderFormulario(){
+    cardConteudo.innerHTML = `
+      <div class="secao" id="secaoCpf">
+        <div class="secao-titulo">Antes de começar</div>
+        <div class="field-group">
+          <label>Seu CPF</label>
+          <input type="text" id="f_cpf" placeholder="000.000.000-00" maxlength="14">
+        </div>
+        <button class="btn-primary" id="btnVerificarCpf">Continuar</button>
+        <div class="form-erro" id="cpfErro"></div>
+        <div class="cpf-aviso" id="cpfAviso" style="display:none;"></div>
+      </div>
+      <div id="restoFormulario"></div>
+    `;
+
+    const inputCpf = document.getElementById('f_cpf');
+    inputCpf.addEventListener('input', () => { inputCpf.value = formatarCpfInput(inputCpf.value); });
+    inputCpf.addEventListener('keydown', e => { if(e.key === 'Enter') verificarCpf(); });
+    document.getElementById('btnVerificarCpf').addEventListener('click', verificarCpf);
+    inputCpf.focus();
+  }
+
+  async function verificarCpf(){
+    const cpfDigitado = document.getElementById('f_cpf').value;
+    const cpfErro = document.getElementById('cpfErro');
+    const cpfAviso = document.getElementById('cpfAviso');
+    cpfErro.classList.remove('show');
+    cpfAviso.style.display = 'none';
+
+    if(!validarCPF(cpfDigitado)){
+      cpfErro.textContent = 'CPF inválido. Confira os números digitados.';
+      cpfErro.classList.add('show');
+      return;
+    }
+
+    const btn = document.getElementById('btnVerificarCpf');
+    btn.disabled = true;
+    btn.textContent = 'Verificando...';
+
+    try{
+      cpfNormalizado = cpfDigitado.replace(/\D/g, '');
+      const { data: situacao, error } = await sb.rpc('fn_staff_verificar_cpf_candidatura', {
+        p_unidade_negocio_id: unidadeId,
+        p_cpf: cpfNormalizado
+      });
+      if(error) throw new Error(error.message);
+
+      if(situacao === 'ativo'){
+        cpfAviso.style.display = 'block';
+        cpfAviso.textContent = 'Já existe um cadastro ativo com esse CPF nesta empresa. Se precisar alterar alguma informação, entre em contato diretamente com a empresa.';
+        btn.disabled = true;
+        return;
+      }
+
+      situacaoCpf = situacao; // 'novo' ou 'pendente'
+      document.getElementById('f_cpf').disabled = true;
+      btn.style.display = 'none';
+
+      if(situacao === 'pendente'){
+        cpfAviso.style.display = 'block';
+        cpfAviso.textContent = 'Encontramos uma candidatura sua ainda em análise nesta empresa. Preencha os dados abaixo pra atualizá-la.';
+      }
+
+      renderRestoFormulario();
+    } catch(erro){
+      cpfErro.textContent = 'Erro ao verificar CPF: ' + erro.message;
+      cpfErro.classList.add('show');
+      btn.disabled = false;
+      btn.textContent = 'Continuar';
+    }
+  }
+
+  // -----------------------------------------------------------------
+  // Etapa 2: resto do formulário, liberado só depois do CPF conferido
+  // -----------------------------------------------------------------
+  function renderRestoFormulario(){
     const optionsFuncaoPrincipal = todasFuncoes.map(f => `<option value="${f.id}">${f.nome}</option>`).join('');
     const checkboxesFuncoesSecundarias = todasFuncoes.map(f => `
       <label class="check-inline"><input type="checkbox" class="check-funcao-secundaria" value="${f.id}"> ${f.nome}</label>
     `).join('');
 
-    cardConteudo.innerHTML = `
+    document.getElementById('restoFormulario').innerHTML = `
       <div class="secao">
         <div class="secao-titulo">Sua foto</div>
         <div class="image-upload-box">
@@ -318,35 +428,33 @@
     btn.textContent = 'Enviando...';
 
     try{
-      const novoProfissionalId = crypto.randomUUID();
-      const payload = {
-        id: novoProfissionalId,
-        unidade_negocio_id: unidadeId,
-        nome_completo: nomeCompleto,
-        telefone: telefone || null,
-        whatsapp: whatsapp || null,
-        email: email || null,
-        endereco: endereco || null,
-        pcd: pcd,
-        foto_url: fotoUrlEnviada || null,
-        funcao_principal_id: funcaoPrincipalId,
-        observacoes: observacoes || null
-        // "ativo" não é enviado de propósito: o cadastro nasce inativo
-        // (valor padrão da coluna) até o admin revisar e aprovar.
-      };
-
-      // Sem .select() de propósito: pedir o registro de volta exigiria
-      // permissão de LEITURA pra "anon" nesta tabela, o que exporia CPF/
-      // endereço/telefone de candidatos pra qualquer requisição anônima.
-      // Como o ID já foi gerado aqui, não precisamos ler de volta nada.
-      const { error: erroInsert } = await sb.from('staff_profissionais').insert(payload);
-      if(erroInsert) throw new Error(erroInsert.message);
-
       const funcoesSecundarias = [...document.querySelectorAll('.check-funcao-secundaria:checked')].map(el => el.value);
-      if(funcoesSecundarias.length > 0){
-        await sb.from('staff_profissional_funcoes').insert(
-          funcoesSecundarias.map(funcaoId => ({ unidade_negocio_id: unidadeId, profissional_id: novoProfissionalId, funcao_id: funcaoId }))
-        );
+
+      // Passa pela função do banco (não insert direto): ela decide
+      // sozinha se é candidatura nova, atualização de uma pendente, ou
+      // se já existe cadastro ativo com esse CPF (nesse caso não altera
+      // nada e devolve 'ativo').
+      const { data: resultado, error: erroSalvar } = await sb.rpc('fn_staff_salvar_candidatura', {
+        p_unidade_negocio_id: unidadeId,
+        p_cpf: cpfNormalizado,
+        p_nome_completo: nomeCompleto,
+        p_telefone: telefone || null,
+        p_whatsapp: whatsapp || null,
+        p_email: email || null,
+        p_endereco: endereco || null,
+        p_foto_url: fotoUrlEnviada || null,
+        p_funcao_principal_id: funcaoPrincipalId,
+        p_observacoes: observacoes || null,
+        p_pcd: pcd,
+        p_funcoes_secundarias: funcoesSecundarias
+      });
+      if(erroSalvar) throw new Error(erroSalvar.message);
+
+      if(resultado === 'ativo'){
+        mostrarErroFormulario('Já existe um cadastro ativo com esse CPF nesta empresa. Entre em contato diretamente com a empresa pra alterar seus dados.');
+        btn.disabled = false;
+        btn.textContent = 'Enviar candidatura';
+        return;
       }
 
       cardConteudo.innerHTML = `
