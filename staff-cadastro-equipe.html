@@ -305,10 +305,7 @@
       <div class="secao">
         <div class="secao-titulo">Seus dados</div>
         <div class="field-group"><label>Nome completo</label><input type="text" id="f_nome_completo" placeholder="Seu nome completo"></div>
-        <div class="field-row">
-          <div class="field-group"><label>Telefone</label><input type="text" id="f_telefone" placeholder="(00) 00000-0000"></div>
-          <div class="field-group"><label>WhatsApp</label><input type="text" id="f_whatsapp" placeholder="(00) 00000-0000"></div>
-        </div>
+        <div class="field-group"><label>WhatsApp</label><input type="text" id="f_whatsapp" placeholder="(00) 00000-0000"></div>
         <div class="field-group"><label>E-mail</label><input type="email" id="f_email" placeholder="seu@email.com"></div>
         <div class="field-group"><label>Cidade / endereço</label><input type="text" id="f_endereco" placeholder="Onde você mora"></div>
         <label class="check-inline"><input type="checkbox" id="f_pcd"> Sou Pessoa com Deficiência (PCD)</label>
@@ -409,7 +406,6 @@
 
   async function enviarCandidatura(){
     const nomeCompleto = document.getElementById('f_nome_completo').value.trim();
-    const telefone = document.getElementById('f_telefone').value.trim();
     const whatsapp = document.getElementById('f_whatsapp').value.trim();
     const email = document.getElementById('f_email').value.trim();
     const endereco = document.getElementById('f_endereco').value.trim();
@@ -420,7 +416,7 @@
     document.getElementById('formErro').classList.remove('show');
 
     if(!nomeCompleto){ mostrarErroFormulario('Informe seu nome completo.'); return; }
-    if(!telefone && !whatsapp){ mostrarErroFormulario('Informe pelo menos um telefone ou WhatsApp de contato.'); return; }
+    if(!whatsapp){ mostrarErroFormulario('Informe seu WhatsApp de contato.'); return; }
     if(!funcaoPrincipalId){ mostrarErroFormulario('Selecione sua principal habilidade.'); return; }
 
     const btn = document.getElementById('btnEnviarCandidatura');
@@ -438,7 +434,7 @@
         p_unidade_negocio_id: unidadeId,
         p_cpf: cpfNormalizado,
         p_nome_completo: nomeCompleto,
-        p_telefone: telefone || null,
+        p_telefone: null,
         p_whatsapp: whatsapp || null,
         p_email: email || null,
         p_endereco: endereco || null,
