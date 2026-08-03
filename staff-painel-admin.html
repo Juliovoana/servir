@@ -366,6 +366,10 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
           <span class="nav-label">Permissões</span>
         </button>
+        <button class="nav-item tab-app-btn" data-app-tab="personalizacao" id="tabPersonalizacao" style="display:none;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>
+          <span class="nav-label">Personalização</span>
+        </button>
         <div class="sidebar-spacer"></div>
         <button class="btn-sair" id="btnConvidarColaborador" style="display:none; margin-bottom:8px;">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="17" y1="11" x2="23" y2="11"/></svg>
@@ -494,6 +498,48 @@
               já tem acesso de Administrador por padrão, mesmo sem aparecer selecionado aqui.
             </p>
             <div class="lista-cadastro" id="listaUsuariosPapeis"></div>
+          </div>
+
+          <!-- ================= PERSONALIZAÇÃO ================= -->
+          <div class="panel-app" id="app-panel-personalizacao">
+            <p style="font-size:.85rem; color:var(--muted); margin-bottom:18px; max-width:520px;">
+              Personalize as cores e o fundo que aparecem pra sua unidade, tanto aqui no painel quanto no formulário
+              público "Faça parte da nossa equipe". Se deixar em branco, usa o padrão verde da Servir.
+            </p>
+
+            <div class="drawer-section" style="max-width:480px;">
+              <div class="drawer-section-title">Cor principal</div>
+              <div class="field-group">
+                <label>Cor</label>
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <input type="color" id="p_cor_principal" value="#1B4332" style="width:52px; height:40px; padding:2px; border-radius:8px; border:1.5px solid var(--border); cursor:pointer;">
+                  <input type="text" id="p_cor_principal_hex" placeholder="#1B4332" maxlength="7" style="flex:1;">
+                </div>
+              </div>
+            </div>
+
+            <div class="drawer-section" style="max-width:480px;">
+              <div class="drawer-section-title">Imagem de fundo</div>
+              <div class="field-group">
+                <div class="image-preview-wrap" style="width:100%; height:140px; border-radius:12px;">
+                  <img id="previewFundoPersonalizacao" src="" style="display:none; width:100%; height:100%; object-fit:cover;">
+                  <div class="image-preview-placeholder" id="placeholderFundoPersonalizacao">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+                  </div>
+                </div>
+                <div style="display:flex; gap:8px; margin-top:10px;">
+                  <button type="button" class="btn-upload-imagem" id="btnEscolherFundoPersonalizacao" style="flex:1;">Escolher imagem</button>
+                  <button type="button" class="btn-upload-imagem" id="btnRemoverFundoPersonalizacao" style="flex:1;">Remover imagem</button>
+                </div>
+                <input type="file" id="p_fundo_arquivo" accept="image/*" style="display:none;">
+                <input type="hidden" id="p_imagem_fundo_url" value="">
+              </div>
+            </div>
+
+            <div style="max-width:480px; display:flex; gap:8px;">
+              <button class="btn-novo" id="btnSalvarPersonalizacao" style="flex:1;">Salvar personalização</button>
+              <button class="btn-upload-imagem" id="btnRestaurarPadraoPersonalizacao">Restaurar padrão</button>
+            </div>
           </div>
         </main>
       </div>
@@ -914,7 +960,7 @@
   // =================================================================
   // TABS DO APP
   // =================================================================
-  const titulosAba = { dashboard: 'Dashboard', profissionais: 'Profissionais', funcoes: 'Funções', clientes: 'Clientes', permissoes: 'Permissões' };
+  const titulosAba = { dashboard: 'Dashboard', profissionais: 'Profissionais', funcoes: 'Funções', clientes: 'Clientes', permissoes: 'Permissões', personalizacao: 'Personalização' };
   document.querySelectorAll('.tab-app-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.tab-app-btn').forEach(b => b.classList.remove('active'));
@@ -941,6 +987,7 @@
     document.getElementById('telaSemAcesso').style.display = 'none';
     appEl.style.display = 'block';
     atualizarUiPapel();
+    await carregarPersonalizacao();
 
     await Promise.all([carregarFuncoes(), carregarClientesStaff()]);
     await carregarProfissionais();
@@ -948,9 +995,11 @@
 
     if(papelStaffAtual === 'administrador'){
       document.getElementById('tabPermissoes').style.display = 'flex';
+      document.getElementById('tabPersonalizacao').style.display = 'flex';
       await carregarUsuariosPapeis();
     } else {
       document.getElementById('tabPermissoes').style.display = 'none';
+      document.getElementById('tabPersonalizacao').style.display = 'none';
     }
   }
 
@@ -1348,6 +1397,156 @@
   // CPF: máscara e validação de dígito verificador (mesmo padrão do
   // formulário público de candidatura)
   // -----------------------------------------------------------------
+  // -----------------------------------------------------------------
+  // Personalização visual por unidade: cor principal e/ou imagem de
+  // fundo. Se a unidade não tiver nada configurado, não faz nada aqui
+  // (mantém o verde padrão do CSS).
+  // -----------------------------------------------------------------
+  function clarearCor(hex, percentual){
+    hex = (hex || '').replace('#', '');
+    if(hex.length !== 6) return hex;
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+    const misturar = (canal) => Math.round(canal + (255 - canal) * percentual);
+    return '#' + [misturar(r), misturar(g), misturar(b)].map(v => v.toString(16).padStart(2, '0')).join('');
+  }
+
+  function escurecerCor(hex, percentual){
+    hex = (hex || '').replace('#', '');
+    if(hex.length !== 6) return hex;
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+    const escurecer = (canal) => Math.round(canal * (1 - percentual));
+    return '#' + [escurecer(r), escurecer(g), escurecer(b)].map(v => v.toString(16).padStart(2, '0')).join('');
+  }
+
+  function aplicarPersonalizacao(corPrincipal, imagemFundoUrl){
+    if(corPrincipal){
+      const raiz = document.documentElement.style;
+      raiz.setProperty('--brand', corPrincipal);
+      raiz.setProperty('--brand-2', clarearCor(corPrincipal, 0.2));
+      raiz.setProperty('--brand-soft', clarearCor(corPrincipal, 0.92));
+      raiz.setProperty('--brand-escuro', escurecerCor(corPrincipal, 0.35));
+    }
+    if(imagemFundoUrl){
+      const sidebar = document.querySelector('.sidebar');
+      sidebar.style.backgroundImage = `linear-gradient(180deg, rgba(15,43,34,.82) 0%, rgba(15,43,34,.7) 100%), url('${imagemFundoUrl}')`;
+      sidebar.style.backgroundSize = 'cover';
+      sidebar.style.backgroundPosition = 'center';
+    }
+  }
+
+  let personalizacaoAtual = { cor_principal: null, imagem_fundo_url: null };
+
+  async function carregarPersonalizacao(){
+    const { data, error } = await sb.from('servir_unidades_negocio').select('cor_principal, imagem_fundo_url').eq('id', agenciaId).single();
+    if(error || !data) return;
+    personalizacaoAtual = data;
+    aplicarPersonalizacao(data.cor_principal, data.imagem_fundo_url);
+
+    const inputCor = document.getElementById('p_cor_principal');
+    const inputCorHex = document.getElementById('p_cor_principal_hex');
+    if(inputCor && data.cor_principal){
+      inputCor.value = data.cor_principal;
+      inputCorHex.value = data.cor_principal;
+    }
+    if(data.imagem_fundo_url){
+      document.getElementById('p_imagem_fundo_url').value = data.imagem_fundo_url;
+      const preview = document.getElementById('previewFundoPersonalizacao');
+      if(preview){
+        preview.src = data.imagem_fundo_url;
+        preview.style.display = 'block';
+        document.getElementById('placeholderFundoPersonalizacao').style.display = 'none';
+      }
+    }
+  }
+
+  async function enviarImagemFundoPersonalizacao(arquivo){
+    const btn = document.getElementById('btnEscolherFundoPersonalizacao');
+    const textoOriginal = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = 'Enviando...';
+    try{
+      const blobComprimido = await comprimirImagem(arquivo, 1600, 0.75);
+      const caminho = `${agenciaId}/fundo-${Date.now()}.jpg`;
+
+      const { error: erroUpload } = await sb.storage
+        .from('servir-personalizacao')
+        .upload(caminho, blobComprimido, { upsert: true, contentType: 'image/jpeg' });
+      if(erroUpload) throw new Error(erroUpload.message);
+
+      const { data } = sb.storage.from('servir-personalizacao').getPublicUrl(caminho);
+      document.getElementById('p_imagem_fundo_url').value = data.publicUrl;
+      const preview = document.getElementById('previewFundoPersonalizacao');
+      preview.src = data.publicUrl;
+      preview.style.display = 'block';
+      document.getElementById('placeholderFundoPersonalizacao').style.display = 'none';
+    } catch(erro){
+      alert('Erro ao enviar imagem: ' + erro.message);
+    } finally{
+      btn.disabled = false;
+      btn.textContent = textoOriginal;
+    }
+  }
+
+  document.getElementById('p_cor_principal').addEventListener('input', (e) => {
+    document.getElementById('p_cor_principal_hex').value = e.target.value;
+  });
+  document.getElementById('p_cor_principal_hex').addEventListener('input', (e) => {
+    if(/^#[0-9a-fA-F]{6}$/.test(e.target.value)) document.getElementById('p_cor_principal').value = e.target.value;
+  });
+  document.getElementById('btnEscolherFundoPersonalizacao').addEventListener('click', () => document.getElementById('p_fundo_arquivo').click());
+  document.getElementById('p_fundo_arquivo').addEventListener('change', async (e) => {
+    const arquivo = e.target.files[0];
+    if(arquivo) await enviarImagemFundoPersonalizacao(arquivo);
+  });
+  document.getElementById('btnRemoverFundoPersonalizacao').addEventListener('click', () => {
+    document.getElementById('p_imagem_fundo_url').value = '';
+    document.getElementById('previewFundoPersonalizacao').style.display = 'none';
+    document.getElementById('placeholderFundoPersonalizacao').style.display = '';
+  });
+
+  document.getElementById('btnSalvarPersonalizacao').addEventListener('click', async () => {
+    const btn = document.getElementById('btnSalvarPersonalizacao');
+    const corHex = document.getElementById('p_cor_principal_hex').value.trim();
+    if(corHex && !/^#[0-9a-fA-F]{6}$/.test(corHex)){ alert('Cor inválida. Use o formato #RRGGBB.'); return; }
+
+    btn.disabled = true;
+    btn.textContent = 'Salvando...';
+    try{
+      const payload = {
+        cor_principal: corHex || null,
+        imagem_fundo_url: document.getElementById('p_imagem_fundo_url').value.trim() || null
+      };
+      const { error } = await sb.from('servir_unidades_negocio').update(payload).eq('id', agenciaId);
+      if(error) throw new Error(error.message);
+      personalizacaoAtual = payload;
+      aplicarPersonalizacao(payload.cor_principal, payload.imagem_fundo_url);
+      alert('Personalização salva!');
+    } catch(erro){
+      alert('Erro ao salvar: ' + erro.message);
+    } finally{
+      btn.disabled = false;
+      btn.textContent = 'Salvar personalização';
+    }
+  });
+
+  document.getElementById('btnRestaurarPadraoPersonalizacao').addEventListener('click', async () => {
+    if(!confirm('Restaurar as cores e o fundo padrão da Servir pra essa unidade?')) return;
+    const btn = document.getElementById('btnRestaurarPadraoPersonalizacao');
+    btn.disabled = true;
+    try{
+      const { error } = await sb.from('servir_unidades_negocio').update({ cor_principal: null, imagem_fundo_url: null }).eq('id', agenciaId);
+      if(error) throw new Error(error.message);
+      location.reload();
+    } catch(erro){
+      alert('Erro ao restaurar: ' + erro.message);
+      btn.disabled = false;
+    }
+  });
+
   function formatarCpfInput(valor){
     let v = (valor || '').replace(/\D/g, '').slice(0, 11);
     if(v.length > 9) v = v.replace(/(\d{3})(\d{3})(\d{3})(\d{1,2})/, '$1.$2.$3-$4');

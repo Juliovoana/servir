@@ -22,8 +22,9 @@
   @media (prefers-reduced-motion: reduce){ *{animation-duration:0.01ms !important; transition-duration:0.01ms !important;} }
 
   .topo{
-    background:linear-gradient(155deg, var(--brand) 0%, #143327 100%); color:#fff;
+    background:linear-gradient(155deg, var(--brand) 0%, var(--brand-escuro, #143327) 100%); color:#fff;
     padding:44px 20px 64px; text-align:center; position:relative; overflow:hidden;
+    background-size:cover; background-position:center;
   }
   .topo::after{ content:""; position:absolute; inset:0; background:radial-gradient(circle at 80% 0%, rgba(242,169,59,.2), transparent 55%); }
   .topo-conteudo{ position:relative; z-index:1; max-width:520px; margin:0 auto; }
@@ -145,6 +146,45 @@
       </div>`;
   }
 
+  // -----------------------------------------------------------------
+  // Personalização por unidade: se a unidade não tiver escolhido nada,
+  // não faz nada aqui (mantém o verde padrão do CSS). Se tiver, troca
+  // as variáveis de cor e/ou o fundo do topo pela imagem configurada.
+  // -----------------------------------------------------------------
+  function clarearCor(hex, percentual){
+    hex = (hex || '').replace('#', '');
+    if(hex.length !== 6) return hex;
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+    const misturar = (canal) => Math.round(canal + (255 - canal) * percentual);
+    return '#' + [misturar(r), misturar(g), misturar(b)].map(v => v.toString(16).padStart(2, '0')).join('');
+  }
+
+  function escurecerCor(hex, percentual){
+    hex = (hex || '').replace('#', '');
+    if(hex.length !== 6) return hex;
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+    const escurecer = (canal) => Math.round(canal * (1 - percentual));
+    return '#' + [escurecer(r), escurecer(g), escurecer(b)].map(v => v.toString(16).padStart(2, '0')).join('');
+  }
+
+  function aplicarPersonalizacao(corPrincipal, imagemFundoUrl){
+    if(corPrincipal){
+      const raiz = document.documentElement.style;
+      raiz.setProperty('--brand', corPrincipal);
+      raiz.setProperty('--brand-2', clarearCor(corPrincipal, 0.2));
+      raiz.setProperty('--brand-soft', clarearCor(corPrincipal, 0.92));
+      raiz.setProperty('--brand-escuro', escurecerCor(corPrincipal, 0.35));
+    }
+    if(imagemFundoUrl){
+      const topo = document.querySelector('.topo');
+      topo.style.backgroundImage = `linear-gradient(155deg, rgba(15,43,34,.72) 0%, rgba(15,43,34,.55) 100%), url('${imagemFundoUrl}')`;
+    }
+  }
+
   async function carregarFormulario(){
     if(!unidadeId){
       mostrarErroCarga('O link usado está incompleto. Peça o link correto pra empresa que você quer se candidatar.');
@@ -153,7 +193,7 @@
 
     const { data: unidade, error: erroUnidade } = await sb
       .from('servir_unidades_negocio')
-      .select('nome')
+      .select('nome, cor_principal, imagem_fundo_url')
       .eq('id', unidadeId)
       .single();
     if(erroUnidade || !unidade){
@@ -162,6 +202,7 @@
     }
 
     document.getElementById('tituloTopo').textContent = `Faça parte da equipe da ${unidade.nome}`;
+    aplicarPersonalizacao(unidade.cor_principal, unidade.imagem_fundo_url);
 
     const { data: funcoes, error: erroFuncoes } = await sb
       .from('staff_funcoes')
