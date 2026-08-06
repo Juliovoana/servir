@@ -70,14 +70,24 @@
   }
   .btn-sair-kiosk:hover{ background:rgba(255,255,255,.22); }
 
-  .kiosk-status-central{
-    position:absolute; left:50%; bottom:60px; transform:translateX(-50%); z-index:5;
-    background:rgba(0,0,0,.55); color:#fff; padding:12px 24px; border-radius:30px;
-    font-size:.92rem; font-weight:600; text-align:center; backdrop-filter:blur(4px);
-    display:flex; align-items:center; gap:10px;
+  .kiosk-acao-central{
+    position:absolute; left:50%; bottom:70px; transform:translateX(-50%); z-index:5;
+    display:flex; flex-direction:column; align-items:center; gap:14px;
   }
-  .dot-pulse{ width:9px; height:9px; border-radius:50%; background:var(--accent); animation:pulse 1.2s infinite; flex-shrink:0; }
-  @keyframes pulse{ 0%,100%{ opacity:1; } 50%{ opacity:.3; } }
+  .btn-bater-ponto{
+    display:flex; align-items:center; gap:10px; background:var(--accent); color:#3d2a06; border:none;
+    font-size:1.05rem; font-weight:700; padding:18px 34px; border-radius:40px; cursor:pointer;
+    box-shadow:0 10px 30px -8px rgba(242,169,59,.6); transition:transform .12s, background .15s;
+  }
+  .btn-bater-ponto:hover{ background:#E5991F; }
+  .btn-bater-ponto:active{ transform:scale(.97); }
+  .btn-bater-ponto:disabled{ opacity:.7; cursor:not-allowed; box-shadow:none; }
+  .btn-bater-ponto svg{ width:22px; height:22px; flex-shrink:0; }
+  .kiosk-status-texto{
+    background:rgba(0,0,0,.55); color:#fff; padding:9px 20px; border-radius:20px;
+    font-size:.85rem; font-weight:600; text-align:center; backdrop-filter:blur(4px); min-height:1.3em;
+  }
+  .kiosk-status-texto:empty{ display:none; }
 
   .kiosk-match-card{
     position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); z-index:10;
@@ -93,6 +103,21 @@
   .kiosk-match-card .tipo-tag.entrada{ background:var(--success-soft); color:var(--brand-2); }
   .kiosk-match-card .tipo-tag.saida{ background:#FEF3E2; color:var(--accent-ink); }
   .kiosk-match-card .horario{ font-family:'JetBrains Mono', monospace; font-size:.85rem; color:var(--muted); }
+
+  .kiosk-recentes{
+    position:absolute; left:20px; bottom:20px; z-index:5; width:240px; max-height:260px;
+    background:rgba(0,0,0,.55); border-radius:14px; padding:12px 14px; backdrop-filter:blur(4px);
+    display:none; flex-direction:column;
+  }
+  .kiosk-recentes.show{ display:flex; }
+  .kiosk-recentes-titulo{ color:rgba(255,255,255,.6); font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.04em; margin-bottom:8px; flex-shrink:0; }
+  .kiosk-recentes-lista{ overflow-y:auto; display:flex; flex-direction:column; gap:7px; }
+  .kiosk-recente-item{ display:flex; align-items:center; justify-content:space-between; gap:8px; font-size:.78rem; }
+  .kiosk-recente-nome{ color:#fff; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; flex:1; }
+  .kiosk-recente-tipo{ font-size:.66rem; font-weight:700; padding:2px 8px; border-radius:10px; flex-shrink:0; }
+  .kiosk-recente-tipo.entrada{ background:rgba(45,106,79,.5); color:#D9F0E4; }
+  .kiosk-recente-tipo.saida{ background:rgba(242,169,59,.35); color:#FCE8C4; }
+  .kiosk-recente-hora{ color:rgba(255,255,255,.55); font-family:'JetBrains Mono', monospace; font-size:.72rem; flex-shrink:0; }
 
   .modal-manual-overlay{
     position:fixed; inset:0; background:rgba(0,0,0,.65); z-index:20; display:none;
@@ -200,9 +225,17 @@
       </div>
     </div>
 
-    <div class="kiosk-status-central" id="statusCentral">
-      <span class="dot-pulse"></span>
-      <span id="textoStatusCentral">Procurando um rosto...</span>
+    <div class="kiosk-acao-central" id="acaoCentral">
+      <button class="btn-bater-ponto" id="btnBaterPonto">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        Bater ponto
+      </button>
+      <div class="kiosk-status-texto" id="textoStatusCentral"></div>
+    </div>
+
+    <div class="kiosk-recentes" id="painelRecentes">
+      <div class="kiosk-recentes-titulo">Últimos registros</div>
+      <div class="kiosk-recentes-lista" id="listaRecentes"></div>
     </div>
 
     <div class="kiosk-match-card" id="cardMatch">
@@ -362,7 +395,7 @@
     await ligarCamera();
 
     mostrarTela(telaKiosk);
-    iniciarLoopReconhecimento();
+    prepararReconhecimento();
   }
 
   function solicitarLocalizacao(){
@@ -404,58 +437,78 @@
 
   function pararTudo(){
     if(streamCamera) streamCamera.getTracks().forEach(t => t.stop());
-    if(loopAtivo) clearInterval(loopAtivo);
   }
 
   // =================================================================
-  // LOOP DE RECONHECIMENTO
+  // RECONHECIMENTO SOB DEMANDA — só tenta quando a pessoa aperta
+  // "Bater ponto" (evita registrar várias vezes se alguém ficar
+  // parado na frente da câmera).
   // =================================================================
-  let loopAtivo = null;
-  let bloqueadoAte = 0;
   let faceMatcher = null;
   let modoManualAberto = false;
+  let escaneando = false;
 
-  function iniciarLoopReconhecimento(){
+  function prepararReconhecimento(){
     if(equipeComRosto.length === 0){
       document.getElementById('textoStatusCentral').textContent = 'Reconhecimento facial indisponível — use "Registrar manual".';
-      return; // ninguém tem rosto processado ainda; só o registro manual funciona
+      return;
     }
-
     faceMatcher = new faceapi.FaceMatcher(
       equipeComRosto.map(p => new faceapi.LabeledFaceDescriptors(p.profissional_id, [p.descriptor])),
       0.55
     );
-
-    const video = document.getElementById('videoKiosk');
-    loopAtivo = setInterval(async () => {
-      if(Date.now() < bloqueadoAte || modoManualAberto) return; // cooldown ou modal manual aberto
-
-      const deteccao = await faceapi
-        .detectSingleFace(video, new faceapi.TinyFaceDetectorOptions())
-        .withFaceLandmarks()
-        .withFaceDescriptor();
-
-      const statusTexto = document.getElementById('textoStatusCentral');
-
-      if(!deteccao){
-        statusTexto.textContent = 'Procurando um rosto...';
-        return;
-      }
-
-      const resultado = faceMatcher.findBestMatch(deteccao.descriptor);
-      if(resultado.label === 'unknown'){
-        statusTexto.textContent = 'Rosto não reconhecido nessa equipe.';
-        return;
-      }
-
-      const pessoa = equipeComRosto.find(p => p.profissional_id === resultado.label);
-      if(!pessoa) return;
-
-      bloqueadoAte = Date.now() + 8000; // evita registrar de novo em looping
-      statusTexto.textContent = 'Confirmando...';
-      await registrarPonto(pessoa, 'facial');
-    }, 700);
   }
+
+  async function tentarReconhecimento(){
+    if(escaneando || modoManualAberto) return;
+    const statusTexto = document.getElementById('textoStatusCentral');
+    const btn = document.getElementById('btnBaterPonto');
+
+    if(!faceMatcher){
+      statusTexto.textContent = 'Reconhecimento facial indisponível — use "Registrar manual".';
+      return;
+    }
+
+    escaneando = true;
+    btn.disabled = true;
+    document.getElementById('btnAbrirManual').disabled = true;
+    const video = document.getElementById('videoKiosk');
+    const tentativaAte = Date.now() + 6000; // tenta por até 6s antes de desistir
+    let pessoaEncontrada = null;
+
+    try{
+      while(Date.now() < tentativaAte && !pessoaEncontrada){
+        statusTexto.textContent = 'Procurando seu rosto...';
+        const deteccao = await faceapi
+          .detectSingleFace(video, new faceapi.TinyFaceDetectorOptions())
+          .withFaceLandmarks()
+          .withFaceDescriptor();
+
+        if(deteccao){
+          const resultado = faceMatcher.findBestMatch(deteccao.descriptor);
+          if(resultado.label !== 'unknown'){
+            pessoaEncontrada = equipeComRosto.find(p => p.profissional_id === resultado.label);
+          } else {
+            statusTexto.textContent = 'Rosto não reconhecido nessa equipe...';
+          }
+        }
+        if(!pessoaEncontrada) await new Promise(resolve => setTimeout(resolve, 400));
+      }
+
+      if(pessoaEncontrada){
+        statusTexto.textContent = 'Confirmando...';
+        await registrarPonto(pessoaEncontrada, 'facial');
+      } else {
+        statusTexto.textContent = 'Não conseguimos te reconhecer. Tente de novo ou use o registro manual.';
+      }
+    } finally{
+      escaneando = false;
+      btn.disabled = false;
+      document.getElementById('btnAbrirManual').disabled = false;
+    }
+  }
+
+  document.getElementById('btnBaterPonto').addEventListener('click', tentarReconhecimento);
 
   async function registrarPonto(pessoa, metodo){
     try{
@@ -471,9 +524,9 @@
 
       const registro = data[0];
       mostrarCardMatch(pessoa, registro.tipo, registro.horario);
+      adicionarRegistroRecente(pessoa.nome_completo, registro.tipo, registro.horario);
     } catch(erro){
       document.getElementById('textoStatusCentral').textContent = 'Erro ao registrar: ' + erro.message;
-      bloqueadoAte = Date.now() + 2000;
     }
   }
 
@@ -489,8 +542,36 @@
 
     setTimeout(() => {
       card.classList.remove('show');
-      document.getElementById('textoStatusCentral').textContent = 'Procurando um rosto...';
+      document.getElementById('textoStatusCentral').textContent = '';
     }, 3500);
+  }
+
+  // -----------------------------------------------------------------
+  // Lista de "últimos registros" na tela, só pra conferência visual
+  // rápida (fica na memória da sessão, some se recarregar a página).
+  // -----------------------------------------------------------------
+  let registrosRecentes = [];
+
+  function adicionarRegistroRecente(nome, tipo, horarioIso){
+    registrosRecentes.unshift({ nome, tipo, horario: horarioIso });
+    registrosRecentes = registrosRecentes.slice(0, 8);
+    renderListaRecentes();
+  }
+
+  function renderListaRecentes(){
+    const painel = document.getElementById('painelRecentes');
+    if(registrosRecentes.length === 0){
+      painel.classList.remove('show');
+      return;
+    }
+    painel.classList.add('show');
+    document.getElementById('listaRecentes').innerHTML = registrosRecentes.map(r => `
+      <div class="kiosk-recente-item">
+        <span class="kiosk-recente-nome" title="${r.nome}">${r.nome}</span>
+        <span class="kiosk-recente-tipo ${r.tipo}">${r.tipo === 'entrada' ? 'Entrada' : 'Saída'}</span>
+        <span class="kiosk-recente-hora">${new Date(r.horario).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</span>
+      </div>
+    `).join('');
   }
 
   // =================================================================
@@ -499,6 +580,7 @@
   // =================================================================
   function abrirModalManual(){
     modoManualAberto = true;
+    document.getElementById('btnBaterPonto').disabled = true;
     document.getElementById('buscaManual').value = '';
     renderListaManual('');
     document.getElementById('modalManualOverlay').classList.add('show');
@@ -507,6 +589,7 @@
 
   function fecharModalManual(){
     modoManualAberto = false;
+    document.getElementById('btnBaterPonto').disabled = false;
     document.getElementById('modalManualOverlay').classList.remove('show');
   }
 
@@ -541,7 +624,6 @@
         if(!pessoa) return;
         fecharModalManual();
         document.getElementById('textoStatusCentral').textContent = 'Confirmando...';
-        bloqueadoAte = Date.now() + 2000; // evita o reconhecimento automático disparar junto
         await registrarPonto(pessoa, 'manual');
       });
     });
