@@ -98,6 +98,13 @@
   .panel-app.active{ display:block; animation:fadeIn .3s ease; }
   @keyframes fadeIn{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
 
+  .btn-equipe-evento{
+    display:flex; align-items:center; gap:6px; background:var(--brand-soft); color:var(--brand-2);
+    border:none; font-size:.78rem; font-weight:600; padding:8px 13px; border-radius:8px; cursor:pointer;
+    flex-shrink:0; transition:background .15s; margin-left:8px; white-space:nowrap;
+  }
+  .btn-equipe-evento:hover{ background:#DCEAE2; }
+
   .stat-cards{ display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:16px; margin-bottom:28px; }
   .stat-card{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:20px; box-shadow:var(--shadow-sm); display:flex; flex-direction:column; gap:10px; }
   .stat-card .icon-badge{ width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; background:var(--brand-soft); color:var(--brand-2); }
@@ -161,6 +168,11 @@
   .pdf-action-btn:hover{ border-color:var(--brand-2); background:var(--brand-soft); color:var(--brand-2); }
   .pdf-action-btn--pdf{ color:var(--danger); }
   .pdf-action-btn--pdf:hover{ border-color:var(--danger); background:var(--danger-soft); color:var(--danger); }
+
+  .chip-placeholder{
+    background:var(--brand-soft); color:var(--brand-2); font-family:'JetBrains Mono', monospace;
+    font-size:.74rem; font-weight:600; padding:4px 9px; border-radius:6px;
+  }
 
   .campo-autocomplete{ position:relative; }
   .lista-sugestoes-autocomplete{
@@ -681,6 +693,28 @@
               <button class="btn-novo" id="btnSalvarPersonalizacao" style="flex:1;">Salvar personalização</button>
               <button class="btn-upload-imagem" id="btnRestaurarPadraoPersonalizacao">Restaurar padrão</button>
             </div>
+
+            <div class="drawer-section" style="max-width:700px; margin-top:28px;">
+              <div class="drawer-section-title">Modelo do contrato de prestação de serviço</div>
+              <p style="font-size:.82rem; color:var(--muted); margin-bottom:12px;">
+                Esse é o texto completo usado ao gerar o contrato pela tela de Equipe do evento. Escreva do jeito que
+                deve sair impresso — dados da empresa, cláusulas, tudo. Use os campos abaixo onde quiser que o
+                sistema troque automaticamente pelos dados de cada contratação:
+              </p>
+              <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px;">
+                <code class="chip-placeholder">#CONTRATADO</code>
+                <code class="chip-placeholder">#FUNCAO</code>
+                <code class="chip-placeholder">#VALOR</code>
+                <code class="chip-placeholder">#DATA_EVENTO</code>
+                <code class="chip-placeholder">#CIDADE</code>
+              </div>
+              <textarea id="p_contrato_texto" rows="18" style="width:100%; padding:12px 14px; border-radius:10px; border:1.5px solid var(--border); font-family:'JetBrains Mono', monospace; font-size:.8rem; line-height:1.5; resize:vertical;"></textarea>
+              <p style="font-size:.76rem; color:var(--muted); margin-top:6px;">A tabela "FOLHA INDIVIDUAL DE PONTO" é adicionada automaticamente no final, depois desse texto — não precisa desenhar ela aqui.</p>
+              <div style="display:flex; gap:8px; margin-top:10px;">
+                <button class="btn-novo" id="btnSalvarContratoTemplate" style="flex:1;">Salvar modelo</button>
+                <button class="btn-upload-imagem" id="btnRestaurarModeloPadrao">Restaurar modelo padrão</button>
+              </div>
+            </div>
           </div>
         </main>
       </div>
@@ -729,6 +763,66 @@
         <button class="btn-acao" id="btnDuplicarRecibo" style="background:none; border:1.5px solid var(--border); color:var(--muted); display:none;">Duplicar</button>
         <button class="btn-acao" id="btnFecharRecibo" style="background:none; border:1.5px solid var(--brand-2); color:var(--brand-2); display:none;">Fechar recibo</button>
         <button class="btn-acao btn-salvar" id="btnSalvarRecibo" style="flex:2;">Salvar recibo</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= POPUP: EQUIPE DO EVENTO ================= -->
+  <div class="modal-lista-overlay" id="modalEquipeEventoOverlay">
+    <div class="modal-lista">
+      <div class="modal-lista-head">
+        <h3 id="modalEquipeEventoTitulo">Equipe do evento</h3>
+        <button class="drawer-close" id="btnFecharModalEquipeEvento">✕</button>
+      </div>
+      <div class="modal-lista-body" id="modalEquipeEventoBody"></div>
+    </div>
+  </div>
+
+  <!-- ================= POPUP: REVISAR CONTRATO ANTES DE GERAR ================= -->
+  <div class="modal-lista-overlay" id="modalEditarContratoOverlay" style="z-index:90;">
+    <div class="modal-lista" style="max-width:440px;">
+      <div class="modal-lista-head">
+        <h3>Revisar antes de gerar</h3>
+        <button class="drawer-close" id="btnFecharModalEditarContrato">✕</button>
+      </div>
+      <div class="modal-lista-body">
+        <p style="font-size:.78rem; color:var(--muted); margin-bottom:14px;">Os campos já vêm preenchidos com os dados do cadastro — ajuste algo só se precisar, vale só pra este documento.</p>
+        <div class="field-group"><label>Nome do contratado</label><input type="text" id="ec_nome"></div>
+        <div class="field-group"><label>Função / objetivo do contrato</label><input type="text" id="ec_funcao"></div>
+        <div class="field-row">
+          <div class="field-group"><label>Data</label><input type="text" id="ec_data" placeholder="Ex: 27/07/2025"></div>
+          <div class="field-group"><label>Valor por dia (R$)</label><input type="text" id="ec_valor" placeholder="Ex: R$ 150,00"></div>
+        </div>
+        <div class="field-group"><label>Cidade (sede do contratante)</label><input type="text" id="ec_cidade"></div>
+        <div class="field-group">
+          <label>Registros de ponto (aparecem na Folha de Ponto do contrato)</label>
+          <textarea id="ec_registros_ponto" rows="2" placeholder="Em branco = tabela sai em branco pra preencher à mão" style="width:100%; padding:9px 12px; border-radius:8px; border:1.5px solid var(--border); font-family:'Inter', sans-serif; font-size:.85rem; resize:vertical;"></textarea>
+        </div>
+        <p style="font-size:.74rem; color:var(--muted); margin-top:-8px;" id="ec_ponto_origem"></p>
+      </div>
+      <div class="modal-lista-add">
+        <button class="btn-novo" id="btnGerarContratoRevisado" style="width:100%;">Gerar PDF</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= POPUP: IMPORTAR EQUIPE DE EVENTO ANTERIOR ================= -->
+  <div class="modal-lista-overlay" id="modalImportarEquipeOverlay" style="z-index:90;">
+    <div class="modal-lista" style="max-width:520px;">
+      <div class="modal-lista-head">
+        <h3>Importar equipe de outro evento</h3>
+        <button class="drawer-close" id="btnFecharModalImportarEquipe">✕</button>
+      </div>
+      <div class="modal-lista-body">
+        <div class="field-group">
+          <label>Evento de origem</label>
+          <select id="imp_evento_origem"><option value="">Selecione um evento...</option></select>
+        </div>
+        <p style="font-size:.78rem; color:var(--muted); margin:10px 0 4px;" id="impDicaTexto"></p>
+        <div id="impListaEquipe"></div>
+      </div>
+      <div class="modal-lista-add">
+        <button class="btn-novo" id="btnConfirmarImportacaoEquipe" style="width:100%;" disabled>Importar selecionados</button>
       </div>
     </div>
   </div>
@@ -1212,6 +1306,7 @@
     appEl.style.display = 'block';
     atualizarUiPapel();
     await carregarPersonalizacao();
+    await carregarContratoTemplate();
 
     await Promise.all([carregarFuncoes(), carregarClientesStaff()]);
     await carregarProfissionais();
@@ -1493,8 +1588,13 @@
           <span class="meta">${formatarDataSemFuso(e.data)}${e.cidade ? ' · ' + e.cidade : ''}${e.local ? ' · ' + e.local : ''}${e.staff_clientes?.nome ? ' · ' + e.staff_clientes.nome : ''}</span>
         </div>
         <span class="status-tag ${e.status}">${mapaStatusEventoLabel[e.status] || e.status}</span>
+        <button type="button" class="btn-equipe-evento" title="Ver equipe do evento"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Equipe</button>
       `;
       row.addEventListener('click', () => abrirDrawerEvento(e.id));
+      row.querySelector('.btn-equipe-evento').addEventListener('click', (evt) => {
+        evt.stopPropagation();
+        abrirModalEquipeEvento(e.id);
+      });
       lista.appendChild(row);
     });
   }
@@ -1546,13 +1646,6 @@
         <div class="field-group"><label>Observações</label><input type="text" id="ev_observacoes" value="${e.observacoes || ''}" ${somenteLeitura ? 'disabled' : ''}></div>
       </div>
 
-      <div class="drawer-section" id="secaoEquipeEvento">
-        <div class="drawer-section-title">Equipe do evento</div>
-        ${id
-          ? `<div id="listaEquipeEvento"></div>${!somenteLeitura ? '<button type="button" class="btn-upload-imagem" id="btnAdicionarMembroEquipe" style="width:100%; margin-top:4px;">+ Adicionar profissional</button>' : ''}`
-          : `<p style="font-size:.82rem; color:var(--muted);">Salve o evento primeiro pra poder montar a equipe.</p>`}
-      </div>
-
       ${id ? `
         <div class="drawer-section">
           <div class="drawer-section-title">Ponto do evento</div>
@@ -1566,10 +1659,6 @@
     `;
 
     if(id){
-      carregarEquipeEvento(id);
-      if(!somenteLeitura){
-        document.getElementById('btnAdicionarMembroEquipe').addEventListener('click', adicionarLinhaMembroEquipe);
-      }
       document.getElementById('btnCopiarLinkPonto').addEventListener('click', () => copiarLinkPontoQuiosque(id));
     }
 
@@ -1638,13 +1727,57 @@
     await carregarEventos();
   });
 
+  function abrirModalEquipeEvento(eventoId){
+    eventoIdAtual = eventoId;
+    const evento = todosEventos.find(x => x.id === eventoId);
+    const somenteLeitura = !podeGerenciarEventosAgora();
+
+    document.getElementById('modalEquipeEventoTitulo').textContent = evento ? `Equipe — ${evento.nome}` : 'Equipe do evento';
+
+    const body = document.getElementById('modalEquipeEventoBody');
+    body.innerHTML = `
+      <div id="listaEquipeEvento"></div>
+      ${!somenteLeitura ? `
+        <div style="display:flex; gap:8px; margin-top:4px;">
+          <button type="button" class="btn-upload-imagem" id="btnAdicionarMembroEquipe" style="flex:1;">+ Adicionar profissional</button>
+          <button type="button" class="btn-upload-imagem" id="btnImportarEquipe" style="flex:1;">Importar de outro evento</button>
+        </div>
+      ` : ''}
+    `;
+
+    carregarEquipeEvento(eventoId);
+    if(!somenteLeitura){
+      document.getElementById('btnAdicionarMembroEquipe').addEventListener('click', adicionarLinhaMembroEquipe);
+      document.getElementById('btnImportarEquipe').addEventListener('click', abrirModalImportarEquipe);
+    }
+
+    document.getElementById('modalEquipeEventoOverlay').classList.add('show');
+  }
+  document.getElementById('btnFecharModalEquipeEvento').addEventListener('click', () => document.getElementById('modalEquipeEventoOverlay').classList.remove('show'));
+
+  let profissionaisComPontoNoEvento = new Set();
+  let registrosPontoPorProfissional = {}; // { profissional_id: [{ tipo, horario }, ...] } — ordenado por horário
+
   async function carregarEquipeEvento(eventoId){
-    const { data, error } = await sb.from('staff_equipe_evento')
-      .select('*, staff_profissionais(nome_completo), staff_funcoes(nome)')
-      .eq('evento_id', eventoId)
-      .order('created_at', { ascending: true });
-    if(error){ alert('Erro ao carregar equipe: ' + error.message); return; }
-    equipeDoEventoAtual = data || [];
+    const [resEquipe, resPonto] = await Promise.all([
+      sb.from('staff_equipe_evento')
+        .select('*, staff_profissionais(nome_completo), staff_funcoes(nome)')
+        .eq('evento_id', eventoId),
+      sb.from('staff_ponto').select('profissional_id, tipo, horario').eq('evento_id', eventoId).order('horario', { ascending: true })
+    ]);
+    if(resEquipe.error){ alert('Erro ao carregar equipe: ' + resEquipe.error.message); return; }
+    equipeDoEventoAtual = (resEquipe.data || []).sort((a, b) =>
+      (a.staff_profissionais?.nome_completo || '').localeCompare(b.staff_profissionais?.nome_completo || '', 'pt-BR')
+    );
+
+    profissionaisComPontoNoEvento = new Set((resPonto.data || []).map(p => p.profissional_id));
+
+    registrosPontoPorProfissional = {};
+    (resPonto.data || []).forEach(r => {
+      if(!registrosPontoPorProfissional[r.profissional_id]) registrosPontoPorProfissional[r.profissional_id] = [];
+      registrosPontoPorProfissional[r.profissional_id].push(r);
+    });
+
     renderEquipeEvento();
   }
 
@@ -1658,21 +1791,45 @@
       return;
     }
 
-    container.innerHTML = equipeDoEventoAtual.map(m => `
-      <div class="linha-membro-equipe" data-membro-id="${m.id}">
+    container.innerHTML = equipeDoEventoAtual.map(m => {
+      const confirmouPonto = profissionaisComPontoNoEvento.has(m.profissional_id);
+      return `
+      <div class="linha-membro-equipe" data-membro-id="${m.id}" data-profissional-id="${m.profissional_id}">
         <div>
           <strong style="font-size:.85rem;">${m.staff_profissionais?.nome_completo || '—'}</strong>
-          <div style="font-size:.76rem; color:var(--muted); margin-top:2px;">
+          <div style="font-size:.76rem; color:var(--muted); margin-top:2px; display:flex; align-items:center; flex-wrap:wrap; gap:4px;">
             ${m.staff_funcoes?.nome || 'sem função'} · ${formatarMoeda(m.valor_combinado)}
-            <span class="status-tag ${m.status}" style="font-size:.64rem; padding:3px 8px; margin-left:4px;">${mapaStatusEquipeLabel[m.status] || m.status}</span>
+            <span class="status-tag ${m.status}" style="font-size:.64rem; padding:3px 8px;">${mapaStatusEquipeLabel[m.status] || m.status}</span>
+            <span class="status-tag ${confirmouPonto ? 'ativo' : 'inativo'}" style="font-size:.64rem; padding:3px 8px;">${confirmouPonto ? '✓ Ponto confirmado' : 'Sem ponto registrado'}</span>
           </div>
         </div>
-        ${!somenteLeitura ? `<button type="button" class="btn-remover-pequeno" title="Remover">✕</button>` : ''}
+        <div style="display:flex; gap:6px; flex-shrink:0;">
+          <button type="button" class="btn-recibo-participacao" title="Imprimir recibo de participação" style="background:var(--brand-soft); color:var(--brand-2); border:none; width:26px; height:26px; border-radius:6px; cursor:pointer; font-size:.85rem; flex-shrink:0;">🖨️</button>
+          <button type="button" class="btn-contrato-prestacao" title="Gerar contrato de prestação de serviço" style="background:var(--brand-soft); color:var(--brand-2); border:none; width:26px; height:26px; border-radius:6px; cursor:pointer; font-size:.85rem; flex-shrink:0;">📄</button>
+          ${!somenteLeitura ? `<button type="button" class="btn-remover-membro-equipe btn-remover-pequeno" title="Remover">✕</button>` : ''}
+        </div>
       </div>
-    `).join('');
+    `;
+    }).join('');
+
+    container.querySelectorAll('.btn-recibo-participacao').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const linha = btn.closest('[data-membro-id]');
+        const membro = equipeDoEventoAtual.find(x => x.id === linha.dataset.membroId);
+        if(membro) gerarReciboParticipacaoPDF(membro);
+      });
+    });
+
+    container.querySelectorAll('.btn-contrato-prestacao').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const linha = btn.closest('[data-membro-id]');
+        const membro = equipeDoEventoAtual.find(x => x.id === linha.dataset.membroId);
+        if(membro) abrirModalEditarContrato(membro);
+      });
+    });
 
     if(!somenteLeitura){
-      container.querySelectorAll('.btn-remover-pequeno').forEach(btn => {
+      container.querySelectorAll('.btn-remover-membro-equipe').forEach(btn => {
         btn.addEventListener('click', async () => {
           const linha = btn.closest('[data-membro-id]');
           if(!confirm('Remover esse profissional da equipe do evento?')) return;
@@ -1684,17 +1841,378 @@
     }
   }
 
+  function gerarReciboParticipacaoPDF(membro){
+    if(typeof window.jspdf === 'undefined'){
+      alert('A biblioteca de geração de PDF não carregou. Verifique sua conexão e tente novamente.');
+      return;
+    }
+    const evento = todosEventos.find(x => x.id === eventoIdAtual);
+    const nome = membro.staff_profissionais?.nome_completo || '—';
+    const funcao = membro.staff_funcoes?.nome || '';
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+    const margem = 25;
+    const largura = 210 - margem * 2;
+    let y = 35;
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(16);
+    doc.text('RECIBO DE PARTICIPAÇÃO', 105, y, { align: 'center' });
+    y += 8;
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    doc.setTextColor(120);
+    doc.text(agenciaNome || '', 105, y, { align: 'center' });
+    doc.setTextColor(0);
+    y += 25;
+
+    const dataFormatada = evento?.data ? formatarDataSemFuso(evento.data) : '';
+    const localTexto = [evento?.local, evento?.cidade].filter(Boolean).join(', ');
+    const horarioTexto = (evento?.horario_inicio && evento?.horario_fim)
+      ? ` das ${evento.horario_inicio.slice(0,5)} às ${evento.horario_fim.slice(0,5)}`
+      : '';
+
+    doc.setFontSize(12);
+    const paragrafo = `Certificamos, para os devidos fins, que ${nome}${funcao ? ', atuando como ' + funcao + ',' : ','} participou do evento "${evento?.nome || '—'}", realizado em ${dataFormatada}${localTexto ? ', no local ' + localTexto : ''}${horarioTexto}.`;
+    const linhas = doc.splitTextToSize(paragrafo, largura);
+    doc.text(linhas, margem, y, { lineHeightFactor: 1.6 });
+    y += linhas.length * 7 + 30;
+
+    doc.setDrawColor(0);
+    doc.line(margem + 20, y, margem + largura - 20, y);
+    y += 6;
+    doc.setFontSize(10);
+    doc.text('Assinatura do(a) participante', 105, y, { align: 'center' });
+    y += 20;
+    doc.setFontSize(10);
+    doc.text(`Data: ____ / ____ / ________`, margem, y);
+
+    const blob = doc.output('blob');
+    const url = URL.createObjectURL(blob);
+    window.open(url, '_blank');
+  }
+
+  // -----------------------------------------------------------------
+  // Contrato de Prestação de Serviços de Natureza Autônoma — usa o
+  // modelo de texto livre configurado em Personalização (com campos
+  // #PLACEHOLDER), preenchido com os dados da contratação. A tabela
+  // "FOLHA INDIVIDUAL DE PONTO" é sempre adicionada no final, de forma
+  // estruturada (não faz parte do texto livre). Sai em meia folha (A5),
+  // com paginação automática se o texto for mais longo que uma página.
+  //
+  // Antes de gerar, abre um popup de revisão com os campos já
+  // preenchidos (mas editáveis) — o ajuste vale só pra esse documento,
+  // não altera o cadastro do profissional nem da equipe.
+  // -----------------------------------------------------------------
+  const CONTRATO_EMPRESA_CIDADE = 'Porto Seguro';
+  const CONTRATO_CODIGO_REFERENCIA = 'MU540/DIPROPOSITO';
+
+  const MESES_EXTENSO = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+  function formatarDataExtenso(dataStr){
+    if(!dataStr) return '';
+    const [ano, mes, dia] = dataStr.slice(0, 10).split('-');
+    return `${parseInt(dia, 10)} de ${MESES_EXTENSO[parseInt(mes, 10) - 1]} de ${ano}`;
+  }
+
+  function formatarHoraPonto(horarioIso){
+    if(!horarioIso) return '';
+    return new Date(horarioIso).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+  }
+
+  function montarTextoRegistrosPonto(profissionalId){
+    const registros = registrosPontoPorProfissional[profissionalId] || [];
+    if(registros.length === 0) return '';
+    return registros
+      .map(r => `${formatarHoraPonto(r.horario)} ${r.tipo === 'entrada' ? 'entrada' : 'saída'}`)
+      .join(' | ');
+  }
+
+  function abrirModalEditarContrato(membro){
+    const evento = todosEventos.find(x => x.id === eventoIdAtual);
+    const textoRegistros = montarTextoRegistrosPonto(membro.profissional_id);
+    document.getElementById('ec_nome').value = membro.staff_profissionais?.nome_completo || '';
+    document.getElementById('ec_funcao').value = membro.staff_funcoes?.nome || '';
+    document.getElementById('ec_data').value = evento?.data ? formatarDataExtenso(evento.data) : '';
+    document.getElementById('ec_valor').value = membro.valor_combinado ? formatarMoeda(membro.valor_combinado) : '';
+    document.getElementById('ec_cidade').value = CONTRATO_EMPRESA_CIDADE;
+    document.getElementById('ec_registros_ponto').value = textoRegistros;
+    document.getElementById('ec_ponto_origem').textContent = textoRegistros
+      ? 'Puxado do ponto batido pelo quiosque — ajuste se precisar.'
+      : 'Sem ponto batido ainda — a Folha de Ponto sai em branco pra preencher à mão.';
+    document.getElementById('modalEditarContratoOverlay').classList.add('show');
+  }
+  document.getElementById('btnFecharModalEditarContrato').addEventListener('click', () => {
+    document.getElementById('modalEditarContratoOverlay').classList.remove('show');
+  });
+  document.getElementById('btnGerarContratoRevisado').addEventListener('click', () => {
+    const evento = todosEventos.find(x => x.id === eventoIdAtual);
+    gerarContratoPrestacaoServicoPDF({
+      nome: document.getElementById('ec_nome').value.trim() || '_________________________________',
+      funcao: document.getElementById('ec_funcao').value.trim() || '_________________________________',
+      dataFormatada: document.getElementById('ec_data').value.trim() || '____/____/________',
+      dataTabela: evento?.data ? formatarDataSemFuso(evento.data) : '',
+      valorTexto: document.getElementById('ec_valor').value.trim() || '_____________',
+      cidade: document.getElementById('ec_cidade').value.trim() || CONTRATO_EMPRESA_CIDADE,
+      registrosPonto: document.getElementById('ec_registros_ponto').value.trim(),
+    });
+    document.getElementById('modalEditarContratoOverlay').classList.remove('show');
+  });
+
+  function preencherTemplateContrato(template, dados){
+    return template
+      .replace(/#CONTRATADO/g, dados.nome)
+      .replace(/#FUNCAO/g, dados.funcao)
+      .replace(/#VALOR/g, dados.valorTexto)
+      .replace(/#DATA_EVENTO/g, dados.dataFormatada)
+      .replace(/#CIDADE/g, dados.cidade);
+  }
+
+  function gerarContratoPrestacaoServicoPDF(dados){
+    if(typeof window.jspdf === 'undefined'){
+      alert('A biblioteca de geração de PDF não carregou. Verifique sua conexão e tente novamente.');
+      return;
+    }
+    const textoPreenchido = preencherTemplateContrato(contratoTemplateTexto, dados);
+
+    const { jsPDF } = window.jspdf;
+    // meia folha = A5 (metade de uma A4); pagina automaticamente se
+    // o modelo configurado for mais longo que isso
+    const doc = new jsPDF({ unit: 'mm', format: 'a5' });
+    const margem = 12;
+    const larguraPagina = 148;
+    const alturaPagina = 210;
+    const largura = larguraPagina - margem * 2;
+    let y = 14;
+
+    function quebrarPaginaSeNecessario(alturaNecessaria){
+      if(y + alturaNecessaria > alturaPagina - margem){
+        doc.addPage();
+        y = margem;
+      }
+    }
+
+    // caixinha do código de referência, no topo da primeira página
+    doc.setDrawColor(0);
+    doc.rect(larguraPagina - margem - 44, y, 44, 8);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(7.5);
+    doc.text(CONTRATO_CODIGO_REFERENCIA, larguraPagina - margem - 22, y + 5.2, { align: 'center' });
+    y += 14;
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8.5);
+    const alturaLinhaTexto = 4;
+
+    textoPreenchido.split('\n').forEach(linha => {
+      if(linha.trim() === ''){ y += alturaLinhaTexto * 0.7; return; }
+      const linhasQuebradas = doc.splitTextToSize(linha, largura);
+      quebrarPaginaSeNecessario(linhasQuebradas.length * alturaLinhaTexto);
+      doc.text(linhasQuebradas, margem, y);
+      y += linhasQuebradas.length * alturaLinhaTexto;
+    });
+
+    y += 6;
+
+    // FOLHA INDIVIDUAL DE PONTO (Lei 626/91) — sempre estruturada como
+    // tabela de verdade, não faz parte do texto livre do modelo.
+    // Sem ponto batido: sai em branco pra preencher à mão. Com ponto
+    // batido (uma ou mais batidas): lista tudo numa coluna só.
+    const alturaLinhaCabecalho = 6.2;
+    const alturaTabelaEstimada = alturaLinhaCabecalho * 2 + 20; // estimativa generosa pra decidir se quebra página
+    quebrarPaginaSeNecessario(alturaTabelaEstimada);
+
+    doc.setDrawColor(0);
+    doc.setLineWidth(0.25);
+
+    doc.rect(margem, y, largura, alturaLinhaCabecalho);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(8);
+    doc.text('FOLHA INDIVIDUAL DE PONTO', larguraPagina / 2, y + 4.2, { align: 'center' });
+    y += alturaLinhaCabecalho;
+
+    doc.rect(margem, y, largura, alturaLinhaCabecalho - 1.5);
+    doc.setFontSize(7);
+    doc.text('LEI. 626/91', larguraPagina / 2, y + 3.4, { align: 'center' });
+    y += alturaLinhaCabecalho - 1.5;
+
+    const temRegistrosPonto = !!(dados.registrosPonto && dados.registrosPonto.trim());
+
+    if(!temRegistrosPonto){
+      // sem ponto batido: 4 colunas, tudo em branco pra preencher à mão
+      const colunas = [
+        { titulo: 'DIA', w: largura * 0.2 },
+        { titulo: 'ENTRADA', w: largura * 0.17 },
+        { titulo: 'SAÍDA', w: largura * 0.17 },
+        { titulo: 'ASSINATURA', w: largura * 0.46 },
+      ];
+      let x = margem;
+      doc.setFontSize(7);
+      colunas.forEach(col => { doc.rect(x, y, col.w, alturaLinhaCabecalho); doc.text(col.titulo, x + col.w / 2, y + 4, { align: 'center' }); x += col.w; });
+      y += alturaLinhaCabecalho;
+
+      x = margem;
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(7.5);
+      colunas.forEach((col, i) => {
+        doc.rect(x, y, col.w, alturaLinhaCabecalho + 2);
+        if(i === 0) doc.text(dados.dataTabela || '', x + col.w / 2, y + 5.2, { align: 'center' });
+        x += col.w;
+      });
+    } else {
+      // com ponto batido: DIA | REGISTROS DE PONTO (lista tudo) | ASSINATURA
+      const colunas = [
+        { titulo: 'DIA', w: largura * 0.18 },
+        { titulo: 'REGISTROS DE PONTO', w: largura * 0.52 },
+        { titulo: 'ASSINATURA', w: largura * 0.30 },
+      ];
+      let x = margem;
+      doc.setFontSize(7);
+      colunas.forEach(col => { doc.rect(x, y, col.w, alturaLinhaCabecalho); doc.text(col.titulo, x + col.w / 2, y + 4, { align: 'center' }); x += col.w; });
+      y += alturaLinhaCabecalho;
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(7);
+      const linhasRegistros = doc.splitTextToSize(dados.registrosPonto, colunas[1].w - 4);
+      const alturaConteudo = Math.max(alturaLinhaCabecalho + 2, linhasRegistros.length * 3.6 + 4);
+      quebrarPaginaSeNecessario(alturaConteudo);
+
+      x = margem;
+      colunas.forEach((col, i) => {
+        doc.rect(x, y, col.w, alturaConteudo);
+        if(i === 0) doc.text(dados.dataTabela || '', x + col.w / 2, y + alturaConteudo / 2 + 1, { align: 'center' });
+        if(i === 1) doc.text(linhasRegistros, x + 2, y + 4.5);
+        x += col.w;
+      });
+    }
+
+    const blob = doc.output('blob');
+    const url = URL.createObjectURL(blob);
+    window.open(url, '_blank');
+  }
+
+  // -----------------------------------------------------------------
+  // Importar equipe de um evento anterior — evita digitar a mesma
+  // equipe de novo em eventos parecidos. Vem tudo marcado como
+  // "contratado" por padrão; desmarca quem não for o caso. Quem já
+  // está na equipe atual aparece bloqueado, pra não duplicar.
+  // -----------------------------------------------------------------
+  let equipeOrigemImportacao = [];
+
+  function abrirModalImportarEquipe(){
+    const select = document.getElementById('imp_evento_origem');
+    const outrosEventos = todosEventos.filter(e => e.id !== eventoIdAtual).sort((a, b) => (b.data || '').localeCompare(a.data || ''));
+    select.innerHTML = '<option value="">Selecione um evento...</option>' +
+      outrosEventos.map(e => `<option value="${e.id}">${e.nome}${e.data ? ' — ' + formatarDataSemFuso(e.data) : ''}</option>`).join('');
+
+    document.getElementById('impDicaTexto').textContent = '';
+    document.getElementById('impListaEquipe').innerHTML = '';
+    document.getElementById('btnConfirmarImportacaoEquipe').disabled = true;
+    equipeOrigemImportacao = [];
+
+    document.getElementById('modalImportarEquipeOverlay').classList.add('show');
+  }
+  document.getElementById('btnFecharModalImportarEquipe').addEventListener('click', () => {
+    document.getElementById('modalImportarEquipeOverlay').classList.remove('show');
+  });
+
+  document.getElementById('imp_evento_origem').addEventListener('change', async (e) => {
+    const eventoOrigemId = e.target.value;
+    const lista = document.getElementById('impListaEquipe');
+    const dica = document.getElementById('impDicaTexto');
+    const btnConfirmar = document.getElementById('btnConfirmarImportacaoEquipe');
+
+    if(!eventoOrigemId){
+      lista.innerHTML = '';
+      dica.textContent = '';
+      btnConfirmar.disabled = true;
+      return;
+    }
+
+    lista.innerHTML = '<p style="font-size:.82rem; color:var(--muted);">Carregando equipe desse evento...</p>';
+    const { data, error } = await sb.from('staff_equipe_evento')
+      .select('*, staff_profissionais(nome_completo), staff_funcoes(nome)')
+      .eq('evento_id', eventoOrigemId)
+      .neq('status', 'cancelado');
+    if(error){ lista.innerHTML = `<p style="font-size:.82rem; color:var(--danger);">Erro ao carregar: ${error.message}</p>`; return; }
+
+    equipeOrigemImportacao = data || [];
+
+    if(equipeOrigemImportacao.length === 0){
+      lista.innerHTML = '<p style="font-size:.82rem; color:var(--muted);">Esse evento não tem equipe cadastrada.</p>';
+      dica.textContent = '';
+      btnConfirmar.disabled = true;
+      return;
+    }
+
+    const idsJaNaEquipeAtual = new Set(equipeDoEventoAtual.map(m => m.profissional_id));
+    dica.textContent = 'Vem tudo marcado como contratado — desmarca quem não for o caso.';
+
+    lista.innerHTML = equipeOrigemImportacao.map(m => {
+      const jaEsta = idsJaNaEquipeAtual.has(m.profissional_id);
+      return `
+        <label class="modal-lista-row" style="cursor:${jaEsta ? 'default' : 'pointer'};">
+          <input type="checkbox" class="imp-check-membro" data-profissional-id="${m.profissional_id}" value="${m.id}" ${jaEsta ? 'disabled' : 'checked'}>
+          <span style="flex:1;">
+            <strong style="font-size:.85rem;">${m.staff_profissionais?.nome_completo || '—'}</strong>
+            <span style="display:block; font-size:.74rem; color:var(--muted);">${m.staff_funcoes?.nome || 'sem função'} · ${formatarMoeda(m.valor_combinado)}${jaEsta ? ' · já está na equipe atual' : ''}</span>
+          </span>
+        </label>
+      `;
+    }).join('');
+
+    btnConfirmar.disabled = false;
+  });
+
+  document.getElementById('btnConfirmarImportacaoEquipe').addEventListener('click', async () => {
+    const checks = [...document.querySelectorAll('.imp-check-membro:checked:not(:disabled)')];
+    if(checks.length === 0){ alert('Marque pelo menos um profissional pra importar.'); return; }
+
+    const btn = document.getElementById('btnConfirmarImportacaoEquipe');
+    btn.disabled = true;
+    btn.textContent = 'Importando...';
+    try{
+      const payload = checks.map(chk => {
+        const membroOrigem = equipeOrigemImportacao.find(m => m.id === chk.value);
+        return {
+          unidade_negocio_id: agenciaId,
+          evento_id: eventoIdAtual,
+          profissional_id: membroOrigem.profissional_id,
+          funcao_id: membroOrigem.funcao_id,
+          valor_combinado: membroOrigem.valor_combinado,
+          status: 'confirmado', // "contratado" = confirmado nessa equipe
+          horario_inicio: membroOrigem.horario_inicio,
+          horario_fim: membroOrigem.horario_fim,
+        };
+      });
+      const { error } = await sb.from('staff_equipe_evento').insert(payload);
+      if(error) throw new Error(error.message);
+
+      document.getElementById('modalImportarEquipeOverlay').classList.remove('show');
+      await carregarEquipeEvento(eventoIdAtual);
+    } catch(erro){
+      alert('Erro ao importar: ' + erro.message);
+    } finally{
+      btn.disabled = false;
+      btn.textContent = 'Importar selecionados';
+    }
+  });
+
   function adicionarLinhaMembroEquipe(){
     if(document.getElementById('formNovoMembroEquipe')) return; // já está aberto
 
-    const optionsProfissionais = todosProfissionais.filter(p => p.ativo).map(p => `<option value="${p.id}">${p.nome_completo}</option>`).join('');
     const optionsFuncoes = todasFuncoes.filter(f => f.ativo).map(f => `<option value="${f.id}">${f.nome}</option>`).join('');
 
     const div = document.createElement('div');
     div.id = 'formNovoMembroEquipe';
     div.style.cssText = 'background:var(--surface); border:1.5px dashed var(--border); border-radius:8px; padding:12px; margin-bottom:10px;';
     div.innerHTML = `
-      <div class="field-group"><label>Profissional</label><select id="nm_profissional_id"><option value="">Selecione...</option>${optionsProfissionais}</select></div>
+      <div class="field-group campo-autocomplete">
+        <label>Profissional</label>
+        <input type="text" id="nm_profissional_busca" placeholder="Digite o nome..." autocomplete="off">
+        <input type="hidden" id="nm_profissional_id" value="">
+        <div class="lista-sugestoes-autocomplete" id="nm_profissional_sugestoes"></div>
+      </div>
       <div class="field-group"><label>Função</label><select id="nm_funcao_id"><option value="">Selecione...</option>${optionsFuncoes}</select></div>
       <div class="field-row">
         <div class="field-group"><label>Valor combinado (R$)</label><input type="number" step="0.01" id="nm_valor_combinado" value="0"></div>
@@ -1717,10 +2235,21 @@
     `;
     document.getElementById('listaEquipeEvento').appendChild(div);
 
+    document.getElementById('nm_profissional_sugestoes').dataset.proximoFoco = 'nm_valor_combinado';
+    configurarAutocompleteProfissionalGenerico('nm_profissional_busca', 'nm_profissional_id', 'nm_profissional_sugestoes', (id) => {
+      // preenche com a função principal do profissional — continua editável
+      const prof = todosProfissionais.find(p => p.id === id);
+      const selectFuncao = document.getElementById('nm_funcao_id');
+      if(prof?.funcao_principal_id && selectFuncao) selectFuncao.value = prof.funcao_principal_id;
+      document.getElementById('nm_valor_combinado').focus();
+      document.getElementById('nm_valor_combinado').select();
+    });
+    document.getElementById('nm_profissional_busca').focus();
+
     document.getElementById('btnCancelarNovoMembro').addEventListener('click', () => div.remove());
     document.getElementById('btnConfirmarNovoMembro').addEventListener('click', async () => {
       const profissionalId = document.getElementById('nm_profissional_id').value;
-      if(!profissionalId){ alert('Selecione o profissional.'); return; }
+      if(!profissionalId){ alert('Selecione o profissional na lista de sugestões.'); return; }
       const payload = {
         unidade_negocio_id: agenciaId,
         evento_id: eventoIdAtual,
@@ -2223,10 +2752,10 @@
   // é um campo de busca — digita o nome e escolhe numa lista de
   // sugestões que aparece embaixo (também navegável com as setas).
   // -----------------------------------------------------------------
-  function configurarAutocompleteProfissional(){
-    const inputBusca = document.getElementById('ri_profissional_busca');
-    const inputId = document.getElementById('ri_profissional_id');
-    const listaSugestoes = document.getElementById('ri_profissional_sugestoes');
+  function configurarAutocompleteProfissionalGenerico(idBusca, idHidden, idSugestoes, aoSelecionar){
+    const inputBusca = document.getElementById(idBusca);
+    const inputId = document.getElementById(idHidden);
+    const listaSugestoes = document.getElementById(idSugestoes);
     let indiceDestacado = -1;
 
     function renderSugestoes(termo){
@@ -2253,14 +2782,7 @@
       inputId.value = id;
       inputBusca.value = nome;
       listaSugestoes.classList.remove('show');
-
-      // preenche com a função principal do profissional — mas continua
-      // editável, pode trocar por qualquer função já cadastrada
-      const prof = todosProfissionais.find(p => p.id === id);
-      const selectFuncao = document.getElementById('ri_funcao_id');
-      if(prof?.funcao_principal_id && selectFuncao) selectFuncao.value = prof.funcao_principal_id;
-
-      document.getElementById('ri_tipo_diaria').focus();
+      if(aoSelecionar) aoSelecionar(id, nome);
     }
 
     inputBusca.addEventListener('focus', () => renderSugestoes(inputBusca.value));
@@ -2290,10 +2812,23 @@
         if(listaSugestoes.classList.contains('show') && itens.length){
           const alvo = indiceDestacado >= 0 ? itens[indiceDestacado] : itens[0];
           selecionarProfissional(alvo.dataset.id, alvo.textContent);
-        } else if(inputId.value){
-          document.getElementById('ri_tipo_diaria').focus();
+        } else if(inputId.value && listaSugestoes.dataset.proximoFoco){
+          document.getElementById(listaSugestoes.dataset.proximoFoco).focus();
         }
       }
+    });
+  }
+
+  // mantém o nome antigo funcionando (usado no lançamento de recibo)
+  function configurarAutocompleteProfissional(){
+    document.getElementById('ri_profissional_sugestoes').dataset.proximoFoco = 'ri_tipo_diaria';
+    configurarAutocompleteProfissionalGenerico('ri_profissional_busca', 'ri_profissional_id', 'ri_profissional_sugestoes', (id) => {
+      // preenche com a função principal do profissional — mas continua
+      // editável, pode trocar por qualquer função já cadastrada
+      const prof = todosProfissionais.find(p => p.id === id);
+      const selectFuncao = document.getElementById('ri_funcao_id');
+      if(prof?.funcao_principal_id && selectFuncao) selectFuncao.value = prof.funcao_principal_id;
+      document.getElementById('ri_tipo_diaria').focus();
     });
   }
 
@@ -2822,6 +3357,69 @@
     }
   }
 
+  // -----------------------------------------------------------------
+  // Modelo do contrato de prestação de serviço — texto livre com
+  // campos #PLACEHOLDER, editável em Personalização.
+  // -----------------------------------------------------------------
+  const CONTRATO_TEMPLATE_PADRAO = `CONTRATO DE PRESTAÇÃO DE SERVIÇOS DE NATUREZA AUTÔNOMA.
+
+CONTRATO DE PRESTAÇÃO DE SERVIÇO DE NATUREZA AUTÔNOMA que fazem de um lado ARENA EVENTOS AXE MOI LTDA, pessoa jurídica de direito privado com sede em #CIDADE, CNPJ/MF - 05.778.885/0001-78, doravante denominado simplesmente CONTRATANTE e do outro lado #CONTRATADO, doravante denominado simplesmente CONTRATADO, que se regerá pelas cláusulas e condições seguintes:
+
+1 - OBJETIVO - É o objeto do presente contrato a prestação de serviço de Natureza autônoma de #FUNCAO apenas no dia, #DATA_EVENTO, ficando desde logo cientificado(a) que não haverá mais serviço após o encerramento do evento.
+
+2 - As partes declaram que o presente contrato não tem natureza empregatícia.
+
+3 - VALOR - A Contratada receberá #VALOR por dia trabalhado.
+
+4 - E por estarem justas e acordadas, as partes assinam o presente.
+
+#CIDADE, #DATA_EVENTO.
+
+Contratante: _______________________________
+
+Contratada: _______________________________`;
+
+  let contratoTemplateTexto = CONTRATO_TEMPLATE_PADRAO;
+
+  async function carregarContratoTemplate(){
+    const { data, error } = await sb.from('staff_contrato_templates').select('texto').eq('unidade_negocio_id', agenciaId).maybeSingle();
+    if(error){ console.error('Erro ao carregar modelo de contrato:', error.message); return; }
+    contratoTemplateTexto = data?.texto || CONTRATO_TEMPLATE_PADRAO;
+    const textarea = document.getElementById('p_contrato_texto');
+    if(textarea) textarea.value = contratoTemplateTexto;
+  }
+
+  const btnSalvarContratoTemplate = document.getElementById('btnSalvarContratoTemplate');
+  if(btnSalvarContratoTemplate){
+    btnSalvarContratoTemplate.addEventListener('click', async () => {
+      const texto = document.getElementById('p_contrato_texto').value.trim();
+      if(!texto){ alert('O modelo não pode ficar em branco.'); return; }
+
+      btnSalvarContratoTemplate.disabled = true;
+      btnSalvarContratoTemplate.textContent = 'Salvando...';
+      try{
+        const { error } = await sb.from('staff_contrato_templates')
+          .upsert({ unidade_negocio_id: agenciaId, texto }, { onConflict: 'unidade_negocio_id' });
+        if(error) throw new Error(error.message);
+        contratoTemplateTexto = texto;
+        alert('Modelo salvo!');
+      } catch(erro){
+        alert('Erro ao salvar: ' + erro.message);
+      } finally{
+        btnSalvarContratoTemplate.disabled = false;
+        btnSalvarContratoTemplate.textContent = 'Salvar modelo';
+      }
+    });
+  }
+
+  const btnRestaurarModeloPadrao = document.getElementById('btnRestaurarModeloPadrao');
+  if(btnRestaurarModeloPadrao){
+    btnRestaurarModeloPadrao.addEventListener('click', () => {
+      if(!confirm('Substituir o texto atual pelo modelo padrão? Isso não salva sozinho — você ainda pode ajustar e clicar em "Salvar modelo", ou simplesmente não salvar.')) return;
+      document.getElementById('p_contrato_texto').value = CONTRATO_TEMPLATE_PADRAO;
+    });
+  }
+
   async function enviarImagemFundoPersonalizacao(arquivo){
     const btn = document.getElementById('btnEscolherFundoPersonalizacao');
     const textoOriginal = btn.textContent;
@@ -3234,7 +3832,7 @@
     const linhas = [];
     for(const v of (vinculos || [])){
       const { data: email } = await sb.rpc('fn_obter_email_usuario', { p_user_id: v.user_id });
-      linhas.push({ user_id: v.user_id, email: email || v.user_id, eh_principal: v.eh_principal, papel: mapaPapeis[v.user_id] || null });
+      linhas.push({ user_id: v.user_id, email: email || 'E-mail indisponível', eh_principal: v.eh_principal, papel: mapaPapeis[v.user_id] || null });
     }
     todosUsuariosUnidade = linhas;
     renderListaUsuariosPapeis();
