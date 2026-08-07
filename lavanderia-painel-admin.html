@@ -462,7 +462,11 @@
                 <label>Até</label>
                 <input type="date" id="filtroNotaAte">
               </div>
-              <button class="btn-novo" id="btnNovaNota" style="margin-left:auto; align-self:flex-end;">+ Nova nota</button>
+              <button type="button" class="btn-upload-imagem" id="btnAtualizarNotas" title="Atualizar lista (ver rols/notas novas)" style="margin-left:auto; align-self:flex-end; display:flex; align-items:center; gap:6px;">
+                <svg id="iconeAtualizarNotas" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px; height:15px; transition:transform .5s;"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+                Atualizar
+              </button>
+              <button class="btn-novo" id="btnNovaNota" style="align-self:flex-end;">+ Nova nota</button>
             </div>
             <div class="lista-reservas" id="listaNotas"></div>
           </div>
@@ -1372,7 +1376,7 @@
         <div class="cadastro-thumb">${iconeCliente}</div>
         <div class="cadastro-info">
           <span class="nome">${c.nome}</span>
-          <span class="meta">${c.endereco || 'Sem endereço'}${c.telefone ? ' · ' + c.telefone : ''}</span>
+          <span class="meta">${c.endereco || 'Sem endereço'}${c.telefone ? ' · ' + c.telefone : ''}${c.codigo_externo ? ' · cód. ' + c.codigo_externo : ''}</span>
         </div>
         <span class="status-tag ${c.ativo ? 'ativo' : 'inativo'}">${c.ativo ? 'ativo' : 'inativo'}</span>
         <button class="btn-link-hotel" data-cliente-id="${c.id}" title="Copiar link do rol de roupas para este cliente">
@@ -1475,6 +1479,7 @@
           <div class="field-group"><label>Nome</label><input type="text" id="c_nome" value="${c.nome || ''}"></div>
           <div class="field-group"><label>Endereço</label><input type="text" id="c_endereco" value="${c.endereco || ''}"></div>
           <div class="field-group"><label>Telefone</label><input type="text" id="c_telefone" value="${c.telefone || ''}"></div>
+          <div class="field-group"><label>Código externo (integração com outro sistema)</label><input type="text" id="c_codigo_externo" value="${c.codigo_externo || ''}" placeholder="Opcional"></div>
           <div class="field-group">
             <label>Status</label>
             <select id="c_ativo"><option value="true" ${c.ativo !== false ? 'selected' : ''}>Ativo</option><option value="false" ${c.ativo === false ? 'selected' : ''}>Inativo</option></select>
@@ -1543,6 +1548,7 @@
           nome: document.getElementById('c_nome').value.trim(),
           endereco: document.getElementById('c_endereco').value.trim() || null,
           telefone: document.getElementById('c_telefone').value.trim() || null,
+          codigo_externo: document.getElementById('c_codigo_externo').value.trim() || null,
           ativo: document.getElementById('c_ativo').value === 'true'
         };
         if(!payload.nome){ throw new Error('Nome é obrigatório.'); }
@@ -2113,6 +2119,17 @@
   }
 
   document.getElementById('btnNovaNota').addEventListener('click', () => abrirDrawerNota(null));
+
+  let rotacaoAtualizarNotas = 0;
+  document.getElementById('btnAtualizarNotas').addEventListener('click', async () => {
+    const btn = document.getElementById('btnAtualizarNotas');
+    const icone = document.getElementById('iconeAtualizarNotas');
+    btn.disabled = true;
+    rotacaoAtualizarNotas += 360;
+    icone.style.transform = `rotate(${rotacaoAtualizarNotas}deg)`;
+    await carregarNotas();
+    btn.disabled = false;
+  });
   document.getElementById('btnFecharDrawerNota').addEventListener('click', () => drawerNotaOverlay.classList.remove('show'));
 
   // =================================================================

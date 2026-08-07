@@ -48,6 +48,10 @@
   .item-rol-row{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:10px 4px; border-bottom:1px solid var(--border); }
   .item-rol-row:last-child{ border-bottom:none; }
   .item-rol-nome{ font-size:.9rem; color:var(--ink); flex:1; min-width:0; }
+  .item-rol-codigo{ font-family:'JetBrains Mono', monospace; font-size:.76rem; color:var(--brand-2); font-weight:700; margin-right:6px; }
+  .item-rol-preco{ display:block; font-size:.76rem; color:var(--muted); font-weight:500; margin-top:2px; }
+  .item-rol-preco.diferenciado{ color:var(--accent-ink); font-weight:700; }
+  .ordenacao-select{ padding:7px 10px; border-radius:8px; border:1.5px solid var(--border); font-size:.78rem; background:var(--surface); color:var(--ink); font-weight:500; }
   .stepper{ display:flex; align-items:center; gap:0; border:1.5px solid var(--border); border-radius:10px; overflow:hidden; flex-shrink:0; }
   .stepper button{ width:34px; height:34px; background:var(--brand-soft); color:var(--brand-2); border:none; font-size:1.1rem; font-weight:700; cursor:pointer; }
   .stepper button:hover{ background:#DCEAE2; }
@@ -125,7 +129,16 @@
           <div class="field-group"><label>Setor / local</label><input type="text" id="f_setor" placeholder="Ex: ala 21, restaurante"></div>
         </div>
 
-        <div class="secao-titulo">Itens e quantidades</div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
+          <div class="secao-titulo" style="margin-bottom:0;">Itens e quantidades</div>
+          <select id="ordenacaoItens" class="ordenacao-select">
+            <option value="padrao">Ordem padrão</option>
+            <option value="codigo_asc">Código A→Z</option>
+            <option value="codigo_desc">Código Z→A</option>
+            <option value="nome_asc">Descrição A→Z</option>
+            <option value="nome_desc">Descrição Z→A</option>
+          </select>
+        </div>
         <div class="lista-itens-rol" id="listaItensRol"></div>
 
         <div class="field-group" style="margin-top:16px;">
@@ -136,6 +149,10 @@
         <div class="resumo-envio">
           <span>Total de peças</span>
           <span class="mono" id="resumoTotalPecas">0</span>
+        </div>
+        <div class="resumo-envio" id="resumoValorTotalWrap" style="display:none;">
+          <span>Valor estimado</span>
+          <span class="mono" id="resumoValorTotal">R$ 0,00</span>
         </div>
 
         <button class="btn-primary" id="btnEnviarRol">Enviar rol de roupas</button>
@@ -167,7 +184,11 @@
   let unidadeNegocioId = null;
   let unidadeWhatsapp = null;
   let todosItensCatalogo = [];
+  let precosEspeciaisPorItem = {}; // { item_id: valor } — só os itens com preço diferenciado pra esse cliente
+  let ordemAtual = 'padrao';
   const quantidadesPorItem = {};
+
+  function formatarMoeda(v){ return 'R$ ' + Number(v || 0).toFixed(2).replace('.', ','); }
 
   function mostrarErroInicial(msg){
     document.getElementById('estadoCarregando').style.display = 'none';
@@ -245,21 +266,43 @@
   }
 
   async function carregarItensCatalogo(){
-    const { data, error } = await sb
-      .from('lavanderia_itens')
-      .select('id, nome, ordem_exibicao')
-      .eq('unidade_negocio_id', unidadeNegocioId)
-      .eq('ativo', true)
-      .order('ordem_exibicao', { ascending: true })
-      .order('nome', { ascending: true });
+    const [resItens, resPrecos] = await Promise.all([
+      sb.from('lavanderia_itens')
+        .select('id, nome, codigo, preco_normal, ordem_exibicao')
+        .eq('unidade_negocio_id', unidadeNegocioId)
+        .eq('ativo', true)
+        .order('ordem_exibicao', { ascending: true })
+        .order('nome', { ascending: true }),
+      sb.from('lavanderia_itens_cliente')
+        .select('item_id, valor')
+        .eq('cliente_id', clienteId)
+        .eq('ativo', true)
+    ]);
 
-    if(error){
+    if(resItens.error){
       mostrarErroInicial('Erro ao carregar a lista de itens. Tente novamente em instantes.');
       return;
     }
 
-    todosItensCatalogo = data || [];
+    todosItensCatalogo = resItens.data || [];
+    precosEspeciaisPorItem = {};
+    (resPrecos.data || []).forEach(p => { precosEspeciaisPorItem[p.item_id] = p.valor; });
+
     renderListaItensRol();
+  }
+
+  function ordenarCatalogo(){
+    const arr = [...todosItensCatalogo];
+    if(ordemAtual === 'codigo_asc') arr.sort((a, b) => (a.codigo || '').localeCompare(b.codigo || '', 'pt-BR', { numeric: true }));
+    else if(ordemAtual === 'codigo_desc') arr.sort((a, b) => (b.codigo || '').localeCompare(a.codigo || '', 'pt-BR', { numeric: true }));
+    else if(ordemAtual === 'nome_asc') arr.sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
+    else if(ordemAtual === 'nome_desc') arr.sort((a, b) => b.nome.localeCompare(a.nome, 'pt-BR'));
+    // 'padrao': mantém a ordem que já veio do banco (ordem_exibicao)
+    return arr;
+  }
+
+  function valorAplicavel(item){
+    return precosEspeciaisPorItem[item.id] !== undefined ? precosEspeciaisPorItem[item.id] : item.preco_normal;
   }
 
   function renderListaItensRol(){
@@ -269,21 +312,32 @@
       return;
     }
 
-    lista.innerHTML = todosItensCatalogo.map(item => `
-      <div class="item-rol-row" data-item-id="${item.id}">
-        <span class="item-rol-nome">${item.nome}</span>
-        <div class="stepper">
-          <button type="button" class="btn-diminuir" aria-label="Diminuir">−</button>
-          <input type="number" min="0" step="1" value="0" class="input-qtd-item">
-          <button type="button" class="btn-aumentar" aria-label="Aumentar">+</button>
+    const itensOrdenados = ordenarCatalogo();
+
+    lista.innerHTML = itensOrdenados.map(item => {
+      const qtdAtual = quantidadesPorItem[item.id] || 0;
+      const temPrecoEspecial = precosEspeciaisPorItem[item.id] !== undefined;
+      const valor = valorAplicavel(item);
+      const codigoHtml = item.codigo ? `<span class="item-rol-codigo">${item.codigo}</span>` : '';
+      const precoHtml = valor !== null && valor !== undefined
+        ? `<span class="item-rol-preco${temPrecoEspecial ? ' diferenciado' : ''}">${formatarMoeda(valor)}${temPrecoEspecial ? ' · seu preço' : ''}</span>`
+        : '';
+      return `
+        <div class="item-rol-row" data-item-id="${item.id}">
+          <span class="item-rol-nome">${codigoHtml}${item.nome}${precoHtml}</span>
+          <div class="stepper">
+            <button type="button" class="btn-diminuir" aria-label="Diminuir">−</button>
+            <input type="number" min="0" step="1" value="${qtdAtual}" class="input-qtd-item">
+            <button type="button" class="btn-aumentar" aria-label="Aumentar">+</button>
+          </div>
         </div>
-      </div>
-    `).join('');
+      `;
+    }).join('');
 
     lista.querySelectorAll('.item-rol-row').forEach(row => {
       const itemId = row.dataset.itemId;
       const input = row.querySelector('.input-qtd-item');
-      quantidadesPorItem[itemId] = 0;
+      if(quantidadesPorItem[itemId] === undefined) quantidadesPorItem[itemId] = 0;
 
       const atualizar = (novoValor) => {
         const v = Math.max(0, Math.round(Number(novoValor) || 0));
@@ -298,9 +352,26 @@
     });
   }
 
+  document.getElementById('ordenacaoItens').addEventListener('change', (e) => {
+    ordemAtual = e.target.value;
+    renderListaItensRol();
+  });
+
   function atualizarResumoTotalPecas(){
     const total = Object.values(quantidadesPorItem).reduce((acc, v) => acc + v, 0);
     document.getElementById('resumoTotalPecas').textContent = total;
+
+    const temAlgumPreco = todosItensCatalogo.some(item => valorAplicavel(item) !== null && valorAplicavel(item) !== undefined);
+    const wrap = document.getElementById('resumoValorTotalWrap');
+    if(!temAlgumPreco){ wrap.style.display = 'none'; return; }
+
+    const valorTotal = todosItensCatalogo.reduce((acc, item) => {
+      const qtd = quantidadesPorItem[item.id] || 0;
+      const valor = valorAplicavel(item) || 0;
+      return acc + qtd * valor;
+    }, 0);
+    document.getElementById('resumoValorTotal').textContent = formatarMoeda(valorTotal);
+    wrap.style.display = 'flex';
   }
 
   function mostrarErroEnvio(msg){
